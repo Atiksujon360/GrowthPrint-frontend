@@ -1,0 +1,6 @@
+{
+  "name": "GrowthPrint",
+  "description": "GrowthPrint is an AI-powered IT services agency platform combining a premium public agency experience, client portal, and founder operations workspace.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
