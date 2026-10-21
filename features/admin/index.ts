@@ -1,0 +1,11 @@
+export { AdminLayout } from './components/AdminLayout.tsx';
+export type { AdminTab } from './components/AdminLayout.tsx';
+export { AdminDashboard } from './components/AdminDashboard.tsx';
+export { AdminLeadsView } from './components/AdminLeadsView.tsx';
+export { AdminOutreachStudio } from './components/AdminOutreachStudio.tsx';
+export { AdminRequestsQueue } from './components/AdminRequestsQueue.tsx';
+export { AdminProjectsView } from './components/AdminProjectsView.tsx';
+export { AdminClientsView } from './components/AdminClientsView.tsx';
+export { AdminInvoicesView } from './components/AdminInvoicesView.tsx';
+export { AdminAutomationView } from './components/AdminAutomationView.tsx';
+export { AdminActivityView } from './components/AdminActivityView.tsx';

@@ -1,31 +1,29 @@
 {
-  "name": "react-example",
+  "name": "growthprint-frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --port=3000 --host=0.0.0.0",
-    "build": "vite build",
-    "preview": "vite preview",
-    "clean": "rm -rf dist server.js",
-    "lint": "tsc --noEmit"
+    "dev": "next dev --port 3000 --hostname 0.0.0.0",
+    "build": "next build",
+    "start": "next start",
+    "clean": "rm -rf .next dist server.js",
+    "lint": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test lib/*.test.ts lib/api/*.test.ts store/*.test.ts"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
     "@reduxjs/toolkit": "^2.13.0",
-    "@tailwindcss/vite": "^4.3.3",
-    "@vitejs/plugin-react": "^6.1.1",
+    "@tailwindcss/postcss": "^4.3.3",
     "date-fns": "^4.4.0",
-    "dotenv": "^17.2.3",
-    "express": "^4.21.2",
     "lucide-react": "^0.546.0",
     "motion": "^12.23.24",
+    "next": "^16.4.2",
     "react": "^19.0.1",
     "react-dom": "^19.0.1",
     "react-hook-form": "^7.90.0",
     "react-redux": "^9.3.0",
     "recharts": "^3.10.1",
-    "vite": "^8.3.0",
     "zod": "^4.6.7"
   },
   "devDependencies": {
@@ -33,10 +31,8 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "autoprefixer": "^10.4.21",
-    "esbuild": "^0.25.0",
     "tailwindcss": "^4.3.3",
     "tsx": "^4.21.0",
-    "typescript": "^7.0.2",
-    "@types/express": "^4.17.21"
+    "typescript": "^7.0.2"
   }
 }
