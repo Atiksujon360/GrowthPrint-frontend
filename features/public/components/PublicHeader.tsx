@@ -43,6 +43,9 @@ export function PublicHeader({ onOpenQuote }: { onOpenQuote: () => void }) {
           <a href="#trust" onClick={(event) => handleSectionClick(event, 'trust')} className="hover:text-slate-900 transition-colors whitespace-nowrap shrink-0">
             Why GrowthPrint
           </a>
+          <a href="#faq" onClick={(event) => handleSectionClick(event, 'faq')} className="hover:text-slate-900 transition-colors whitespace-nowrap shrink-0">
+            FAQ
+          </a>
           <button 
             onClick={() => {
               dispatch(switchRole('CLIENT'));
@@ -100,6 +103,13 @@ export function PublicHeader({ onOpenQuote }: { onOpenQuote: () => void }) {
             className="block py-2 text-base font-medium text-slate-700 hover:text-blue-600"
           >
             Case Studies
+          </a>
+          <a 
+            href="#faq" 
+            onClick={(event) => handleSectionClick(event, 'faq')}
+            className="block py-2 text-base font-medium text-slate-700 hover:text-blue-600"
+          >
+            FAQ
           </a>
           <a 
             href="#trust" 

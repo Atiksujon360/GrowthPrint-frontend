@@ -18,6 +18,7 @@ import {
   HowWeWorkSection,
   CaseStudiesSection,
   TrustSection,
+  FAQSection,
   PublicFooter,
   QuoteInquiryModal
 } from '../../features/public/index.ts';
@@ -135,6 +136,7 @@ function MainApp() {
             <HowWeWorkSection />
             <CaseStudiesSection />
             <TrustSection onOpenQuote={() => handleOpenQuote()} />
+            <FAQSection />
           </main>
           <PublicFooter onOpenQuote={() => handleOpenQuote()} />
 

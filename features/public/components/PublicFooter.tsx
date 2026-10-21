@@ -115,6 +115,11 @@ export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
                   Client work
                 </a>
               </li>
+              <li>
+                <a href="#faq" onClick={(event) => handleFooterSectionClick(event, 'faq')} className="hover:text-white transition-colors">
+                  Common questions
+                </a>
+              </li>
             </ul>
           </div>
 
