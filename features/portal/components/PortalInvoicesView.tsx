@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks.ts';
-import { payInvoice } from '../../../store/index.ts';
+import { addNotification, addToast, payInvoice } from '../../../store/index.ts';
 import { StatusBadge } from '../../../components/ui/Badges.tsx';
+import { EmptyState } from '../../../components/ui/AsyncState.tsx';
 import { CreditCard, Download, CheckCircle2, ArrowRight, FileText } from 'lucide-react';
 
 export function PortalInvoicesView() {
@@ -14,7 +15,29 @@ export function PortalInvoicesView() {
 
   const handleDownload = (invoiceNumber: string) => {
     setDownloadSuccess(invoiceNumber);
+    dispatch(addToast({
+      type: 'success',
+      title: 'Invoice Ready',
+      message: `Invoice ${invoiceNumber} is ready for download.`
+    }));
     setTimeout(() => setDownloadSuccess(null), 2500);
+  };
+
+  const handlePayment = (invoiceId: string, invoiceNumber: string, amount: number) => {
+    dispatch(payInvoice({ invoiceId }));
+    dispatch(addToast({
+      type: 'success',
+      title: 'Payment Recorded',
+      message: `Payment of $${amount.toLocaleString()} for ${invoiceNumber} was recorded in the demo ledger.`
+    }));
+    dispatch(addNotification({
+      category: 'FINANCIAL',
+      title: 'Invoice Paid',
+      message: `${invoiceNumber} was marked as paid by ${currentUser.name}.`,
+      priority: 'MEDIUM',
+      targetTab: 'INVOICES',
+      entityId: invoiceId
+    }));
   };
 
   const totalOutstanding = invoices
@@ -52,7 +75,9 @@ export function PortalInvoicesView() {
 
       {/* Invoice list */}
       <div className="space-y-4">
-        {invoices.map((inv) => (
+        {invoices.length === 0 ? (
+          <EmptyState title="No invoices yet" message="Billing records will appear here after a project milestone or approved support estimate." />
+        ) : invoices.map((inv) => (
           <div 
             key={inv.id} 
             className="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden"
@@ -80,7 +105,7 @@ export function PortalInvoicesView() {
                 <div className="flex items-center gap-2 pl-2">
                   {inv.status === 'ISSUED' && (
                     <button
-                      onClick={() => dispatch(payInvoice({ invoiceId: inv.id }))}
+                      onClick={() => handlePayment(inv.id, inv.invoiceNumber, inv.totalAmount)}
                       className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow-xs flex items-center gap-1.5 transition-colors"
                     >
                       <CreditCard className="w-3.5 h-3.5" />

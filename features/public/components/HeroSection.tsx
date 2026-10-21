@@ -17,17 +17,17 @@ export function HeroSection({ onOpenQuote }: { onOpenQuote: () => void }) {
           {/* Left Column: Value proposition and primary CTA */}
           <div className="lg:col-span-7 space-y-6">
             <div className="inline-flex items-center gap-2 text-xs font-semibold text-blue-700 tracking-wider uppercase">
-              <span>Your Technology Partner</span>
+              <span>Clear thinking</span>
               <span aria-hidden="true" className="text-slate-300">/</span>
-              <span>Founder-Led Engineering</span>
+              <span>Careful engineering</span>
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.1] text-balance">
-              Technology That Moves Your Business Forward.
+              Good software should make work feel easier.
             </h1>
 
             <p className="text-lg sm:text-xl text-slate-600 leading-relaxed max-w-2xl">
-              From custom software and website improvements to business automation, GrowthPrint helps businesses solve technical bottlenecks and build resilient digital operations.
+              GrowthPrint helps growing teams fix the systems that slow them down, then build the next version with care.
             </p>
 
             {/* CTAs */}
@@ -36,7 +36,7 @@ export function HeroSection({ onOpenQuote }: { onOpenQuote: () => void }) {
                 onClick={onOpenQuote}
                 className="px-6 py-3.5 text-base font-semibold text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 rounded-xl shadow-sm hover:shadow transition-all flex items-center gap-2.5"
               >
-                <span>Let&apos;s Discuss Your Project</span>
+                <span>Tell us what&apos;s getting in the way</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
@@ -48,7 +48,7 @@ export function HeroSection({ onOpenQuote }: { onOpenQuote: () => void }) {
                 }}
                 className="px-6 py-3.5 text-base font-medium text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl transition-colors flex items-center gap-2"
               >
-                <span>Explore Services</span>
+                <span>See how we can help</span>
               </a>
 
               <button
@@ -58,7 +58,7 @@ export function HeroSection({ onOpenQuote }: { onOpenQuote: () => void }) {
                 }}
                 className="text-sm font-medium text-slate-500 hover:text-blue-600 transition-colors flex items-center gap-1.5 ml-2"
               >
-                <span>Already a client? Sign in</span>
+                <span>Already working with us? Sign in</span>
                 <ArrowUpRight className="w-3.5 h-3.5" />
               </button>
             </div>
@@ -67,15 +67,15 @@ export function HeroSection({ onOpenQuote }: { onOpenQuote: () => void }) {
             <div className="pt-4 border-t border-slate-200 flex flex-wrap items-center gap-6 text-xs text-slate-600">
               <div className="flex items-center gap-1.5">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Defined scope & transparent estimates</span>
+                <span>Clear scope before work starts</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Direct founder oversight & delivery</span>
+                <span>Direct access to the person doing the work</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>30-day post-launch warranty</span>
+                <span>Support after launch when you need it</span>
               </div>
             </div>
           </div>
@@ -86,7 +86,7 @@ export function HeroSection({ onOpenQuote }: { onOpenQuote: () => void }) {
               {!imageError ? (
                 <img
                   src={heroImage.src}
-                  alt="GrowthPrint engineering team collaborating on enterprise software architecture"
+                  alt="A team reviewing practical software solutions together"
                   className="w-full h-[380px] lg:h-[440px] object-cover object-center"
                   referrerPolicy="no-referrer"
                   onError={() => setImageError(true)}
@@ -98,8 +98,8 @@ export function HeroSection({ onOpenQuote }: { onOpenQuote: () => void }) {
                     <Terminal className="w-5 h-5 text-slate-400" />
                   </div>
                   <div className="space-y-3">
-                    <h3 className="text-2xl font-bold">Reliable Engineering for Scalable Operations</h3>
-                    <p className="text-sm text-slate-300">Web applications, business automation, and ongoing technical maintenance.</p>
+                    <h3 className="text-2xl font-bold">A calmer way to improve your digital work</h3>
+                    <p className="text-sm text-slate-300">Software, automation, and thoughtful ongoing support.</p>
                   </div>
                   <div className="text-xs font-mono text-slate-400">TypeScript · React · Next.js · Node.js</div>
                 </div>
@@ -111,7 +111,7 @@ export function HeroSection({ onOpenQuote }: { onOpenQuote: () => void }) {
                   <div className="text-xs font-semibold text-slate-900">GrowthPrint IT Services</div>
                   <div className="text-[11px] text-slate-500">Custom Software · Maintenance · Automation</div>
                 </div>
-                <span className="text-xs font-medium text-blue-600">Enterprise Ready</span>
+                <span className="text-xs font-medium text-blue-600">Built to be useful</span>
               </div>
             </div>
           </div>
@@ -121,19 +121,19 @@ export function HeroSection({ onOpenQuote }: { onOpenQuote: () => void }) {
         <div className="mt-16 pt-8 border-t border-slate-200 grid grid-cols-2 md:grid-cols-4 gap-6">
           <div className="space-y-1">
             <div className="text-3xl font-bold text-slate-900 tabular-nums">14+</div>
-            <div className="text-xs font-medium text-slate-500">Production Systems Delivered</div>
+            <div className="text-xs font-medium text-slate-500">Systems shipped</div>
           </div>
           <div className="space-y-1">
             <div className="text-3xl font-bold text-slate-900 tabular-nums">35%</div>
-            <div className="text-xs font-medium text-slate-500">Average Process Latency Cut</div>
+            <div className="text-xs font-medium text-slate-500">Less process friction</div>
           </div>
           <div className="space-y-1">
             <div className="text-3xl font-bold text-slate-900 tabular-nums">100%</div>
-            <div className="text-xs font-medium text-slate-500">Founder-Led Technical Review</div>
+            <div className="text-xs font-medium text-slate-500">Work reviewed personally</div>
           </div>
           <div className="space-y-1">
             <div className="text-3xl font-bold text-slate-900 tabular-nums">99.9%</div>
-            <div className="text-xs font-medium text-slate-500">Automated Pipeline Reliability</div>
+            <div className="text-xs font-medium text-slate-500">Reliable automated workflows</div>
           </div>
         </div>
       </div>

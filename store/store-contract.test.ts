@@ -25,6 +25,7 @@ import {
   switchRole,
   toggleTaskStatus,
   triggerWorkflowRun,
+  updateOutreachDraft,
   updateLeadStage,
   updateRequestStatus,
   store
@@ -48,6 +49,7 @@ test('Redux state keys and action type strings remain stable', () => {
       triggerWorkflowRun,
       payInvoice,
       toggleTaskStatus,
+      updateOutreachDraft,
       addToast,
       removeToast,
       clearAllToasts,
@@ -76,6 +78,7 @@ test('Redux state keys and action type strings remain stable', () => {
       'agency/triggerWorkflowRun',
       'agency/payInvoice',
       'agency/toggleTaskStatus',
+      'agency/updateOutreachDraft',
       'ui/addToast',
       'ui/removeToast',
       'ui/clearAllToasts',

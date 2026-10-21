@@ -161,7 +161,8 @@ export function AdminProjectsView() {
             options: [
               { label: 'All Projects', value: 'ALL', count: projects.length },
               { label: 'In Progress', value: 'IN_PROGRESS', count: projects.filter(p => p.status === 'IN_PROGRESS').length },
-              { label: 'Discovery / Planned', value: 'PLANNED', count: projects.filter(p => p.status === 'PLANNED' || p.status === 'DISCOVERY').length },
+              { label: 'Planned', value: 'PLANNED', count: projects.filter(p => p.status === 'PLANNED').length },
+              { label: 'Discovery', value: 'DISCOVERY', count: projects.filter(p => p.status === 'DISCOVERY').length },
               { label: 'Completed', value: 'COMPLETED', count: projects.filter(p => p.status === 'COMPLETED').length }
             ]
           }}

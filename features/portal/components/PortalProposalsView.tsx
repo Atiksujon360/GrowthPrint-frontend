@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAppSelector } from '../../../store/hooks.ts';
 import { StatusBadge } from '../../../components/ui/Badges.tsx';
+import { EmptyState } from '../../../components/ui/AsyncState.tsx';
 import { FileCheck, CheckCircle2, Clock, Calendar, ShieldCheck } from 'lucide-react';
 
 export function PortalProposalsView() {
@@ -20,7 +21,9 @@ export function PortalProposalsView() {
       </div>
 
       <div className="space-y-6">
-        {proposals.map((prop) => (
+        {proposals.length === 0 ? (
+          <EmptyState title="No proposals yet" message="New statements of work will appear here when GrowthPrint prepares them for review." />
+        ) : proposals.map((prop) => (
           <div key={prop.id} className="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
             {/* Header */}
             <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex flex-col md:flex-row md:items-center justify-between gap-4">

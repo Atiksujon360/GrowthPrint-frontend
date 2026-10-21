@@ -141,7 +141,10 @@ export function AdminRequestsQueue() {
 
   const statusOptions = [
     { label: 'All Tickets', value: 'ALL', count: requests.length },
-    { label: 'Pending Review', value: 'AWAITING_CLIENT_APPROVAL', count: requests.filter(r => r.status === 'AWAITING_CLIENT_APPROVAL').length },
+    { label: 'New', value: 'NEW', count: requests.filter(r => r.status === 'NEW').length },
+    { label: 'Needs Classification', value: 'NEEDS_CLASSIFICATION', count: requests.filter(r => r.status === 'NEEDS_CLASSIFICATION').length },
+    { label: 'Estimate Pending', value: 'ESTIMATE_PENDING', count: requests.filter(r => r.status === 'ESTIMATE_PENDING').length },
+    { label: 'Awaiting Client Approval', value: 'AWAITING_CLIENT_APPROVAL', count: requests.filter(r => r.status === 'AWAITING_CLIENT_APPROVAL').length },
     { label: 'Ready to Start', value: 'READY_TO_START', count: requests.filter(r => r.status === 'READY_TO_START').length },
     { label: 'In Progress', value: 'IN_PROGRESS', count: requests.filter(r => r.status === 'IN_PROGRESS').length },
     { label: 'Completed', value: 'COMPLETED', count: requests.filter(r => r.status === 'COMPLETED').length }

@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from '../../../store/hooks.ts';
 import { 
   approveOutreachDraft, 
   sendApprovedOutreach, 
+  updateOutreachDraft,
   addToast, 
   addNotification 
 } from '../../../store/index.ts';
@@ -55,12 +56,33 @@ export function AdminOutreachStudio({ preselectedLeadId }: { preselectedLeadId?:
   }
 
   const handleApprove = () => {
+    dispatch(updateOutreachDraft({
+      draftId: activeDraft.id,
+      subject: editedSubject.trim(),
+      messageBody: editedBody.trim()
+    }));
     dispatch(approveOutreachDraft({ draftId: activeDraft.id }));
     dispatch(addToast({
       type: 'success',
       title: 'Email Draft Approved',
       message: `Draft for ${activeDraft.recipientName} (${activeDraft.companyName}) is approved and ready for sending.`
     }));
+  };
+
+  const handleToggleEdit = () => {
+    if (isEditing) {
+      dispatch(updateOutreachDraft({
+        draftId: activeDraft.id,
+        subject: editedSubject.trim(),
+        messageBody: editedBody.trim()
+      }));
+      dispatch(addToast({
+        type: 'success',
+        title: 'Draft Changes Saved',
+        message: `Updated copy for ${activeDraft.recipientName}.`
+      }));
+    }
+    setIsEditing(current => !current);
   };
 
   const handleConfirmSend = () => {
@@ -206,7 +228,7 @@ export function AdminOutreachStudio({ preselectedLeadId }: { preselectedLeadId?:
                 <span>Message Preview</span>
               </span>
               <button
-                onClick={() => setIsEditing(!isEditing)}
+                onClick={handleToggleEdit}
                 className="text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-1"
               >
                 <Edit3 className="w-3 h-3" />

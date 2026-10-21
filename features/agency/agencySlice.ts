@@ -357,7 +357,16 @@ const agencySlice = createSlice({
       }
     },
 
-    // I. Update Lead Pipeline Stage
+    // I. Save founder-edited outreach copy before approval or dispatch
+    updateOutreachDraft: (state, action: PayloadAction<{ draftId: string; subject: string; messageBody: string }>) => {
+      const draft = state.outreachDrafts.find(d => d.id === action.payload.draftId);
+      if (draft) {
+        draft.subject = action.payload.subject;
+        draft.messageBody = action.payload.messageBody;
+      }
+    },
+
+    // J. Update Lead Pipeline Stage
     updateLeadStage: (state, action: PayloadAction<{ leadId: string; stage: LeadPipelineStage }>) => {
       const lead = state.leads.find(l => l.id === action.payload.leadId);
       if (lead) {
@@ -375,7 +384,7 @@ const agencySlice = createSlice({
       }
     },
 
-    // J. Run Automation Workflow
+    // K. Run Automation Workflow
     triggerWorkflowRun: (state, action: PayloadAction<{ workflowId: string }>) => {
       const wf = state.workflows.find(w => w.id === action.payload.workflowId);
       if (wf) {
@@ -396,7 +405,7 @@ const agencySlice = createSlice({
       }
     },
 
-    // K. Invoice Payment Simulator
+    // L. Invoice Payment Simulator
     payInvoice: (state, action: PayloadAction<{ invoiceId: string }>) => {
       const inv = state.invoices.find(i => i.id === action.payload.invoiceId);
       if (inv) {
@@ -416,7 +425,7 @@ const agencySlice = createSlice({
       }
     },
 
-    // L. Toggle Task Completion
+    // M. Toggle Task Completion
     toggleTaskStatus: (state, action: PayloadAction<{ taskId: string }>) => {
       const task = state.tasks.find(t => t.id === action.payload.taskId);
       if (task) {
@@ -435,6 +444,7 @@ export const {
   updateRequestStatus,
   approveOutreachDraft,
   sendApprovedOutreach,
+  updateOutreachDraft,
   updateLeadStage,
   triggerWorkflowRun,
   payInvoice,

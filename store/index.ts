@@ -11,6 +11,7 @@ import agencyReducer, {
   submitPublicInquiry,
   toggleTaskStatus,
   triggerWorkflowRun,
+  updateOutreachDraft,
   updateLeadStage,
   updateRequestStatus
 } from '../features/agency/agencySlice.ts';
@@ -41,6 +42,7 @@ export {
   updateRequestStatus,
   approveOutreachDraft,
   sendApprovedOutreach,
+  updateOutreachDraft,
   updateLeadStage,
   triggerWorkflowRun,
   payInvoice,

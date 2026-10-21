@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { useAppSelector } from '../../../store/hooks.ts';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks.ts';
+import { addNotification, addToast } from '../../../store/index.ts';
 import { Send, User, Bot, Clock, Paperclip } from 'lucide-react';
 
 export function PortalMessagesView() {
+  const dispatch = useAppDispatch();
   const { currentUser } = useAppSelector(state => state.auth);
 
   const [messages, setMessages] = useState([
@@ -45,6 +47,18 @@ export function PortalMessagesView() {
         text: inputVal.trim()
       }
     ]);
+    dispatch(addToast({
+      type: 'success',
+      title: 'Message Sent',
+      message: 'Your technical lead has been notified.'
+    }));
+    dispatch(addNotification({
+      category: 'SYSTEM',
+      title: 'Client Message Received',
+      message: `${currentUser.name} sent a new message in the client channel.`,
+      priority: 'MEDIUM',
+      targetTab: 'MESSAGES'
+    }));
     setInputVal('');
   };
 

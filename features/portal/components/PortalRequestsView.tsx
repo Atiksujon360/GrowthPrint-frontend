@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks.ts';
 import { createSupportRequest, clientApproveEstimate, addToast, addNotification } from '../../../store/index.ts';
 import { StatusBadge } from '../../../components/ui/Badges.tsx';
+import { EmptyState } from '../../../components/ui/AsyncState.tsx';
 import { 
   PlusCircle, 
   TicketCheck, 
@@ -119,7 +120,9 @@ export function PortalRequestsView({ isModalOpen, onOpenModal, onCloseModal }: P
         </div>
 
         <div className="divide-y divide-slate-100">
-          {requests.map((r) => (
+          {requests.length === 0 ? (
+            <div className="p-5"><EmptyState title="No support requests" message="Submit a request when your team needs help with a bug, feature, or technical question." actionLabel="Create Support Request" onAction={onOpenModal} /></div>
+          ) : requests.map((r) => (
             <div key={r.id} className="p-5 hover:bg-slate-50/50 transition-colors">
               <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                 <div className="space-y-1.5 flex-1">
@@ -163,7 +166,22 @@ export function PortalRequestsView({ isModalOpen, onOpenModal, onCloseModal }: P
                       {r.estimate.explanation}
                     </div>
                     <button
-                      onClick={() => dispatch(clientApproveEstimate({ requestId: r.id, clientUser: currentUser.name }))}
+                      onClick={() => {
+                        dispatch(clientApproveEstimate({ requestId: r.id, clientUser: currentUser.name }));
+                        dispatch(addToast({
+                          type: 'success',
+                          title: 'Work Authorized',
+                          message: `Estimate for ${r.reference} was approved and queued for delivery.`
+                        }));
+                        dispatch(addNotification({
+                          category: 'ACTION_REQUIRED',
+                          title: 'Estimate Approved',
+                          message: `${currentUser.name} approved estimate ${r.reference}.`,
+                          priority: 'MEDIUM',
+                          targetTab: 'REQUESTS',
+                          entityId: r.id
+                        }));
+                      }}
                       className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow-xs flex items-center gap-1.5 ml-auto"
                     >
                       <CheckCircle2 className="w-3.5 h-3.5" />
