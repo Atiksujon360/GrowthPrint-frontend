@@ -6,7 +6,7 @@ import { DataTable, type ColumnDef } from '../../../components/ui/DataTable.tsx'
 import { CopyButton } from '../../../components/ui/CopyButton.tsx';
 import { DollarSign, Download, CheckCircle2, FileText, CreditCard, FileSpreadsheet } from 'lucide-react';
 import { exportToCsv, exportToJson } from '../../../lib/utils.ts';
-import type { Invoice } from '../../../types/index.ts';
+import type { Invoice } from '../../../types/agency.ts';
 
 export function AdminInvoicesView() {
   const dispatch = useAppDispatch();

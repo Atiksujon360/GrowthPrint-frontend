@@ -26,12 +26,9 @@ import uiReducer, {
   removeToast,
   setShortcutsModalOpen,
   setSystemAlert,
-  startLiveSync,
-  type AppNotification,
-  type SystemAlert,
-  type ToastMessage,
-  type ToastType
+  startLiveSync
 } from '../features/ui/uiSlice.ts';
+import type { AppNotification, SystemAlert, ToastMessage, ToastType } from '../types/ui.ts';
 
 export {
   switchRole,

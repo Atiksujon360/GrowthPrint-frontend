@@ -14,7 +14,7 @@ import {
   Table as TableIcon, 
   Columns 
 } from 'lucide-react';
-import type { Lead, LeadPipelineStage } from '../../../types/index.ts';
+import type { Lead, LeadPipelineStage } from '../../../types/agency.ts';
 
 export function AdminLeadsView({ onOpenOutreach }: { onOpenOutreach: (leadId: string) => void }) {
   const dispatch = useAppDispatch();

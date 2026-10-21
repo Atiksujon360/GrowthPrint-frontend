@@ -3,6 +3,7 @@ import { ArrowRight, CheckCircle2, ShieldCheck, Terminal, Layers, ArrowUpRight }
 import { useAppDispatch } from '../../../store/hooks.ts';
 import { setActiveView, switchRole } from '../../../store/index.ts';
 import heroImage from '../../../assets/images/hero_agency_workspace_1792450306060.jpg';
+import { scrollToSection } from '../../../lib/scroll.ts';
 
 export function HeroSection({ onOpenQuote }: { onOpenQuote: () => void }) {
   const dispatch = useAppDispatch();
@@ -41,6 +42,10 @@ export function HeroSection({ onOpenQuote }: { onOpenQuote: () => void }) {
 
               <a
                 href="#services"
+                onClick={(event) => {
+                  event.preventDefault();
+                  scrollToSection('services');
+                }}
                 className="px-6 py-3.5 text-base font-medium text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl transition-colors flex items-center gap-2"
               >
                 <span>Explore Services</span>

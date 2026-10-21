@@ -14,7 +14,7 @@ import {
   Columns,
   Table as TableIcon
 } from 'lucide-react';
-import type { SupportRequest, SupportCategory, SupportRequestStatus } from '../../../types/index.ts';
+import type { SupportRequest, SupportCategory, SupportRequestStatus } from '../../../types/agency.ts';
 
 export function AdminRequestsQueue() {
   const dispatch = useAppDispatch();

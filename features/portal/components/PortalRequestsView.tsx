@@ -11,7 +11,7 @@ import {
   X,
   FileText
 } from 'lucide-react';
-import type { SupportCategory } from '../../../types/index.ts';
+import type { SupportCategory } from '../../../types/agency.ts';
 
 interface PortalRequestsViewProps {
   isModalOpen: boolean;

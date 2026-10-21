@@ -14,7 +14,7 @@ import {
   type SupportCategory,
   type SupportRequestStatus,
   type LeadPipelineStage
-} from '../../types/index.ts';
+} from '../../types/agency.ts';
 import {
   INITIAL_CLIENTS,
   INITIAL_PROJECTS,
@@ -29,20 +29,7 @@ import {
 } from './initialData.ts';
 import { calculateLeadScore, calculateEstimateCost, calculateInvoiceTotals } from '../../lib/domain-rules.ts';
 
-// Agency Core Slice
-interface AgencyState {
-  clients: Client[];
-  projects: Project[];
-  tasks: Task[];
-  requests: SupportRequest[];
-  leads: Lead[];
-  outreachDrafts: OutreachDraft[];
-  proposals: Proposal[];
-  invoices: Invoice[];
-  workflows: WorkflowDefinition[];
-  activities: ActivityEvent[];
-  lastInquiryReference?: string;
-}
+import type { AgencyState } from '../../types/agency.ts';
 
 const initialAgencyState: AgencyState = {
   clients: INITIAL_CLIENTS,

@@ -8,7 +8,7 @@ import {
   ArrowRight,
   CheckCircle2
 } from 'lucide-react';
-import type { ServiceCategory } from '../../../types/index.ts';
+import type { ServiceCategory } from '../../../types/agency.ts';
 
 interface ServicesSectionProps {
   onSelectService: (service: ServiceCategory) => void;

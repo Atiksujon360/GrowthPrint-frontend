@@ -2,6 +2,12 @@ import React from 'react';
 import { useAppDispatch } from '../../../store/hooks.ts';
 import { setActiveView, switchRole } from '../../../store/index.ts';
 import { Mail, Phone, MapPin, ArrowUpRight } from 'lucide-react';
+import { scrollToSection } from '../../../lib/scroll.ts';
+
+function handleFooterSectionClick(event: React.MouseEvent<HTMLAnchorElement>, sectionId: string) {
+  event.preventDefault();
+  scrollToSection(sectionId);
+}
 
 export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
   const dispatch = useAppDispatch();
@@ -42,27 +48,27 @@ export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
             </h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <a href="#services" className="hover:text-white transition-colors">
+                <a href="#services" onClick={(event) => handleFooterSectionClick(event, 'services')} className="hover:text-white transition-colors">
                   Custom Software Development
                 </a>
               </li>
               <li>
-                <a href="#services" className="hover:text-white transition-colors">
+                <a href="#services" onClick={(event) => handleFooterSectionClick(event, 'services')} className="hover:text-white transition-colors">
                   Website & Application Support
                 </a>
               </li>
               <li>
-                <a href="#services" className="hover:text-white transition-colors">
+                <a href="#services" onClick={(event) => handleFooterSectionClick(event, 'services')} className="hover:text-white transition-colors">
                   Technical SEO & Optimization
                 </a>
               </li>
               <li>
-                <a href="#services" className="hover:text-white transition-colors">
+                <a href="#services" onClick={(event) => handleFooterSectionClick(event, 'services')} className="hover:text-white transition-colors">
                   Business Process Automation
                 </a>
               </li>
               <li>
-                <a href="#services" className="hover:text-white transition-colors">
+                <a href="#services" onClick={(event) => handleFooterSectionClick(event, 'services')} className="hover:text-white transition-colors">
                   AI Integration & Emerging Tech
                 </a>
               </li>
@@ -100,12 +106,12 @@ export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
                 </button>
               </li>
               <li>
-                <a href="#process" className="hover:text-white transition-colors">
+                <a href="#process" onClick={(event) => handleFooterSectionClick(event, 'process')} className="hover:text-white transition-colors">
                   Methodology & SLA
                 </a>
               </li>
               <li>
-                <a href="#work" className="hover:text-white transition-colors">
+                <a href="#work" onClick={(event) => handleFooterSectionClick(event, 'work')} className="hover:text-white transition-colors">
                   Verified Case Studies
                 </a>
               </li>

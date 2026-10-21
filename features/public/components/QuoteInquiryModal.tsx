@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { X, CheckCircle2, ArrowRight, ShieldCheck, Sparkles, Building, Mail, User, Globe } from 'lucide-react';
 import { useAppDispatch } from '../../../store/hooks.ts';
 import { submitPublicInquiry, addToast, addNotification } from '../../../store/index.ts';
-import type { ServiceCategory, PublicInquiryFormData } from '../../../types/index.ts';
+import type { ServiceCategory, PublicInquiryFormData } from '../../../types/agency.ts';
 
 interface QuoteInquiryModalProps {
   isOpen: boolean;

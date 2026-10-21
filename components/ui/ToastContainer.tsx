@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks.ts';
-import { removeToast, type ToastMessage } from '../../store/index.ts';
+import { removeToast } from '../../store/index.ts';
+import type { ToastMessage } from '../../types/ui.ts';
 import { CheckCircle2, AlertCircle, AlertTriangle, Info, X } from 'lucide-react';
 
 interface ToastContainerProps {

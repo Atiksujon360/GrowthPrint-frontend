@@ -9,7 +9,6 @@ import {
   Terminal, 
   Database, 
   Play, 
-  RefreshCw, 
   Copy, 
   ExternalLink,
   Code2,
@@ -18,6 +17,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { CopyButton } from './CopyButton.tsx';
+import { LoadingButton } from './LoadingButton.tsx';
 import { apiClient, agencyApi } from '../../lib/api/client.ts';
 import { storage } from '../../lib/utils.ts';
 import { useAppDispatch } from '../../store/hooks.ts';
@@ -381,14 +381,15 @@ export function ApiIntegrationModal({ isOpen, onClose }: ApiIntegrationModalProp
                     </span>
                   </div>
 
-                  <button
+                  <LoadingButton
                     onClick={handleExecuteTest}
-                    disabled={isTesting}
+                    loading={isTesting}
+                    loadingLabel="Calling API..."
                     className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors disabled:opacity-50 shadow-xs"
                   >
-                    {isTesting ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5" />}
-                    <span>{isTesting ? 'Calling API...' : 'Send Request'}</span>
-                  </button>
+                    <Play className="w-3.5 h-3.5" />
+                    <span>Send Request</span>
+                  </LoadingButton>
                 </div>
 
                 <div className="text-xs text-slate-400">

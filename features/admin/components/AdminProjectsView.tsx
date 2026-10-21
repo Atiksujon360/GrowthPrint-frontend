@@ -12,7 +12,7 @@ import {
   Columns, 
   Table as TableIcon 
 } from 'lucide-react';
-import type { Project } from '../../../types/index.ts';
+import type { Project } from '../../../types/agency.ts';
 
 export function AdminProjectsView() {
   const projects = useAppSelector(state => state.agency.projects);

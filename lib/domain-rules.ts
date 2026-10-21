@@ -1,10 +1,10 @@
 import type { 
   SupportCategory, 
   SupportRequestStatus, 
-  UserRole, 
   LeadScoreBreakdown, 
   InvoiceLineItem 
-} from '../types/index.ts';
+} from '../types/agency.ts';
+import type { UserRole } from '../types/auth.ts';
 
 /**
  * Decimal-safe round to 2 decimal places to avoid floating point inaccuracies

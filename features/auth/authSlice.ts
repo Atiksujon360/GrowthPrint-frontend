@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { User, UserRole } from '../../types/index.ts';
+import type { AuthState, User, UserRole } from '../../types/auth.ts';
 
 export const DEMO_USERS: Record<UserRole, User> = {
   ADMIN: {
@@ -27,12 +27,6 @@ export const DEMO_USERS: Record<UserRole, User> = {
     role: 'GUEST'
   }
 };
-
-interface AuthState {
-  currentUser: User;
-  isAuthenticated: boolean;
-  activeView: 'PUBLIC' | 'PORTAL' | 'ADMIN';
-}
 
 const initialAuthState: AuthState = {
   currentUser: DEMO_USERS.ADMIN,

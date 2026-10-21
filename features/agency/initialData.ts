@@ -9,7 +9,7 @@ import type {
   Invoice,
   WorkflowDefinition,
   ActivityEvent
-} from '../../types/index.ts';
+} from '../../types/agency.ts';
 
 export const INITIAL_CLIENTS: Client[] = [
   {

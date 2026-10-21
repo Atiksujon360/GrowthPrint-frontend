@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks.ts';
 import { setActiveView, switchRole } from '../../store/index.ts';
-import type { ServiceCategory } from '../../types/index.ts';
+import type { ServiceCategory } from '../../types/agency.ts';
+import { WorkspaceLoginScreen } from '../../features/auth/components/WorkspaceLoginScreen.tsx';
 
 // Common Components
 import { RoleSwitcherBar } from '../ui/RoleSwitcherBar.tsx';
@@ -67,6 +68,16 @@ function isAdminTab(tab: string): tab is AdminTab {
 function MainApp() {
   const dispatch = useAppDispatch();
   const { activeView } = useAppSelector(state => state.auth);
+  const [workspaceLoginRole, setWorkspaceLoginRole] = useState<'ADMIN' | 'CLIENT' | null>(null);
+
+  useEffect(() => {
+    if (activeView === 'PUBLIC') {
+      setWorkspaceLoginRole(null);
+      return;
+    }
+
+    setWorkspaceLoginRole(currentRole => currentRole ?? (activeView === 'ADMIN' ? 'ADMIN' : 'CLIENT'));
+  }, [activeView]);
 
   // Public View Modal States
   const [isQuoteOpen, setIsQuoteOpen] = useState(false);
@@ -90,15 +101,29 @@ function MainApp() {
     setAdminTab('OUTREACH');
   };
 
+  const handleBackToPublic = () => {
+    dispatch(switchRole('GUEST'));
+    dispatch(setActiveView('PUBLIC'));
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-[#F8FAFD] text-[#182230]">
       {/* Universal Top Switcher Bar allowing instant testing between Agency Public, Client Portal, and Admin Workspace */}
-      <RoleSwitcherBar />
+      {!workspaceLoginRole && <RoleSwitcherBar />}
 
       {/* Global Toast Notifications Stack */}
-      <ToastContainer onNavigateTab={(tab) => {
+      {!workspaceLoginRole && <ToastContainer onNavigateTab={(tab) => {
         if (isAdminTab(tab)) setAdminTab(tab);
-      }} />
+      }} />}
+
+      {workspaceLoginRole ? (
+        <WorkspaceLoginScreen
+          role={workspaceLoginRole}
+          onSignIn={() => setWorkspaceLoginRole(null)}
+          onBackToPublic={handleBackToPublic}
+        />
+      ) : (
+        <>
 
       {/* 1. Public Agency Experience */}
       {activeView === 'PUBLIC' && (
@@ -183,6 +208,8 @@ function MainApp() {
 
           {adminTab === 'ACTIVITY' && <AdminActivityView />}
         </AdminLayout>
+      )}
+        </>
       )}
     </div>
   );

@@ -14,7 +14,7 @@ import {
   Columns, 
   Table as TableIcon 
 } from 'lucide-react';
-import type { Client } from '../../../types/index.ts';
+import type { Client } from '../../../types/agency.ts';
 
 export function AdminClientsView() {
   const clients = useAppSelector(state => state.agency.clients);

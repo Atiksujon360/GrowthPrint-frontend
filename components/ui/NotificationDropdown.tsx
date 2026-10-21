@@ -3,9 +3,9 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks.ts';
 import { 
   markNotificationAsRead, 
   markAllNotificationsAsRead, 
-  clearNotification,
-  type AppNotification 
+  clearNotification
 } from '../../store/index.ts';
+import type { AppNotification } from '../../types/ui.ts';
 import { formatRelativeTime } from '../../lib/utils.ts';
 import { 
   Bell, 

@@ -2,10 +2,17 @@ import React, { useState } from 'react';
 import { useAppDispatch } from '../../../store/hooks.ts';
 import { setActiveView, switchRole } from '../../../store/index.ts';
 import { ArrowRight, Menu, X, ShieldCheck } from 'lucide-react';
+import { scrollToSection } from '../../../lib/scroll.ts';
 
 export function PublicHeader({ onOpenQuote }: { onOpenQuote: () => void }) {
   const dispatch = useAppDispatch();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const handleSectionClick = (event: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
+    event.preventDefault();
+    setMobileMenuOpen(false);
+    scrollToSection(sectionId);
+  };
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200">
@@ -24,16 +31,16 @@ export function PublicHeader({ onOpenQuote }: { onOpenQuote: () => void }) {
 
         {/* Zone 2: Navigation Links (Single-line clean text) */}
         <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-slate-600">
-          <a href="#services" className="hover:text-slate-900 transition-colors whitespace-nowrap shrink-0">
+          <a href="#services" onClick={(event) => handleSectionClick(event, 'services')} className="hover:text-slate-900 transition-colors whitespace-nowrap shrink-0">
             Services
           </a>
-          <a href="#process" className="hover:text-slate-900 transition-colors whitespace-nowrap shrink-0">
+          <a href="#process" onClick={(event) => handleSectionClick(event, 'process')} className="hover:text-slate-900 transition-colors whitespace-nowrap shrink-0">
             Process
           </a>
-          <a href="#work" className="hover:text-slate-900 transition-colors whitespace-nowrap shrink-0">
+          <a href="#work" onClick={(event) => handleSectionClick(event, 'work')} className="hover:text-slate-900 transition-colors whitespace-nowrap shrink-0">
             Case Studies
           </a>
-          <a href="#trust" className="hover:text-slate-900 transition-colors whitespace-nowrap shrink-0">
+          <a href="#trust" onClick={(event) => handleSectionClick(event, 'trust')} className="hover:text-slate-900 transition-colors whitespace-nowrap shrink-0">
             Why GrowthPrint
           </a>
           <button 
@@ -75,28 +82,28 @@ export function PublicHeader({ onOpenQuote }: { onOpenQuote: () => void }) {
         <div className="md:hidden border-b border-slate-200 bg-white px-4 py-4 space-y-3">
           <a 
             href="#services" 
-            onClick={() => setMobileMenuOpen(false)}
+            onClick={(event) => handleSectionClick(event, 'services')}
             className="block py-2 text-base font-medium text-slate-700 hover:text-blue-600"
           >
             Services
           </a>
           <a 
             href="#process" 
-            onClick={() => setMobileMenuOpen(false)}
+            onClick={(event) => handleSectionClick(event, 'process')}
             className="block py-2 text-base font-medium text-slate-700 hover:text-blue-600"
           >
             Process
           </a>
           <a 
             href="#work" 
-            onClick={() => setMobileMenuOpen(false)}
+            onClick={(event) => handleSectionClick(event, 'work')}
             className="block py-2 text-base font-medium text-slate-700 hover:text-blue-600"
           >
             Case Studies
           </a>
           <a 
             href="#trust" 
-            onClick={() => setMobileMenuOpen(false)}
+            onClick={(event) => handleSectionClick(event, 'trust')}
             className="block py-2 text-base font-medium text-slate-700 hover:text-blue-600"
           >
             Why GrowthPrint

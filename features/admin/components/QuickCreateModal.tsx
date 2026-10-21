@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks.ts';
 import { submitPublicInquiry, createSupportRequest, addToast, addNotification } from '../../../store/index.ts';
 import { X, Sparkles, TicketCheck, CreditCard, Building, CheckCircle2 } from 'lucide-react';
-import type { ServiceCategory, SupportCategory } from '../../../types/index.ts';
+import type { ServiceCategory, SupportCategory } from '../../../types/agency.ts';
 
 interface QuickCreateModalProps {
   isOpen: boolean;
