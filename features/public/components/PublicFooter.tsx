@@ -27,7 +27,7 @@ export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
               </span>
             </div>
             <p className="text-sm text-slate-400 leading-relaxed max-w-sm">
-              An AI-powered IT services agency helping businesses build custom software, maintain critical digital applications, and automate operational workflows.
+              GrowthPrint helps growing teams build useful software, improve the systems they already have, and remove repetitive work.
             </p>
             <div className="pt-2 text-xs text-slate-400 space-y-1.5">
               <div className="flex items-center gap-2">
@@ -36,7 +36,7 @@ export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="w-3.5 h-3.5 text-blue-400" />
-                <span>San Francisco, CA · Remote Global Delivery</span>
+                <span>San Francisco, CA · Working with teams anywhere</span>
               </div>
             </div>
           </div>
@@ -69,7 +69,7 @@ export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
               </li>
               <li>
                 <a href="#services" onClick={(event) => handleFooterSectionClick(event, 'services')} className="hover:text-white transition-colors">
-                  AI Integration & Emerging Tech
+              Useful AI and automation
                 </a>
               </li>
             </ul>
@@ -78,7 +78,7 @@ export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
           {/* Col 4: Platform & Navigation */}
           <div className="space-y-3">
             <h4 className="text-xs font-semibold text-white uppercase tracking-wider">
-              Platform & Access
+              Client access
             </h4>
             <ul className="space-y-2 text-xs">
               <li>
@@ -89,7 +89,7 @@ export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
                   }}
                   className="hover:text-white transition-colors flex items-center gap-1 text-blue-400"
                 >
-                  <span>Client Portal Sign In</span>
+                  <span>Open the client portal</span>
                   <ArrowUpRight className="w-3 h-3" />
                 </button>
               </li>
@@ -101,18 +101,18 @@ export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
                   }}
                   className="hover:text-white transition-colors flex items-center gap-1 text-slate-400"
                 >
-                  <span>Admin Workspace (Founder)</span>
+                  <span>Open the team workspace</span>
                   <ArrowUpRight className="w-3 h-3" />
                 </button>
               </li>
               <li>
                 <a href="#process" onClick={(event) => handleFooterSectionClick(event, 'process')} className="hover:text-white transition-colors">
-                  Methodology & SLA
+                  How we work
                 </a>
               </li>
               <li>
                 <a href="#work" onClick={(event) => handleFooterSectionClick(event, 'work')} className="hover:text-white transition-colors">
-                  Verified Case Studies
+                  Client work
                 </a>
               </li>
             </ul>
@@ -121,16 +121,16 @@ export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
           {/* Col 5: Inquiry CTA */}
           <div className="space-y-3">
             <h4 className="text-xs font-semibold text-white uppercase tracking-wider">
-              Start an Engagement
+              Start a conversation
             </h4>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Ready to scope a new platform, fix critical bugs, or automate operations?
+              Need to build something, fix something, or make a routine task easier?
             </p>
             <button
               onClick={onOpenQuote}
               className="mt-2 w-full py-2.5 px-3 rounded-lg text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 transition-colors shadow-xs"
             >
-              Request Project Estimate
+              Tell us what you need
             </button>
           </div>
         </div>

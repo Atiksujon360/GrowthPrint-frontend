@@ -63,8 +63,8 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
       dispatch(submitPublicInquiry(formData));
       dispatch(addToast({
         type: 'success',
-        title: 'Project Brief Received',
-        message: `Thank you, ${formData.name}. Our principal engineer will review and reach out within 1 business day.`
+        title: 'Message received',
+        message: `Thanks, ${formData.name}. We will review your note and get back to you within 1 business day.`
       }));
       dispatch(addNotification({
         category: 'ACTION_REQUIRED',
@@ -104,10 +104,10 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
         <div className="px-6 py-5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
           <div>
             <div className="text-xs font-semibold uppercase tracking-wider text-blue-600">
-              Project Conversation
+              A quick conversation
             </div>
             <h3 className="text-lg font-bold text-slate-900">
-              {referenceNumber ? 'Inquiry Submitted' : 'Let\'s Discuss Your Project'}
+              {referenceNumber ? 'Thanks — we got it' : 'Tell us what you need'}
             </h3>
           </div>
           <button
@@ -132,7 +132,7 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
                   Thank You, {formData.name}
                 </h4>
                 <p className="text-sm text-slate-600 max-w-md mx-auto">
-                  Your project inquiry has been logged in GrowthPrint&apos;s system and sent directly to our Founder & Principal Engineer for review.
+                  We have your note and will review it personally before getting back to you.
                 </p>
               </div>
 
@@ -260,7 +260,7 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
                     <option value="WEBSITE_MAINTENANCE">Website & Application Support</option>
                     <option value="TECHNICAL_SEO">SEO & Technical Optimization</option>
                     <option value="BUSINESS_AUTOMATION">Business Process Automation</option>
-                    <option value="AI_INTEGRATION">AI Integration & Emerging Tech</option>
+                    <option value="AI_INTEGRATION">Useful AI and automation</option>
                   </select>
                 </div>
 
@@ -292,7 +292,7 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
                     <option value="Under $5,000">Under $5,000 (Small sprint / audit)</option>
                     <option value="$5,000 – $10,000">$5,000 – $10,000 (Standard integration)</option>
                     <option value="$10,000 – $25,000">$10,000 – $25,000 (Complete portal / app)</option>
-                    <option value="$25,000+">$25,000+ (Multi-stage enterprise system)</option>
+                    <option value="$25,000+">$25,000+ (Larger, multi-stage project)</option>
                   </select>
                 </div>
 
@@ -315,13 +315,13 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
               {/* Project Description */}
               <div>
                 <label className="block text-xs font-medium text-slate-700 mb-1">
-                  Project Description & Goals *
+                  What would you like to improve? *
                 </label>
                 <textarea
                   rows={3}
                   value={formData.projectDescription}
                   onChange={(e) => setFormData({ ...formData, projectDescription: e.target.value })}
-                  placeholder="Describe what you want to build or the technical challenges you are facing..."
+                  placeholder="Tell us what is happening today and what you would like to be different..."
                   className={`w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 ${
                     errors.projectDescription ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300'
                   }`}
@@ -345,7 +345,7 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
                       onChange={() => setFormData({ ...formData, preferredContactMethod: 'EMAIL' })}
                       className="text-blue-600"
                     />
-                    <span>Email Briefing</span>
+                    <span>Email</span>
                   </label>
                   <label className="flex items-center gap-1.5 cursor-pointer">
                     <input
@@ -370,7 +370,7 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
                     className="mt-0.5 rounded text-blue-600"
                   />
                   <span>
-                    I agree to allow GrowthPrint to review these details for scoping purposes. No spam, ever.
+                    I agree that GrowthPrint can review these details to understand the work. We will not send spam.
                   </span>
                 </label>
                 {errors.consent && <p className="text-[11px] text-rose-600 mt-1">{errors.consent}</p>}
@@ -391,10 +391,10 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
                   className="px-5 py-2.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-xs flex items-center gap-2 disabled:opacity-50"
                 >
                   {isSubmitting ? (
-                    <span>Submitting Inquiry...</span>
+                    <span>Sending your note...</span>
                   ) : (
                     <>
-                      <span>Submit Project Inquiry</span>
+                      <span>Send my note</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </>
                   )}

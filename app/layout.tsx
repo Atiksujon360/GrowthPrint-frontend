@@ -3,13 +3,13 @@ import type { ReactNode } from 'react';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'GrowthPrint — AI-Powered IT Services Agency Platform',
+  title: 'GrowthPrint — Practical software for growing teams',
   description:
-    'GrowthPrint is an AI-powered IT services agency platform combining a premium public agency experience, client portal, and founder operations workspace.',
+    'GrowthPrint helps growing teams build useful software, improve existing systems, and automate the work that slows them down.',
   openGraph: {
-    title: 'GrowthPrint — AI-Powered IT Services Agency Platform',
+    title: 'GrowthPrint — Practical software for growing teams',
     description:
-      'GrowthPrint is an AI-powered IT services agency platform combining a premium public agency experience, client portal, and founder operations workspace.',
+      'GrowthPrint helps growing teams build useful software, improve existing systems, and automate the work that slows them down.',
     type: 'website'
   },
   twitter: {

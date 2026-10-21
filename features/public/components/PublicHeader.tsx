@@ -60,7 +60,7 @@ export function PublicHeader({ onOpenQuote }: { onOpenQuote: () => void }) {
             onClick={onOpenQuote}
             className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 rounded-lg shadow-xs hover:shadow-sm transition-all whitespace-nowrap shrink-0 flex items-center gap-2"
           >
-            <span>Let&apos;s Discuss Your Project</span>
+            <span>Tell us what you need</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
@@ -126,7 +126,7 @@ export function PublicHeader({ onOpenQuote }: { onOpenQuote: () => void }) {
               }}
               className="w-full py-2.5 px-4 text-center text-sm font-semibold text-white bg-blue-600 rounded-lg shadow-xs"
             >
-              Discuss Your Project
+              Tell us what you need
             </button>
           </div>
         </div>

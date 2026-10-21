@@ -5,33 +5,33 @@ export function TrustSection({ onOpenQuote }: { onOpenQuote: () => void }) {
   const pillars = [
     {
       icon: UserCheck,
-      title: 'Direct Founder Oversight',
+      title: 'You work with the person doing the work',
       description: 'Your project is planned, reviewed, and engineered under the direct supervision of a senior technology leader—no handoffs to junior offshore account reps.'
     },
     {
       icon: FileCheck,
-      title: 'Defined Scope & Deliverables',
-      description: 'Every project begins with an explicit blueprint, milestone breakdown, and documented acceptance criteria so you never wonder what is being built.'
+      title: 'A clear plan before we start',
+      description: 'We agree on the important pieces, the milestones, and what done means so you always know what is being built.'
     },
     {
       icon: DollarSign,
-      title: 'Transparent Estimates & Billing',
-      description: 'Clear pricing with no surprise bills. We classify requests into included maintenance, warranty reviews, or fixed ad-hoc estimates before billing.'
+      title: 'Straightforward estimates',
+      description: 'You get clear pricing and a clear explanation of the work. If a request falls outside the plan, we talk about it before it becomes a surprise.'
     },
     {
       icon: ShieldCheck,
-      title: 'Enterprise Security & Code Quality',
-      description: 'Strict TypeScript typing, environment secret segregation, automated validation schemas, and defensive API architectures.'
+      title: 'Careful with your data and your code',
+      description: 'We use sensible security practices, strong typing, validation, and careful API design because reliable software is built on good habits.'
     },
     {
       icon: Clock,
-      title: '30-Day Post-Launch Warranty',
-      description: 'Every custom software delivery includes a 30-day comprehensive defect warranty covering bug corrections and performance tuning at zero added cost.'
+      title: 'Help after launch',
+      description: 'Every custom software delivery includes 30 days for fixing defects and smoothing out performance issues at no extra cost.'
     },
     {
       icon: Headphones,
-      title: 'Dedicated Client Portal',
-      description: 'Track milestones, review estimates, approve proposals, submit urgent tickets, and download reconciled invoices in your private dashboard.'
+      title: 'A place to keep everything together',
+      description: 'Your private portal keeps milestones, estimates, approvals, requests, and invoices in one place.'
     }
   ];
 
@@ -40,13 +40,13 @@ export function TrustSection({ onOpenQuote }: { onOpenQuote: () => void }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl">
           <div className="text-xs font-semibold uppercase tracking-wider text-blue-600">
-            Why GrowthPrint
+            What working with us feels like
           </div>
           <h2 className="mt-2 text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
-            Built On Professional Standards & Engineering Discipline
+            Thoughtful work, clear communication, and no unnecessary drama.
           </h2>
           <p className="mt-4 text-base text-slate-600 leading-relaxed">
-            We partner with businesses that need reliable, high-touch technology delivery without the bloat, delays, and miscommunication of traditional agencies.
+            We work best with teams that want a dependable technical partner who listens, explains the trade-offs, and follows through.
           </p>
         </div>
 
@@ -76,17 +76,17 @@ export function TrustSection({ onOpenQuote }: { onOpenQuote: () => void }) {
         <div className="mt-16 bg-gradient-to-r from-blue-900 via-slate-900 to-blue-950 rounded-2xl p-8 sm:p-12 text-white flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
           <div className="space-y-2 max-w-xl">
             <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-              Have a Project in Mind?
+              Have something that needs fixing or building?
             </h3>
             <p className="text-sm sm:text-base text-slate-300">
-              Tell us what you are trying to build, maintain, or automate. We will respond within 1 business day with concrete next steps.
+              Tell us what is happening today and where you want to get to. We will reply within 1 business day with a useful next step.
             </p>
           </div>
           <button
             onClick={onOpenQuote}
             className="px-6 py-3.5 rounded-xl font-semibold text-slate-900 bg-white hover:bg-slate-100 shadow-md transition-all whitespace-nowrap shrink-0"
           >
-            Start a Project Conversation
+            Start a conversation
           </button>
         </div>
       </div>

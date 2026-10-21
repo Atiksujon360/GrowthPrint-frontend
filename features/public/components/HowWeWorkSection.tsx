@@ -5,30 +5,30 @@ export function HowWeWorkSection() {
   const steps = [
     {
       step: '01',
-      title: 'Discover',
-      tagline: 'Understand the business problem first',
-      description: 'We audit your existing technical stack, talk through operational bottlenecks, and identify exactly where custom code or automation delivers genuine value.',
+      title: 'Listen',
+      tagline: 'Start with the problem, not the tool',
+      description: 'We learn how the work happens today, where it gets stuck, and what a better day would look like before recommending a technical solution.',
       icon: Search
     },
     {
       step: '02',
-      title: 'Plan',
-      tagline: 'Fixed scope, transparent costs, milestones',
-      description: 'We define explicit deliverables, dependencies, exclusions, and payment milestones. You get an unambiguous specification before any work begins.',
+      title: 'Make a plan',
+      tagline: 'A clear scope and a sensible path forward',
+      description: 'We agree on what matters first, what it will take, and how we will show progress. You know what is included before the work begins.',
       icon: Compass
     },
     {
       step: '03',
-      title: 'Build',
-      tagline: 'Production-grade engineering & updates',
-      description: 'We build cleanly with modern TypeScript, automated tests, and regular staging previews. You see progress on a live development sandbox.',
+      title: 'Do the work',
+      tagline: 'Small steps, regular updates, solid foundations',
+      description: 'We build in visible increments, test as we go, and share working previews so you can give useful feedback while there is still time to use it.',
       icon: Cpu
     },
     {
       step: '04',
-      title: 'Improve',
-      tagline: 'Ongoing maintenance & evolution',
-      description: 'Post-launch 30-day warranty followed by structured monthly support retainers. As your business grows, your platform scales reliably.',
+      title: 'Stay involved',
+      tagline: 'Support after launch, when it is useful',
+      description: 'After launch, we help fix the rough edges, keep things healthy, and make the next improvement when your business is ready for it.',
       icon: RefreshCw
     }
   ];
@@ -38,13 +38,13 @@ export function HowWeWorkSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl">
           <div className="text-xs font-semibold uppercase tracking-wider text-blue-600">
-            Delivery Methodology
+            How the work comes together
           </div>
           <h2 className="mt-2 text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
-            How We Work Together
+            A straightforward way to get good work done.
           </h2>
           <p className="mt-4 text-base text-slate-600 leading-relaxed">
-            A disciplined four-phase delivery framework that ensures total clarity on timelines, technical deliverables, and commercial commitments.
+            The process is simple: understand the need, agree on the plan, build it together, and stay available when it is live.
           </p>
         </div>
 
@@ -62,7 +62,7 @@ export function HowWeWorkSection() {
                     <Icon className="w-6 h-6" />
                   </div>
                   <span className="text-xs font-mono font-bold text-blue-600 md:mt-4">
-                    Stage {s.step}
+                    Step {s.step}
                   </span>
                 </div>
 

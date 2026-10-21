@@ -48,17 +48,17 @@ export function CaseStudiesSection() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="max-w-2xl">
             <div className="text-xs font-semibold uppercase tracking-wider text-blue-600">
-              Selected Engagements
+              A few problems we have helped solve
             </div>
             <h2 className="mt-2 text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
-              Proven Architecture in Production
+              Work that made a real difference.
             </h2>
             <p className="mt-4 text-base text-slate-600 leading-relaxed">
-              Explore how we design and deploy scalable digital operations, custom platforms, and automation workflows for growing businesses.
+              These are examples of the kinds of messy, important problems we like to make simpler.
             </p>
           </div>
           <div className="text-xs text-slate-500 font-medium pb-2">
-            Verified Production Case Studies
+            Selected client work
           </div>
         </div>
 
@@ -105,11 +105,11 @@ export function CaseStudiesSection() {
 
                   <div className="mt-4 space-y-3 text-sm text-slate-600">
                     <div>
-                      <strong className="text-slate-900 font-medium">The Challenge: </strong>
+                      <strong className="text-slate-900 font-medium">What was getting in the way: </strong>
                       {c.problem}
                     </div>
                     <div>
-                      <strong className="text-slate-900 font-medium">Engineered Solution: </strong>
+                      <strong className="text-slate-900 font-medium">What we changed: </strong>
                       {c.solution}
                     </div>
                   </div>
@@ -117,7 +117,7 @@ export function CaseStudiesSection() {
                   {/* Quantified outcomes */}
                   <div className="mt-6 pt-5 border-t border-slate-100">
                     <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
-                      Measured Impact
+                      What improved
                     </div>
                     <ul className="space-y-1.5 text-xs text-slate-800">
                       {c.results.map((r, rIdx) => (

@@ -19,72 +19,72 @@ export function ServicesSection({ onSelectService }: { onSelectService: (service
     {
       id: 'SOFTWARE_DEV' as ServiceCategory,
       number: '01',
-      title: 'Custom Software Development',
+      title: 'Software built around your work',
       icon: Code2,
-      description: 'Modern web applications, customer portals, internal business platforms, and robust API integrations designed for stability.',
+      description: 'We build the portals, internal tools, and integrations your team needs to do good work without fighting the software.',
       deliverables: [
-        'Client & Customer Portals',
-        'Custom Web Applications (Next.js / React)',
-        'RESTful & GraphQL API Gateways',
-        'Modernization of Legacy Codebases'
+        'Client and customer portals',
+        'Custom web applications',
+        'Reliable API integrations',
+        'Careful upgrades to older systems'
       ],
-      ctaText: 'Discuss a Software Project'
+      ctaText: 'Talk through a software idea'
     },
     {
       id: 'WEBSITE_MAINTENANCE' as ServiceCategory,
       number: '02',
-      title: 'Website & Application Support',
+      title: 'A steady hand for your website',
       icon: Wrench,
-      description: 'Keep your revenue-critical digital products dependable, secure, patched, and ready to evolve without internal engineering overhead.',
+      description: 'Keep important websites and applications secure, dependable, and moving forward when your team needs an extra pair of hands.',
       deliverables: [
-        'Rapid Bug Resolution & Hotfixes',
-        'Runtime & Dependency Patching',
-        'Performance & Database Tuning',
-        'Scheduled Retainer Support SLA'
+        'Bug fixes and urgent repairs',
+        'Security and dependency updates',
+        'Performance and database tuning',
+        'Ongoing support when it helps'
       ],
-      ctaText: 'Improve My Website'
+      ctaText: 'Improve my website'
     },
     {
       id: 'TECHNICAL_SEO' as ServiceCategory,
       number: '03',
-      title: 'SEO & Technical Optimization',
+      title: 'Make your website easier to find',
       icon: LineChart,
-      description: 'Strengthen technical foundations so search engines can crawl, index, and surface your digital presence cleanly and quickly.',
+      description: 'We remove the technical issues that make a website slow, difficult to understand, or easy for search engines to miss.',
       deliverables: [
-        'Core Web Vitals Optimization (LCP/INP)',
-        'Server-Side Rendering & Hydration Audits',
-        'Schema.org Structured Data Implementation',
-        'Technical Crawlability & Indexing Health'
+        'Core Web Vitals improvements',
+        'Rendering and page-speed reviews',
+        'Structured data setup',
+        'Crawl and indexing fixes'
       ],
-      ctaText: 'Request an SEO Review'
+      ctaText: 'Request an SEO review'
     },
     {
       id: 'BUSINESS_AUTOMATION' as ServiceCategory,
       number: '04',
-      title: 'Business Process Automation',
+      title: 'Less repetitive work',
       icon: Workflow,
-      description: 'Eliminate repetitive manual tasks and synchronize the SaaS platforms, databases, and operational tools your team uses daily.',
+      description: 'We connect the tools your team already uses so routine work happens reliably in the background.',
       deliverables: [
-        'API & Webhook Integration Pipelines',
-        'n8n & Workflow Orchestration',
-        'Lead & Customer Hand-off Workflows',
-        'Automated Reporting & Slack/Email Alerts'
+        'API and webhook connections',
+        'Reliable workflow automation',
+        'Lead and customer hand-offs',
+        'Reports and useful alerts'
       ],
-      ctaText: 'Explore Automation'
+      ctaText: 'Explore automation'
     },
     {
       id: 'AI_INTEGRATION' as ServiceCategory,
       number: '05',
-      title: 'AI Integration & Practical Technology',
+      title: 'Useful AI, used carefully',
       icon: Cpu,
-      description: 'Implement targeted, practical AI capabilities that streamline real business workflows, document processing, and customer experiences.',
+      description: 'When it genuinely helps, we add AI to the right part of a workflow—with clear checks, useful boundaries, and a person still in control.',
       deliverables: [
-        'Document Extraction & Parsing Pipelines',
-        'Internal Knowledge & Operational Assistants',
-        'Automated Lead Research & Qualification',
-        'Safe Human-in-the-Loop AI Gates'
+        'Document extraction and review',
+        'Internal knowledge assistants',
+        'Lead research and qualification',
+        'Human review where it matters'
       ],
-      ctaText: 'Discuss an AI Opportunity'
+      ctaText: 'Discuss an AI use case'
     }
   ];
 
@@ -94,10 +94,10 @@ export function ServicesSection({ onSelectService }: { onSelectService: (service
         {/* Section Header */}
         <div className="max-w-3xl">
           <div className="text-xs font-semibold uppercase tracking-wider text-blue-600">
-            Core Capabilities
+            What we can help with
           </div>
           <h2 className="mt-2 text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight text-balance">
-            Delivering Business Outcomes Through Reliable Engineering.
+            Practical help for the work behind your business.
           </h2>
           <p className="mt-4 text-base sm:text-lg text-slate-600 leading-relaxed">
             We don’t sell buzzwords or abstract concepts. We build, maintain, and automate practical software systems that help businesses operate with higher efficiency.
@@ -138,7 +138,7 @@ export function ServicesSection({ onSelectService }: { onSelectService: (service
                   {/* Deliverables list */}
                   <div className="mt-6 pt-5 border-t border-slate-100">
                     <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
-                      Key Deliverables
+                      What you can expect
                     </div>
                     <ul className={`grid gap-2 text-xs text-slate-700 ${isFeatured ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'}`}>
                       {service.deliverables.map((d, i) => (

@@ -19,9 +19,9 @@ export function RoleSwitcherBar() {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5 font-medium text-white">
             <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-            <span className="font-semibold tracking-tight">GrowthPrint Architecture:</span>
+            <span className="font-semibold tracking-tight">GrowthPrint workspace:</span>
           </div>
-          <span className="text-slate-400 hidden sm:inline">Current View Mode:</span>
+          <span className="text-slate-400 hidden sm:inline">Viewing as:</span>
           
           <div className="flex items-center bg-slate-800 rounded-lg p-0.5 border border-slate-700 overflow-x-auto max-w-full">
             <button
@@ -88,7 +88,7 @@ export function RoleSwitcherBar() {
             <span>
               Active as <strong className="text-white font-medium">{currentUser.name}</strong>
               {currentUser.role === 'CLIENT' && ` (${currentUser.clientName})`}
-              {currentUser.role === 'ADMIN' && ' (Founder)'}
+              {currentUser.role === 'ADMIN' && ' (team)'}
             </span>
           </div>
 
