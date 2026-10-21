@@ -39,7 +39,7 @@ export function TrustSection({ onOpenQuote }: { onOpenQuote: () => void }) {
     <section id="trust" className="py-20 bg-white border-t border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl">
-          <div className="text-xs font-semibold uppercase tracking-wider text-blue-600">
+          <div className="text-sm font-semibold uppercase tracking-wider text-blue-600">
             What working with us feels like
           </div>
           <h2 className="mt-2 text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
@@ -64,7 +64,7 @@ export function TrustSection({ onOpenQuote }: { onOpenQuote: () => void }) {
                 <h3 className="mt-4 text-lg font-bold text-slate-900">
                   {p.title}
                 </h3>
-                <p className="mt-2 text-sm text-slate-600 leading-relaxed">
+                <p className="mt-2 text-base text-slate-600 leading-relaxed">
                   {p.description}
                 </p>
               </div>

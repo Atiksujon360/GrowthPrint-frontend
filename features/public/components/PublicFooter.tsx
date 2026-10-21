@@ -29,7 +29,7 @@ export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
             <p className="text-sm text-slate-400 leading-relaxed max-w-sm">
               GrowthPrint helps growing teams build useful software, improve the systems they already have, and remove repetitive work.
             </p>
-            <div className="pt-2 text-xs text-slate-400 space-y-1.5">
+            <div className="pt-2 text-sm text-slate-400 space-y-1.5">
               <div className="flex items-center gap-2">
                 <Mail className="w-3.5 h-3.5 text-blue-400" />
                 <span>contact@growthprint.agency</span>
@@ -46,7 +46,7 @@ export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
             <h4 className="text-xs font-semibold text-white uppercase tracking-wider">
               Services
             </h4>
-            <ul className="space-y-2 text-xs">
+            <ul className="space-y-2 text-sm">
               <li>
                 <a href="#services" onClick={(event) => handleFooterSectionClick(event, 'services')} className="hover:text-white transition-colors">
                   Custom Software Development
@@ -80,7 +80,7 @@ export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
             <h4 className="text-xs font-semibold text-white uppercase tracking-wider">
               Client access
             </h4>
-            <ul className="space-y-2 text-xs">
+            <ul className="space-y-2 text-sm">
               <li>
                 <button
                   onClick={() => {
@@ -128,12 +128,12 @@ export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
             <h4 className="text-xs font-semibold text-white uppercase tracking-wider">
               Start a conversation
             </h4>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <p className="text-sm text-slate-400 leading-relaxed">
               Need to build something, fix something, or make a routine task easier?
             </p>
             <button
               onClick={onOpenQuote}
-              className="mt-2 w-full py-2.5 px-3 rounded-lg text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 transition-colors shadow-xs"
+              className="mt-2 w-full py-3 px-3 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-500 transition-colors shadow-xs"
             >
               Tell us what you need
             </button>

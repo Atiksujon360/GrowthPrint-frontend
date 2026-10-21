@@ -47,7 +47,7 @@ export function CaseStudiesSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="max-w-2xl">
-            <div className="text-xs font-semibold uppercase tracking-wider text-blue-600">
+            <div className="text-sm font-semibold uppercase tracking-wider text-blue-600">
               A few problems we have helped solve
             </div>
             <h2 className="mt-2 text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
@@ -57,7 +57,7 @@ export function CaseStudiesSection() {
               These are examples of the kinds of messy, important problems we like to make simpler.
             </p>
           </div>
-          <div className="text-xs text-slate-500 font-medium pb-2">
+          <div className="text-sm text-slate-500 font-medium pb-2">
             Selected client work
           </div>
         </div>
@@ -103,7 +103,7 @@ export function CaseStudiesSection() {
                     {c.title}
                   </h3>
 
-                  <div className="mt-4 space-y-3 text-sm text-slate-600">
+                  <div className="mt-4 space-y-3 text-base text-slate-600">
                     <div>
                       <strong className="text-slate-900 font-medium">What was getting in the way: </strong>
                       {c.problem}
@@ -116,10 +116,10 @@ export function CaseStudiesSection() {
 
                   {/* Quantified outcomes */}
                   <div className="mt-6 pt-5 border-t border-slate-100">
-                    <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                    <div className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2">
                       What improved
                     </div>
-                    <ul className="space-y-1.5 text-xs text-slate-800">
+                    <ul className="space-y-1.5 text-sm text-slate-800">
                       {c.results.map((r, rIdx) => (
                         <li key={rIdx} className="flex items-start gap-2">
                           <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
@@ -132,11 +132,11 @@ export function CaseStudiesSection() {
 
                 {/* Tech tags */}
                 <div className="mt-6 pt-4 border-t border-slate-100 flex flex-wrap items-center gap-2">
-                  <span className="text-xs font-medium text-slate-400 mr-1">Stack:</span>
+                  <span className="text-sm font-medium text-slate-400 mr-1">Stack:</span>
                   {c.techStack.map((tech, tIdx) => (
                     <span 
                       key={tIdx} 
-                      className="px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 text-xs font-medium"
+                      className="px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 text-sm font-medium"
                     >
                       {tech}
                     </span>

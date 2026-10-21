@@ -16,7 +16,7 @@ export function HeroSection({ onOpenQuote }: { onOpenQuote: () => void }) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           {/* Left Column: Value proposition and primary CTA */}
           <div className="lg:col-span-7 space-y-6">
-            <div className="inline-flex items-center gap-2 text-xs font-semibold text-blue-700 tracking-wider uppercase">
+            <div className="inline-flex items-center gap-2 text-sm font-semibold text-blue-700 tracking-wider uppercase">
               <span>Clear thinking</span>
               <span aria-hidden="true" className="text-slate-300">/</span>
               <span>Careful engineering</span>
@@ -64,7 +64,7 @@ export function HeroSection({ onOpenQuote }: { onOpenQuote: () => void }) {
             </div>
 
             {/* Trust bullet strip */}
-            <div className="pt-4 border-t border-slate-200 flex flex-wrap items-center gap-6 text-xs text-slate-600">
+            <div className="pt-4 border-t border-slate-200 flex flex-wrap items-center gap-6 text-sm text-slate-600">
               <div className="flex items-center gap-1.5">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                 <span>Clear scope before work starts</span>
@@ -94,14 +94,14 @@ export function HeroSection({ onOpenQuote }: { onOpenQuote: () => void }) {
               ) : (
                 <div className="w-full h-[380px] lg:h-[440px] bg-gradient-to-br from-slate-900 via-slate-800 to-blue-950 p-8 flex flex-col justify-between text-white">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-mono uppercase tracking-widest text-blue-400">GrowthPrint Studio</span>
+                  <span className="text-sm font-mono uppercase tracking-widest text-blue-400">GrowthPrint Studio</span>
                     <Terminal className="w-5 h-5 text-slate-400" />
                   </div>
                   <div className="space-y-3">
                     <h3 className="text-2xl font-bold">A calmer way to improve your digital work</h3>
-                    <p className="text-sm text-slate-300">Software, automation, and thoughtful ongoing support.</p>
+                    <p className="text-base text-slate-300">Software, automation, and thoughtful ongoing support.</p>
                   </div>
-                  <div className="text-xs font-mono text-slate-400">TypeScript · React · Next.js · Node.js</div>
+                  <div className="text-sm font-mono text-slate-400">TypeScript · React · Next.js · Node.js</div>
                 </div>
               )}
 
@@ -111,7 +111,7 @@ export function HeroSection({ onOpenQuote }: { onOpenQuote: () => void }) {
                   <div className="text-xs font-semibold text-slate-900">GrowthPrint IT Services</div>
                   <div className="text-[11px] text-slate-500">Custom Software · Maintenance · Automation</div>
                 </div>
-                <span className="text-xs font-medium text-blue-600">Built to be useful</span>
+                <span className="text-sm font-medium text-blue-600">Built to be useful</span>
               </div>
             </div>
           </div>
@@ -121,19 +121,19 @@ export function HeroSection({ onOpenQuote }: { onOpenQuote: () => void }) {
         <div className="mt-16 pt-8 border-t border-slate-200 grid grid-cols-2 md:grid-cols-4 gap-6">
           <div className="space-y-1">
             <div className="text-3xl font-bold text-slate-900 tabular-nums">14+</div>
-            <div className="text-xs font-medium text-slate-500">Systems shipped</div>
+            <div className="text-sm font-medium text-slate-500">Systems shipped</div>
           </div>
           <div className="space-y-1">
             <div className="text-3xl font-bold text-slate-900 tabular-nums">35%</div>
-            <div className="text-xs font-medium text-slate-500">Less process friction</div>
+            <div className="text-sm font-medium text-slate-500">Less process friction</div>
           </div>
           <div className="space-y-1">
             <div className="text-3xl font-bold text-slate-900 tabular-nums">100%</div>
-            <div className="text-xs font-medium text-slate-500">Work reviewed personally</div>
+            <div className="text-sm font-medium text-slate-500">Work reviewed personally</div>
           </div>
           <div className="space-y-1">
             <div className="text-3xl font-bold text-slate-900 tabular-nums">99.9%</div>
-            <div className="text-xs font-medium text-slate-500">Reliable automated workflows</div>
+            <div className="text-sm font-medium text-slate-500">Reliable automated workflows</div>
           </div>
         </div>
       </div>

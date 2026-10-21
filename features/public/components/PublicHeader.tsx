@@ -30,7 +30,7 @@ export function PublicHeader({ onOpenQuote }: { onOpenQuote: () => void }) {
         </a>
 
         {/* Zone 2: Navigation Links (Single-line clean text) */}
-        <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-slate-600">
+        <nav className="hidden md:flex items-center gap-7 text-base font-medium text-slate-600">
           <a href="#services" onClick={(event) => handleSectionClick(event, 'services')} className="hover:text-slate-900 transition-colors whitespace-nowrap shrink-0">
             Services
           </a>
@@ -61,7 +61,7 @@ export function PublicHeader({ onOpenQuote }: { onOpenQuote: () => void }) {
         <div className="hidden md:flex items-center gap-3 shrink-0">
           <button
             onClick={onOpenQuote}
-            className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 rounded-lg shadow-xs hover:shadow-sm transition-all whitespace-nowrap shrink-0 flex items-center gap-2"
+            className="px-4 py-2.5 text-base font-semibold text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 rounded-lg shadow-xs hover:shadow-sm transition-all whitespace-nowrap shrink-0 flex items-center gap-2"
           >
             <span>Tell us what you need</span>
             <ArrowRight className="w-4 h-4" />

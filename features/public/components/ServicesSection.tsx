@@ -93,7 +93,7 @@ export function ServicesSection({ onSelectService }: { onSelectService: (service
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="max-w-3xl">
-          <div className="text-xs font-semibold uppercase tracking-wider text-blue-600">
+          <div className="text-sm font-semibold uppercase tracking-wider text-blue-600">
             What we can help with
           </div>
           <h2 className="mt-2 text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight text-balance">
@@ -131,16 +131,16 @@ export function ServicesSection({ onSelectService }: { onSelectService: (service
                     {service.title}
                   </h3>
 
-                  <p className="mt-2 text-sm text-slate-600 leading-relaxed">
+                  <p className="mt-2 text-base text-slate-600 leading-relaxed">
                     {service.description}
                   </p>
 
                   {/* Deliverables list */}
                   <div className="mt-6 pt-5 border-t border-slate-100">
-                    <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
+                    <div className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">
                       What you can expect
                     </div>
-                    <ul className={`grid gap-2 text-xs text-slate-700 ${isFeatured ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'}`}>
+                    <ul className={`grid gap-2 text-sm text-slate-700 ${isFeatured ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'}`}>
                       {service.deliverables.map((d, i) => (
                         <li key={i} className="flex items-start gap-2">
                           <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0 mt-0.5" />
@@ -154,7 +154,7 @@ export function ServicesSection({ onSelectService }: { onSelectService: (service
                 <div className="mt-8 pt-4">
                   <button
                     onClick={() => onSelectService(service.id)}
-                    className="w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-blue-700 hover:text-white bg-blue-50 hover:bg-blue-600 transition-colors flex items-center justify-center gap-2 group"
+                    className="w-full py-3 px-4 rounded-xl text-sm font-semibold text-blue-700 hover:text-white bg-blue-50 hover:bg-blue-600 transition-colors flex items-center justify-center gap-2 group"
                   >
                     <span>{service.ctaText}</span>
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />

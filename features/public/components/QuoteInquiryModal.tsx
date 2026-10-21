@@ -103,7 +103,7 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
         {/* Modal Header */}
         <div className="px-6 py-5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
           <div>
-            <div className="text-xs font-semibold uppercase tracking-wider text-blue-600">
+            <div className="text-sm font-semibold uppercase tracking-wider text-blue-600">
               A quick conversation
             </div>
             <h3 className="text-lg font-bold text-slate-900">
@@ -131,7 +131,7 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
                 <h4 className="text-xl font-bold text-slate-900">
                   Thank You, {formData.name}
                 </h4>
-                <p className="text-sm text-slate-600 max-w-md mx-auto">
+              <p className="text-base text-slate-600 max-w-md mx-auto leading-relaxed">
                   We have your note and will review it personally before getting back to you.
                 </p>
               </div>
@@ -169,7 +169,7 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
               {/* Row 1: Contact Details */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
                     Your Name *
                   </label>
                   <div className="relative">
@@ -188,7 +188,7 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
                     Business Email *
                   </label>
                   <div className="relative">
@@ -210,7 +210,7 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
               {/* Row 2: Company & Website */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
                     Company Name *
                   </label>
                   <div className="relative">
@@ -229,7 +229,7 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
                     Website (Optional)
                   </label>
                   <div className="relative">
@@ -248,7 +248,7 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
               {/* Row 3: Service Selection & Project Type */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
                     Primary Service Category
                   </label>
                   <select
@@ -265,7 +265,7 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
                     Project Type
                   </label>
                   <input
@@ -281,7 +281,7 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
               {/* Row 4: Budget & Timeline */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
                     Estimated Budget Range
                   </label>
                   <select
@@ -314,7 +314,7 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
 
               {/* Project Description */}
               <div>
-                <label className="block text-xs font-medium text-slate-700 mb-1">
+                <label className="block text-sm font-medium text-slate-700 mb-1">
                   What would you like to improve? *
                 </label>
                 <textarea
@@ -333,10 +333,10 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
 
               {/* Preferred Contact Method */}
               <div>
-                <span className="block text-xs font-medium text-slate-700 mb-2">
+                <span className="block text-sm font-medium text-slate-700 mb-2">
                   Preferred Contact Method
                 </span>
-                <div className="flex items-center gap-4 text-xs text-slate-700">
+                <div className="flex items-center gap-4 text-sm text-slate-700">
                   <label className="flex items-center gap-1.5 cursor-pointer">
                     <input
                       type="radio"
