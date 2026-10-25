@@ -1,16 +1,41 @@
-import { useAppDispatch, useAppSelector } from '../../store/hooks.ts';
-import { switchRole, setActiveView } from '../../store/index.ts';
+'use client';
+
+import { useAppSelector } from '../../store/hooks.ts';
+import { usePathname, useRouter } from 'next/navigation';
 import { Globe, UserCheck, ShieldAlert, Sparkles, CheckCircle2, ArrowRight } from 'lucide-react';
+import { ROUTES, isProtectedRoute } from '../../lib/routes';
 
 export function RoleSwitcherBar() {
-  const dispatch = useAppDispatch();
-  const { currentUser, activeView } = useAppSelector(state => state.auth);
+  const pathname = usePathname();
+  const router = useRouter();
+  const { currentUser, isAuthenticated } = useAppSelector(state => state.auth);
   const requests = useAppSelector(state => state.agency.requests);
   const outreach = useAppSelector(state => state.agency.outreachDrafts);
   const leads = useAppSelector(state => state.agency.leads);
 
   const pendingEstimates = requests.filter(r => r.status === 'AWAITING_CLIENT_APPROVAL').length;
   const pendingApprovals = outreach.filter(d => d.status === 'AWAITING_HUMAN_APPROVAL').length;
+
+  const isActiveRoute = (route: string) => {
+    if (route === '/') return pathname === '/';
+    return pathname.startsWith(route);
+  };
+
+  const handleNavToPortal = () => {
+    if (isAuthenticated) {
+      router.push(ROUTES.portal.home);
+    } else {
+      router.push(ROUTES.portal.login);
+    }
+  };
+
+  const handleNavToAdmin = () => {
+    if (isAuthenticated) {
+      router.push(ROUTES.admin.home);
+    } else {
+      router.push(ROUTES.admin.login);
+    }
+  };
 
   return (
     <div className="bg-slate-900 text-slate-200 text-xs py-2 px-4 border-b border-slate-800 transition-colors">
@@ -22,15 +47,12 @@ export function RoleSwitcherBar() {
             <span className="font-semibold tracking-tight">GrowthPrint workspace:</span>
           </div>
           <span className="text-slate-400 hidden sm:inline">Viewing as:</span>
-          
+
           <div className="flex items-center bg-slate-800 rounded-lg p-0.5 border border-slate-700 overflow-x-auto max-w-full">
             <button
-              onClick={() => {
-                dispatch(switchRole('GUEST'));
-                dispatch(setActiveView('PUBLIC'));
-              }}
+              onClick={() => router.push(ROUTES.public.home)}
               className={`px-2 py-1 rounded-md font-medium transition-all flex items-center gap-1 shrink-0 ${
-                activeView === 'PUBLIC'
+                isActiveRoute('/')
                   ? 'bg-blue-600 text-white shadow-xs'
                   : 'text-slate-300 hover:text-white'
               }`}
@@ -40,12 +62,9 @@ export function RoleSwitcherBar() {
             </button>
 
             <button
-              onClick={() => {
-                dispatch(switchRole('CLIENT'));
-                dispatch(setActiveView('PORTAL'));
-              }}
+              onClick={handleNavToPortal}
               className={`px-2 py-1 rounded-md font-medium transition-all flex items-center gap-1 shrink-0 relative ${
-                activeView === 'PORTAL'
+                isActiveRoute('/portal')
                   ? 'bg-blue-600 text-white shadow-xs'
                   : 'text-slate-300 hover:text-white'
               }`}
@@ -60,12 +79,9 @@ export function RoleSwitcherBar() {
             </button>
 
             <button
-              onClick={() => {
-                dispatch(switchRole('ADMIN'));
-                dispatch(setActiveView('ADMIN'));
-              }}
+              onClick={handleNavToAdmin}
               className={`px-2 py-1 rounded-md font-medium transition-all flex items-center gap-1 shrink-0 relative ${
-                activeView === 'ADMIN'
+                isActiveRoute('/admin')
                   ? 'bg-blue-600 text-white shadow-xs'
                   : 'text-slate-300 hover:text-white'
               }`}
@@ -92,12 +108,9 @@ export function RoleSwitcherBar() {
             </span>
           </div>
 
-          {activeView === 'PUBLIC' && (
+          {isActiveRoute('/') && (
             <button
-              onClick={() => {
-                dispatch(switchRole('CLIENT'));
-                dispatch(setActiveView('PORTAL'));
-              }}
+              onClick={handleNavToPortal}
               className="text-blue-400 hover:text-blue-300 font-medium flex items-center gap-1 ml-2 transition-colors"
             >
               Go to Portal <ArrowRight className="w-3 h-3" />

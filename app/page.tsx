@@ -1,10 +1,10 @@
 import { AppProviders } from './providers';
-import { ApplicationShell } from '../components/shell/ApplicationShell';
+import HomePageContent from './(public)/page';
 
 export default function HomePage() {
   return (
     <AppProviders>
-      <ApplicationShell />
+      <HomePageContent />
     </AppProviders>
   );
 }

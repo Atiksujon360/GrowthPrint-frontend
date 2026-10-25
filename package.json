@@ -9,7 +9,7 @@
     "start": "next start",
     "clean": "rm -rf .next dist server.js",
     "lint": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test lib/*.test.ts lib/api/*.test.ts store/*.test.ts"
+    "test": "node --experimental-strip-types --test lib/*.test.ts lib/api/*.test.ts store/*.test.ts features/auth/*.test.ts components/shell/*.test.ts"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer, { setActiveView, switchRole } from '../features/auth/authSlice.ts';
+import authReducer, { setActiveView, switchRole, validateSession } from '../features/auth/authSlice.ts';
 import agencyReducer, {
   attachEstimate,
   approveOutreachDraft,
@@ -34,6 +34,7 @@ import type { AppNotification, SystemAlert, ToastMessage, ToastType } from '../t
 export {
   switchRole,
   setActiveView,
+  validateSession,
   submitPublicInquiry,
   createSupportRequest,
   classifyRequest,

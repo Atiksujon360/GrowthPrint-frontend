@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Loader2 } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks.ts';
-import { setActiveView, switchRole } from '../../store/index.ts';
+import { setActiveView, switchRole, validateSession } from '../../store/index.ts';
 import type { ServiceCategory } from '../../types/agency.ts';
 import { WorkspaceLoginScreen } from '../../features/auth/components/WorkspaceLoginScreen.tsx';
 
@@ -68,8 +69,18 @@ function isAdminTab(tab: string): tab is AdminTab {
 
 function MainApp() {
   const dispatch = useAppDispatch();
-  const { activeView } = useAppSelector(state => state.auth);
+  const { activeView, isAuthenticated, isSessionValidating } = useAppSelector(state => state.auth);
+  const [hasInitialized, setHasInitialized] = useState(false);
   const [workspaceLoginRole, setWorkspaceLoginRole] = useState<'ADMIN' | 'CLIENT' | null>(null);
+
+  // Validate session on mount to restore auth state from stored token
+  useEffect(() => {
+    const initializeSession = async () => {
+      await dispatch(validateSession());
+      setHasInitialized(true);
+    };
+    initializeSession();
+  }, [dispatch]);
 
   useEffect(() => {
     if (activeView === 'PUBLIC') {
@@ -106,6 +117,19 @@ function MainApp() {
     dispatch(switchRole('GUEST'));
     dispatch(setActiveView('PUBLIC'));
   };
+
+  // Show loading state during initial session validation in real API mode
+  const isMockMode = process.env.NEXT_PUBLIC_USE_MOCK_API !== 'false';
+  if (!hasInitialized && !isMockMode) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F8FAFD]">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+          <p className="text-sm text-slate-500">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F8FAFD] text-[#182230]">

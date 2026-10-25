@@ -1,3 +1,6 @@
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { getDefaultRouteForRole } from '../../../lib/routes';
 import {
   ArrowRight,
   Check,
@@ -5,8 +8,12 @@ import {
   Mail,
   ShieldCheck,
   Sparkles,
-  UsersRound
+  UsersRound,
+  Loader2,
+  AlertCircle
 } from 'lucide-react';
+import { useAppDispatch } from '../../../store/hooks.ts';
+import { login } from '../authSlice.ts';
 
 type WorkspaceLoginRole = 'ADMIN' | 'CLIENT';
 
@@ -52,8 +59,34 @@ const LOGIN_CONTENT: Record<WorkspaceLoginRole, {
 };
 
 export function WorkspaceLoginScreen({ role, onSignIn, onBackToPublic }: WorkspaceLoginScreenProps) {
+  const dispatch = useAppDispatch();
+  const router = useRouter();
   const content = LOGIN_CONTENT[role];
   const isAdmin = role === 'ADMIN';
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [email, setEmail] = useState(content.email);
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (isLoading) return; // Prevent duplicate submissions
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      await dispatch(login({ email, password })).unwrap();
+      // Redirect based on role using central route module
+      const targetRoute = getDefaultRouteForRole(isAdmin ? 'ADMIN' : 'CLIENT');
+      router.push(targetRoute);
+      onSignIn();
+    } catch (err) {
+      setError(err as string || 'Login failed. Please check your credentials.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <main className="min-h-[calc(100vh-2px)] bg-[#F8FAFD] px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
@@ -123,23 +156,16 @@ export function WorkspaceLoginScreen({ role, onSignIn, onBackToPublic }: Workspa
               <h2 className="text-3xl font-bold tracking-tight text-slate-950">Welcome back.</h2>
               <p className="mt-2 text-sm leading-6 text-slate-500">Sign in to continue to your workspace.</p>
 
-              <div className="mt-8 rounded-2xl border border-blue-100 bg-blue-50/60 p-4">
-                <div className="flex items-center gap-3">
-                  <img src={content.avatarUrl} alt="" className="h-11 w-11 rounded-full object-cover ring-4 ring-white" />
-                  <div className="min-w-0">
-                    <div className="truncate text-sm font-bold text-slate-900">{content.user}</div>
-                    <div className="truncate text-xs text-slate-500">{content.email}</div>
-                  </div>
-                  <span className="ml-auto rounded-full bg-emerald-100 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-emerald-700">Demo access</span>
+              {error && (
+                <div className="mt-4 flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                  <AlertCircle className="h-4 w-4" />
+                  {error}
                 </div>
-              </div>
+              )}
 
               <form
                 className="mt-7 space-y-4"
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  onSignIn();
-                }}
+                onSubmit={handleSubmit}
               >
                 <label className="block">
                   <span className="mb-2 block text-xs font-semibold text-slate-700">Work email</span>
@@ -147,9 +173,12 @@ export function WorkspaceLoginScreen({ role, onSignIn, onBackToPublic }: Workspa
                     <Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                     <input
                       type="email"
-                      defaultValue={content.email}
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       autoComplete="email"
-                      className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                      required
+                      disabled={isLoading}
+                      className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 disabled:opacity-50 disabled:cursor-not-allowed"
                     />
                   </span>
                 </label>
@@ -159,9 +188,13 @@ export function WorkspaceLoginScreen({ role, onSignIn, onBackToPublic }: Workspa
                     <LockKeyhole className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                     <input
                       type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                       placeholder="Enter your password"
                       autoComplete="current-password"
-                      className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                      required
+                      disabled={isLoading}
+                      className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 disabled:opacity-50 disabled:cursor-not-allowed"
                     />
                   </span>
                 </label>
@@ -174,10 +207,20 @@ export function WorkspaceLoginScreen({ role, onSignIn, onBackToPublic }: Workspa
                 </div>
                 <button
                   type="submit"
-                  className="group mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-700 hover:shadow-blue-600/30 focus:outline-none focus:ring-4 focus:ring-blue-100"
+                  disabled={isLoading}
+                  className="group mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-700 hover:shadow-blue-600/30 focus:outline-none focus:ring-4 focus:ring-blue-100 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Continue to workspace
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Signing in...
+                    </>
+                  ) : (
+                    <>
+                      Continue to workspace
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                    </>
+                  )}
                 </button>
               </form>
             </div>

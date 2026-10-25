@@ -17,4 +17,6 @@ export interface AuthState {
   currentUser: User;
   isAuthenticated: boolean;
   activeView: ActiveView;
+  isSessionValidating: boolean;
+  isLoggingIn: boolean;
 }
