@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks.ts';
-import { createSupportRequest, clientApproveEstimate, addToast, addNotification } from '../../../store/index.ts';
+import { createSupportRequest, clientApproveEstimate, addToast, addNotification, fetchSupportRequests, approveEstimate } from '../../../store/index.ts';
 import { StatusBadge } from '../../../components/ui/Badges.tsx';
 import { EmptyState } from '../../../components/ui/AsyncState.tsx';
 import { 
@@ -10,7 +10,8 @@ import {
   AlertCircle, 
   Clock, 
   X,
-  FileText
+  FileText,
+  RefreshCw
 } from 'lucide-react';
 import type { SupportCategory } from '../../../types/agency.ts';
 
@@ -26,6 +27,8 @@ export function PortalRequestsView({ isModalOpen, onOpenModal, onCloseModal }: P
   const clientId = currentUser.clientId || 'client-meridian';
   const requests = useAppSelector(state => state.agency.requests.filter(r => r.clientId === clientId));
   const projects = useAppSelector(state => state.agency.projects.filter(p => p.clientId === clientId));
+  const isLoadingRequests = useAppSelector(state => state.agency.isLoadingRequests);
+  const requestsError = useAppSelector(state => state.agency.requestsError);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -38,6 +41,15 @@ export function PortalRequestsView({ isModalOpen, onOpenModal, onCloseModal }: P
   });
 
   const [formError, setFormError] = useState('');
+
+  // Fetch support requests on mount
+  useEffect(() => {
+    dispatch(fetchSupportRequests());
+  }, [dispatch]);
+
+  const handleRefresh = () => {
+    dispatch(fetchSupportRequests());
+  };
 
   const handleCreateRequest = (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,6 +102,67 @@ export function PortalRequestsView({ isModalOpen, onOpenModal, onCloseModal }: P
     onCloseModal();
   };
 
+  // Loading, error, and empty states
+  if (isLoadingRequests && requests.length === 0) {
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+              Support & Service Requests
+            </h2>
+            <p className="text-xs text-slate-500">
+              Submit bug reports, feature extensions, and technical requests under your service agreement.
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <RefreshCw className="w-8 h-8 text-slate-400 animate-spin mx-auto mb-3" />
+            <p className="text-sm text-slate-500">Loading support requests...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (requestsError) {
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+              Support & Service Requests
+            </h2>
+            <p className="text-xs text-slate-500">
+              Submit bug reports, feature extensions, and technical requests under your service agreement.
+            </p>
+          </div>
+          <button
+            onClick={handleRefresh}
+            className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-50 flex items-center gap-1.5"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+            <span>Retry</span>
+          </button>
+        </div>
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center max-w-md">
+            <AlertCircle className="w-8 h-8 text-rose-500 mx-auto mb-3" />
+            <p className="text-sm font-medium text-slate-900 mb-1">Failed to load support requests</p>
+            <p className="text-xs text-slate-500 mb-3">{requestsError}</p>
+            <button
+              onClick={handleRefresh}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Top Header */}
@@ -103,13 +176,23 @@ export function PortalRequestsView({ isModalOpen, onOpenModal, onCloseModal }: P
           </p>
         </div>
 
-        <button
-          onClick={onOpenModal}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-xs flex items-center gap-2 self-start"
-        >
-          <PlusCircle className="w-4 h-4" />
-          <span>New Support Request</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleRefresh}
+            disabled={isLoadingRequests}
+            className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isLoadingRequests ? 'animate-spin' : ''}`} />
+            <span>Refresh</span>
+          </button>
+          <button
+            onClick={onOpenModal}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-xs flex items-center gap-2 self-start"
+          >
+            <PlusCircle className="w-4 h-4" />
+            <span>New Support Request</span>
+          </button>
+        </div>
       </div>
 
       {/* Ticket List */}
@@ -166,21 +249,29 @@ export function PortalRequestsView({ isModalOpen, onOpenModal, onCloseModal }: P
                       {r.estimate.explanation}
                     </div>
                     <button
-                      onClick={() => {
-                        dispatch(clientApproveEstimate({ requestId: r.id, clientUser: currentUser.name }));
-                        dispatch(addToast({
-                          type: 'success',
-                          title: 'Work Authorized',
-                          message: `Estimate for ${r.reference} was approved and queued for delivery.`
-                        }));
-                        dispatch(addNotification({
-                          category: 'ACTION_REQUIRED',
-                          title: 'Estimate Approved',
-                          message: `${currentUser.name} approved estimate ${r.reference}.`,
-                          priority: 'MEDIUM',
-                          targetTab: 'REQUESTS',
-                          entityId: r.id
-                        }));
+                      onClick={async () => {
+                        try {
+                          await dispatch(approveEstimate({ requestId: r.id, approvedBy: currentUser.name })).unwrap();
+                          dispatch(addToast({
+                            type: 'success',
+                            title: 'Work Authorized',
+                            message: `Estimate for ${r.reference} was approved and queued for delivery.`
+                          }));
+                          dispatch(addNotification({
+                            category: 'ACTION_REQUIRED',
+                            title: 'Estimate Approved',
+                            message: `${currentUser.name} approved estimate ${r.reference}.`,
+                            priority: 'MEDIUM',
+                            targetTab: 'REQUESTS',
+                            entityId: r.id
+                          }));
+                        } catch (error) {
+                          dispatch(addToast({
+                            type: 'error',
+                            title: 'Approval Failed',
+                            message: 'Failed to approve estimate. Please try again.'
+                          }));
+                        }
                       }}
                       className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow-xs flex items-center gap-1.5 ml-auto"
                     >

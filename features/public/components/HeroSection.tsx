@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { ArrowRight, CheckCircle2, ShieldCheck, Terminal, Layers, ArrowUpRight } from 'lucide-react';
 import { useAppDispatch } from '../../../store/hooks.ts';
+import { useRouter } from 'next/navigation';
 import { setActiveView, switchRole } from '../../../store/index.ts';
 import heroImage from '../../../assets/images/hero_agency_workspace_1792450306060.jpg';
 import { scrollToSection } from '../../../lib/scroll.ts';
 
 export function HeroSection({ onOpenQuote }: { onOpenQuote: () => void }) {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const [imageError, setImageError] = useState(false);
+  const isMockMode = process.env.NEXT_PUBLIC_USE_MOCK_API !== 'false';
 
   return (
     <section className="relative pt-12 pb-16 lg:pt-16 lg:pb-24 overflow-hidden">
@@ -53,8 +56,12 @@ export function HeroSection({ onOpenQuote }: { onOpenQuote: () => void }) {
 
               <button
                 onClick={() => {
-                  dispatch(switchRole('CLIENT'));
-                  dispatch(setActiveView('PORTAL'));
+                  if (isMockMode) {
+                    dispatch(switchRole('CLIENT'));
+                    dispatch(setActiveView('PORTAL'));
+                  } else {
+                    router.push('/portal/login');
+                  }
                 }}
                 className="text-sm font-medium text-slate-500 hover:text-blue-600 transition-colors flex items-center gap-1.5 ml-2"
               >

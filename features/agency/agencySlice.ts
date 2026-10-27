@@ -3,19 +3,24 @@ import {
   type Client,
   type BackendClientResponse,
   type Project,
+  type BackendProjectResponse,
   type Task,
   type SupportRequest,
+  type BackendSupportRequestResponse,
   type Lead,
   type BackendCrmLeadResponse,
   type OutreachDraft,
   type Proposal,
   type Invoice,
+  type BackendInvoiceResponse,
   type WorkflowDefinition,
   type ActivityEvent,
   type PublicInquiryFormData,
   type SupportCategory,
   type SupportRequestStatus,
-  type LeadPipelineStage
+  type LeadPipelineStage,
+  type ProjectStatus,
+  type ServiceCategory
 } from '../../types/agency.ts';
 import {
   INITIAL_CLIENTS,
@@ -50,8 +55,14 @@ const initialAgencyState: AgencyState = {
   activities: INITIAL_ACTIVITY_EVENTS,
   isLoadingClients: false,
   isLoadingLeads: false,
+  isLoadingProjects: false,
+  isLoadingRequests: false,
+  isLoadingInvoices: false,
   clientsError: null,
-  leadsError: null
+  leadsError: null,
+  projectsError: null,
+  requestsError: null,
+  invoicesError: null
 };
 
 // Async thunks for Clients API
@@ -336,6 +347,560 @@ export const deleteCrmLead = createAsyncThunk(
   }
 );
 
+// Async thunks for Projects API
+export const fetchProjects = createAsyncThunk(
+  'agency/fetchProjects',
+  async (_, { rejectWithValue }) => {
+    if (isMockMode) {
+      return INITIAL_PROJECTS;
+    }
+
+    try {
+      const response = await agencyApi.projects.getAll();
+      const backendProjects = response.data as BackendProjectResponse[];
+
+      // Map backend response to frontend Project type
+      const projects: Project[] = backendProjects.map(bp => ({
+        id: bp.id,
+        reference: bp.reference,
+        name: bp.name,
+        clientId: bp.clientId,
+        clientName: bp.clientName,
+        serviceCategory: bp.serviceCategory as ServiceCategory,
+        description: bp.description,
+        status: bp.status as ProjectStatus,
+        progressPercent: bp.progressPercent,
+        startDate: bp.startDate,
+        targetCompletionDate: bp.targetCompletionDate,
+        budgetTotal: bp.budgetTotal,
+        budgetSpent: bp.budgetSpent,
+        milestones: bp.milestones.map(m => ({
+          id: m.id,
+          title: m.title,
+          dueDate: m.dueDate,
+          status: m.status as 'PENDING' | 'IN_PROGRESS' | 'COMPLETED'
+        })),
+        deliverables: bp.deliverables,
+        assignedLead: bp.assignedLead,
+        updatedAt: bp.updatedAt
+      }));
+
+      return projects;
+    } catch (error: any) {
+      console.error('Failed to fetch projects:', error.message);
+      return rejectWithValue(error.message || 'Failed to fetch projects');
+    }
+  }
+);
+
+export const fetchMyProjects = createAsyncThunk(
+  'agency/fetchMyProjects',
+  async (_, { rejectWithValue }) => {
+    if (isMockMode) {
+      return INITIAL_PROJECTS;
+    }
+
+    try {
+      const response = await agencyApi.projects.getMyProjects();
+      const backendProjects = response.data as BackendProjectResponse[];
+
+      // Map backend response to frontend Project type
+      const projects: Project[] = backendProjects.map(bp => ({
+        id: bp.id,
+        reference: bp.reference,
+        name: bp.name,
+        clientId: bp.clientId,
+        clientName: bp.clientName,
+        serviceCategory: bp.serviceCategory as ServiceCategory,
+        description: bp.description,
+        status: bp.status as ProjectStatus,
+        progressPercent: bp.progressPercent,
+        startDate: bp.startDate,
+        targetCompletionDate: bp.targetCompletionDate,
+        budgetTotal: bp.budgetTotal,
+        budgetSpent: bp.budgetSpent,
+        milestones: bp.milestones.map(m => ({
+          id: m.id,
+          title: m.title,
+          dueDate: m.dueDate,
+          status: m.status as 'PENDING' | 'IN_PROGRESS' | 'COMPLETED'
+        })),
+        deliverables: bp.deliverables,
+        assignedLead: bp.assignedLead,
+        updatedAt: bp.updatedAt
+      }));
+
+      return projects;
+    } catch (error: any) {
+      console.error('Failed to fetch my projects:', error.message);
+      return rejectWithValue(error.message || 'Failed to fetch my projects');
+    }
+  }
+);
+
+export const createProject = createAsyncThunk(
+  'agency/createProject',
+  async (projectData: any, { rejectWithValue }) => {
+    if (isMockMode) {
+      // In mock mode, skip optimistic update - let the reducer handle it
+      return rejectWithValue('Mock mode: createProject not implemented');
+    }
+
+    try {
+      const response = await agencyApi.projects.create(projectData);
+      const backendProject = response.data as BackendProjectResponse;
+
+      const project: Project = {
+        id: backendProject.id,
+        reference: backendProject.reference,
+        name: backendProject.name,
+        clientId: backendProject.clientId,
+        clientName: backendProject.clientName,
+        serviceCategory: backendProject.serviceCategory as ServiceCategory,
+        description: backendProject.description,
+        status: backendProject.status as ProjectStatus,
+        progressPercent: backendProject.progressPercent,
+        startDate: backendProject.startDate,
+        targetCompletionDate: backendProject.targetCompletionDate,
+        budgetTotal: backendProject.budgetTotal,
+        budgetSpent: backendProject.budgetSpent,
+        milestones: backendProject.milestones.map(m => ({
+          id: m.id,
+          title: m.title,
+          dueDate: m.dueDate,
+          status: m.status as 'PENDING' | 'IN_PROGRESS' | 'COMPLETED'
+        })),
+        deliverables: backendProject.deliverables,
+        assignedLead: backendProject.assignedLead,
+        updatedAt: backendProject.updatedAt
+      };
+
+      return project;
+    } catch (error: any) {
+      console.error('Failed to create project:', error.message);
+      return rejectWithValue(error.message || 'Failed to create project');
+    }
+  }
+);
+
+export const updateProjectStatus = createAsyncThunk(
+  'agency/updateProjectStatus',
+  async ({ id, status }: { id: string; status: ProjectStatus }, { rejectWithValue }) => {
+    if (isMockMode) {
+      // In mock mode, skip optimistic update - let the reducer handle it
+      return rejectWithValue('Mock mode: updateProjectStatus not implemented');
+    }
+
+    try {
+      const response = await agencyApi.projects.updateStatus(id, status);
+      const backendProject = response.data as BackendProjectResponse;
+
+      const project: Project = {
+        id: backendProject.id,
+        reference: backendProject.reference,
+        name: backendProject.name,
+        clientId: backendProject.clientId,
+        clientName: backendProject.clientName,
+        serviceCategory: backendProject.serviceCategory as ServiceCategory,
+        description: backendProject.description,
+        status: backendProject.status as ProjectStatus,
+        progressPercent: backendProject.progressPercent,
+        startDate: backendProject.startDate,
+        targetCompletionDate: backendProject.targetCompletionDate,
+        budgetTotal: backendProject.budgetTotal,
+        budgetSpent: backendProject.budgetSpent,
+        milestones: backendProject.milestones.map(m => ({
+          id: m.id,
+          title: m.title,
+          dueDate: m.dueDate,
+          status: m.status as 'PENDING' | 'IN_PROGRESS' | 'COMPLETED'
+        })),
+        deliverables: backendProject.deliverables,
+        assignedLead: backendProject.assignedLead,
+        updatedAt: backendProject.updatedAt
+      };
+
+      return project;
+    } catch (error: any) {
+      console.error('Failed to update project status:', error.message);
+      return rejectWithValue(error.message || 'Failed to update project status');
+    }
+  }
+);
+
+// Async thunks for Support Requests API
+export const fetchSupportRequests = createAsyncThunk(
+  'agency/fetchSupportRequests',
+  async (_, { rejectWithValue }) => {
+    if (isMockMode) {
+      return INITIAL_SUPPORT_REQUESTS;
+    }
+
+    try {
+      const response = await agencyApi.support.getAll();
+      const backendRequests = response.data as BackendSupportRequestResponse[];
+
+      // Map backend response to frontend SupportRequest type
+      const requests: SupportRequest[] = backendRequests.map(br => ({
+        id: br.id,
+        reference: br.reference,
+        clientId: br.clientId,
+        clientName: br.clientName,
+        projectId: br.projectId,
+        projectName: br.projectName,
+        title: br.title,
+        category: br.category as SupportCategory,
+        description: br.description,
+        businessImpact: br.businessImpact as 'LOW' | 'MEDIUM' | 'CRITICAL_BLOCKER',
+        urgency: br.urgency as 'NORMAL' | 'URGENT',
+        status: br.status as SupportRequestStatus,
+        createdAt: br.createdAt,
+        updatedAt: br.updatedAt,
+        adminNotes: br.adminNotes,
+        resolutionSummary: br.resolutionSummary,
+        estimate: br.estimate ? {
+          id: br.estimate.id,
+          requestId: br.estimate.requestId,
+          estimatedHours: parseFloat(br.estimate.estimatedHours),
+          hourlyRate: parseFloat(br.estimate.hourlyRate),
+          subtotal: parseFloat(br.estimate.subtotal),
+          discount: parseFloat(br.estimate.discount),
+          totalAmount: parseFloat(br.estimate.totalAmount),
+          currency: br.estimate.currency,
+          deliveryTimelineDays: br.estimate.deliveryTimelineDays,
+          explanation: br.estimate.explanation,
+          createdAt: br.estimate.createdAt,
+          status: br.estimate.status as 'PENDING_APPROVAL' | 'ACCEPTED' | 'DECLINED',
+          acceptedAt: br.estimate.acceptedAt,
+          acceptedBy: br.estimate.acceptedBy
+        } : undefined
+      }));
+
+      return requests;
+    } catch (error: any) {
+      console.error('Failed to fetch support requests:', error.message);
+      return rejectWithValue(error.message || 'Failed to fetch support requests');
+    }
+  }
+);
+
+export const classifyRequestThunk = createAsyncThunk(
+  'agency/classifyRequest',
+  async ({ requestId, category, adminNotes }: { requestId: string; category: SupportCategory; adminNotes: string }, { rejectWithValue }) => {
+    if (isMockMode) {
+      // In mock mode, skip optimistic update - let the reducer handle it
+      return rejectWithValue('Mock mode: classifyRequest not implemented');
+    }
+
+    try {
+      const response = await agencyApi.support.classify(requestId, { category, adminNotes });
+      const backendRequest = response.data as BackendSupportRequestResponse;
+
+      const request: SupportRequest = {
+        id: backendRequest.id,
+        reference: backendRequest.reference,
+        clientId: backendRequest.clientId,
+        clientName: backendRequest.clientName,
+        projectId: backendRequest.projectId,
+        projectName: backendRequest.projectName,
+        title: backendRequest.title,
+        category: backendRequest.category as SupportCategory,
+        description: backendRequest.description,
+        businessImpact: backendRequest.businessImpact as 'LOW' | 'MEDIUM' | 'CRITICAL_BLOCKER',
+        urgency: backendRequest.urgency as 'NORMAL' | 'URGENT',
+        status: backendRequest.status as SupportRequestStatus,
+        createdAt: backendRequest.createdAt,
+        updatedAt: backendRequest.updatedAt,
+        adminNotes: backendRequest.adminNotes,
+        resolutionSummary: backendRequest.resolutionSummary,
+        estimate: backendRequest.estimate ? {
+          id: backendRequest.estimate.id,
+          requestId: backendRequest.estimate.requestId,
+          estimatedHours: parseFloat(backendRequest.estimate.estimatedHours),
+          hourlyRate: parseFloat(backendRequest.estimate.hourlyRate),
+          subtotal: parseFloat(backendRequest.estimate.subtotal),
+          discount: parseFloat(backendRequest.estimate.discount),
+          totalAmount: parseFloat(backendRequest.estimate.totalAmount),
+          currency: backendRequest.estimate.currency,
+          deliveryTimelineDays: backendRequest.estimate.deliveryTimelineDays,
+          explanation: backendRequest.estimate.explanation,
+          createdAt: backendRequest.estimate.createdAt,
+          status: backendRequest.estimate.status as 'PENDING_APPROVAL' | 'ACCEPTED' | 'DECLINED',
+          acceptedAt: backendRequest.estimate.acceptedAt,
+          acceptedBy: backendRequest.estimate.acceptedBy
+        } : undefined
+      };
+
+      return request;
+    } catch (error: any) {
+      console.error('Failed to classify request:', error.message);
+      return rejectWithValue(error.message || 'Failed to classify request');
+    }
+  }
+);
+
+export const attachEstimateThunk = createAsyncThunk(
+  'agency/attachEstimate',
+  async ({ requestId, hours, hourlyRate, explanation, deliveryTimelineDays }: { requestId: string; hours: number; hourlyRate: number; explanation: string; deliveryTimelineDays: number }, { rejectWithValue }) => {
+    if (isMockMode) {
+      // In mock mode, skip optimistic update - let the reducer handle it
+      return rejectWithValue('Mock mode: attachEstimate not implemented');
+    }
+
+    try {
+      const response = await agencyApi.support.attachEstimate(requestId, {
+        estimatedHours: hours,
+        hourlyRate,
+        discount: 0,
+        deliveryTimelineDays,
+        explanation
+      });
+      const backendRequest = response.data as BackendSupportRequestResponse;
+
+      const request: SupportRequest = {
+        id: backendRequest.id,
+        reference: backendRequest.reference,
+        clientId: backendRequest.clientId,
+        clientName: backendRequest.clientName,
+        projectId: backendRequest.projectId,
+        projectName: backendRequest.projectName,
+        title: backendRequest.title,
+        category: backendRequest.category as SupportCategory,
+        description: backendRequest.description,
+        businessImpact: backendRequest.businessImpact as 'LOW' | 'MEDIUM' | 'CRITICAL_BLOCKER',
+        urgency: backendRequest.urgency as 'NORMAL' | 'URGENT',
+        status: backendRequest.status as SupportRequestStatus,
+        createdAt: backendRequest.createdAt,
+        updatedAt: backendRequest.updatedAt,
+        adminNotes: backendRequest.adminNotes,
+        resolutionSummary: backendRequest.resolutionSummary,
+        estimate: backendRequest.estimate ? {
+          id: backendRequest.estimate.id,
+          requestId: backendRequest.estimate.requestId,
+          estimatedHours: parseFloat(backendRequest.estimate.estimatedHours),
+          hourlyRate: parseFloat(backendRequest.estimate.hourlyRate),
+          subtotal: parseFloat(backendRequest.estimate.subtotal),
+          discount: parseFloat(backendRequest.estimate.discount),
+          totalAmount: parseFloat(backendRequest.estimate.totalAmount),
+          currency: backendRequest.estimate.currency,
+          deliveryTimelineDays: backendRequest.estimate.deliveryTimelineDays,
+          explanation: backendRequest.estimate.explanation,
+          createdAt: backendRequest.estimate.createdAt,
+          status: backendRequest.estimate.status as 'PENDING_APPROVAL' | 'ACCEPTED' | 'DECLINED',
+          acceptedAt: backendRequest.estimate.acceptedAt,
+          acceptedBy: backendRequest.estimate.acceptedBy
+        } : undefined
+      };
+
+      return request;
+    } catch (error: any) {
+      console.error('Failed to attach estimate:', error.message);
+      return rejectWithValue(error.message || 'Failed to attach estimate');
+    }
+  }
+);
+
+export const approveEstimateThunk = createAsyncThunk(
+  'agency/approveEstimate',
+  async ({ requestId, approvedBy }: { requestId: string; approvedBy: string }, { rejectWithValue }) => {
+    if (isMockMode) {
+      // In mock mode, skip optimistic update - let the reducer handle it
+      return rejectWithValue('Mock mode: approveEstimate not implemented');
+    }
+
+    try {
+      const response = await agencyApi.support.approveEstimate(requestId, approvedBy);
+      const backendRequest = response.data as BackendSupportRequestResponse;
+
+      const request: SupportRequest = {
+        id: backendRequest.id,
+        reference: backendRequest.reference,
+        clientId: backendRequest.clientId,
+        clientName: backendRequest.clientName,
+        projectId: backendRequest.projectId,
+        projectName: backendRequest.projectName,
+        title: backendRequest.title,
+        category: backendRequest.category as SupportCategory,
+        description: backendRequest.description,
+        businessImpact: backendRequest.businessImpact as 'LOW' | 'MEDIUM' | 'CRITICAL_BLOCKER',
+        urgency: backendRequest.urgency as 'NORMAL' | 'URGENT',
+        status: backendRequest.status as SupportRequestStatus,
+        createdAt: backendRequest.createdAt,
+        updatedAt: backendRequest.updatedAt,
+        adminNotes: backendRequest.adminNotes,
+        resolutionSummary: backendRequest.resolutionSummary,
+        estimate: backendRequest.estimate ? {
+          id: backendRequest.estimate.id,
+          requestId: backendRequest.estimate.requestId,
+          estimatedHours: parseFloat(backendRequest.estimate.estimatedHours),
+          hourlyRate: parseFloat(backendRequest.estimate.hourlyRate),
+          subtotal: parseFloat(backendRequest.estimate.subtotal),
+          discount: parseFloat(backendRequest.estimate.discount),
+          totalAmount: parseFloat(backendRequest.estimate.totalAmount),
+          currency: backendRequest.estimate.currency,
+          deliveryTimelineDays: backendRequest.estimate.deliveryTimelineDays,
+          explanation: backendRequest.estimate.explanation,
+          createdAt: backendRequest.estimate.createdAt,
+          status: backendRequest.estimate.status as 'PENDING_APPROVAL' | 'ACCEPTED' | 'DECLINED',
+          acceptedAt: backendRequest.estimate.acceptedAt,
+          acceptedBy: backendRequest.estimate.acceptedBy
+        } : undefined
+      };
+
+      return request;
+    } catch (error: any) {
+      console.error('Failed to approve estimate:', error.message);
+      return rejectWithValue(error.message || 'Failed to approve estimate');
+    }
+  }
+);
+
+export const updateRequestStatusThunk = createAsyncThunk(
+  'agency/updateRequestStatus',
+  async ({ requestId, status }: { requestId: string; status: SupportRequestStatus }, { rejectWithValue }) => {
+    if (isMockMode) {
+      // In mock mode, skip optimistic update - let the reducer handle it
+      return rejectWithValue('Mock mode: updateRequestStatus not implemented');
+    }
+
+    try {
+      const response = await agencyApi.support.updateStatus(requestId, status);
+      const backendRequest = response.data as BackendSupportRequestResponse;
+
+      const request: SupportRequest = {
+        id: backendRequest.id,
+        reference: backendRequest.reference,
+        clientId: backendRequest.clientId,
+        clientName: backendRequest.clientName,
+        projectId: backendRequest.projectId,
+        projectName: backendRequest.projectName,
+        title: backendRequest.title,
+        category: backendRequest.category as SupportCategory,
+        description: backendRequest.description,
+        businessImpact: backendRequest.businessImpact as 'LOW' | 'MEDIUM' | 'CRITICAL_BLOCKER',
+        urgency: backendRequest.urgency as 'NORMAL' | 'URGENT',
+        status: backendRequest.status as SupportRequestStatus,
+        createdAt: backendRequest.createdAt,
+        updatedAt: backendRequest.updatedAt,
+        adminNotes: backendRequest.adminNotes,
+        resolutionSummary: backendRequest.resolutionSummary,
+        estimate: backendRequest.estimate ? {
+          id: backendRequest.estimate.id,
+          requestId: backendRequest.estimate.requestId,
+          estimatedHours: parseFloat(backendRequest.estimate.estimatedHours),
+          hourlyRate: parseFloat(backendRequest.estimate.hourlyRate),
+          subtotal: parseFloat(backendRequest.estimate.subtotal),
+          discount: parseFloat(backendRequest.estimate.discount),
+          totalAmount: parseFloat(backendRequest.estimate.totalAmount),
+          currency: backendRequest.estimate.currency,
+          deliveryTimelineDays: backendRequest.estimate.deliveryTimelineDays,
+          explanation: backendRequest.estimate.explanation,
+          createdAt: backendRequest.estimate.createdAt,
+          status: backendRequest.estimate.status as 'PENDING_APPROVAL' | 'ACCEPTED' | 'DECLINED',
+          acceptedAt: backendRequest.estimate.acceptedAt,
+          acceptedBy: backendRequest.estimate.acceptedBy
+        } : undefined
+      };
+
+      return request;
+    } catch (error: any) {
+      console.error('Failed to update request status:', error.message);
+      return rejectWithValue(error.message || 'Failed to update request status');
+    }
+  }
+);
+
+// Async thunks for Invoices API
+export const fetchInvoices = createAsyncThunk(
+  'agency/fetchInvoices',
+  async (_, { rejectWithValue }) => {
+    if (isMockMode) {
+      return INITIAL_INVOICES;
+    }
+
+    try {
+      const response = await agencyApi.invoices.getAll();
+      const backendInvoices = response.data as BackendInvoiceResponse[];
+
+      // Map backend response to frontend Invoice type
+      const invoices: Invoice[] = backendInvoices.map(bi => ({
+        id: bi.id,
+        invoiceNumber: bi.invoiceNumber,
+        clientId: bi.clientId,
+        clientName: bi.clientName,
+        clientEmail: bi.clientEmail,
+        issueDate: bi.issueDate,
+        dueDate: bi.dueDate,
+        lineItems: bi.lineItems.map((bli: any) => ({
+          id: bli.id,
+          description: bli.description,
+          quantity: bli.quantity,
+          unitPrice: parseFloat(bli.unitPrice),
+          amount: parseFloat(bli.amount)
+        })),
+        subtotal: parseFloat(bi.subtotal),
+        taxPercent: parseFloat(bi.taxPercent),
+        taxAmount: parseFloat(bi.taxAmount),
+        totalAmount: parseFloat(bi.totalAmount),
+        currency: bi.currency,
+        status: bi.status as 'DRAFT' | 'ISSUED' | 'PAID' | 'OVERDUE' | 'VOID',
+        paidAt: bi.paidAt,
+        notes: bi.notes
+      }));
+
+      return invoices;
+    } catch (error: any) {
+      console.error('Failed to fetch invoices:', error.message);
+      return rejectWithValue(error.message || 'Failed to fetch invoices');
+    }
+  }
+);
+
+export const markInvoicePaidThunk = createAsyncThunk(
+  'agency/markInvoicePaid',
+  async ({ invoiceId }: { invoiceId: string }, { rejectWithValue }) => {
+    if (isMockMode) {
+      // In mock mode, skip optimistic update - let the reducer handle it
+      return rejectWithValue('Mock mode: markInvoicePaid not implemented');
+    }
+
+    try {
+      const response = await agencyApi.invoices.markPaid(invoiceId, { status: 'PAID' });
+      const backendInvoice = response.data as BackendInvoiceResponse;
+
+      const invoice: Invoice = {
+        id: backendInvoice.id,
+        invoiceNumber: backendInvoice.invoiceNumber,
+        clientId: backendInvoice.clientId,
+        clientName: backendInvoice.clientName,
+        clientEmail: backendInvoice.clientEmail,
+        issueDate: backendInvoice.issueDate,
+        dueDate: backendInvoice.dueDate,
+        lineItems: backendInvoice.lineItems.map((bli: any) => ({
+          id: bli.id,
+          description: bli.description,
+          quantity: bli.quantity,
+          unitPrice: parseFloat(bli.unitPrice),
+          amount: parseFloat(bli.amount)
+        })),
+        subtotal: parseFloat(backendInvoice.subtotal),
+        taxPercent: parseFloat(backendInvoice.taxPercent),
+        taxAmount: parseFloat(backendInvoice.taxAmount),
+        totalAmount: parseFloat(backendInvoice.totalAmount),
+        currency: backendInvoice.currency,
+        status: backendInvoice.status as 'DRAFT' | 'ISSUED' | 'PAID' | 'OVERDUE' | 'VOID',
+        paidAt: backendInvoice.paidAt,
+        notes: backendInvoice.notes
+      };
+
+      return invoice;
+    } catch (error: any) {
+      console.error('Failed to mark invoice as paid:', error.message);
+      return rejectWithValue(error.message || 'Failed to mark invoice as paid');
+    }
+  }
+);
+
 const agencySlice = createSlice({
   name: 'agency',
   initialState: initialAgencyState,
@@ -434,8 +999,8 @@ const agencySlice = createSlice({
       });
     },
 
-    // C. Admin Classify Support Request
-    classifyRequest: (state, action: PayloadAction<{
+    // C. Admin Classify Support Request (local/sync)
+    classifyRequestLocal: (state, action: PayloadAction<{
       requestId: string;
       category: SupportCategory;
       adminNotes: string;
@@ -460,8 +1025,8 @@ const agencySlice = createSlice({
       }
     },
 
-    // D. Admin Attach Estimate
-    attachEstimate: (state, action: PayloadAction<{
+    // D. Admin Attach Estimate (local/sync)
+    attachEstimateLocal: (state, action: PayloadAction<{
       requestId: string;
       hours: number;
       hourlyRate: number;
@@ -505,8 +1070,8 @@ const agencySlice = createSlice({
       }
     },
 
-    // E. Client Approve Estimate (Triggers Status Update, Task, and Invoice)
-    clientApproveEstimate: (state, action: PayloadAction<{ requestId: string; clientUser: string }>) => {
+    // E. Client Approve Estimate (Triggers Status Update, Task, and Invoice) (local/sync)
+    clientApproveEstimateLocal: (state, action: PayloadAction<{ requestId: string; clientUser: string }>) => {
       const req = state.requests.find(r => r.id === action.payload.requestId);
       if (req && req.estimate) {
         req.estimate.status = 'ACCEPTED';
@@ -574,8 +1139,8 @@ const agencySlice = createSlice({
       }
     },
 
-    // F. Update Support Request Status
-    updateRequestStatus: (state, action: PayloadAction<{ requestId: string; status: SupportRequestStatus }>) => {
+    // F. Update Support Request Status (local/sync)
+    updateRequestStatusLocal: (state, action: PayloadAction<{ requestId: string; status: SupportRequestStatus }>) => {
       const req = state.requests.find(r => r.id === action.payload.requestId);
       if (req) {
         req.status = action.payload.status;
@@ -783,16 +1348,140 @@ const agencySlice = createSlice({
       .addCase(deleteCrmLead.fulfilled, (state, action) => {
         state.leads = state.leads.filter(l => l.id !== action.payload);
       });
+
+    // Projects
+    builder
+      .addCase(fetchProjects.pending, (state) => {
+        state.isLoadingProjects = true;
+        state.projectsError = null;
+      })
+      .addCase(fetchProjects.fulfilled, (state, action) => {
+        state.isLoadingProjects = false;
+        state.projects = action.payload;
+        state.projectsError = null;
+      })
+      .addCase(fetchProjects.rejected, (state, action) => {
+        state.isLoadingProjects = false;
+        state.projectsError = action.payload as string || 'Failed to fetch projects';
+      })
+      .addCase(fetchMyProjects.pending, (state) => {
+        state.isLoadingProjects = true;
+        state.projectsError = null;
+      })
+      .addCase(fetchMyProjects.fulfilled, (state, action) => {
+        state.isLoadingProjects = false;
+        state.projects = action.payload;
+        state.projectsError = null;
+      })
+      .addCase(fetchMyProjects.rejected, (state, action) => {
+        state.isLoadingProjects = false;
+        state.projectsError = action.payload as string || 'Failed to fetch my projects';
+      })
+      .addCase(createProject.fulfilled, (state, action) => {
+        state.projects.unshift(action.payload);
+      })
+      .addCase(updateProjectStatus.fulfilled, (state, action) => {
+        const index = state.projects.findIndex(p => p.id === action.payload.id);
+        if (index !== -1) {
+          state.projects[index] = action.payload;
+        }
+      })
+      .addCase(updateProjectStatus.rejected, (state, action) => {
+        // Optional: set error state for failed status updates
+        console.error('Failed to update project status:', action.payload);
+      });
+
+    // Support Requests
+    builder
+      .addCase(fetchSupportRequests.pending, (state) => {
+        state.isLoadingRequests = true;
+        state.requestsError = null;
+      })
+      .addCase(fetchSupportRequests.fulfilled, (state, action) => {
+        state.isLoadingRequests = false;
+        state.requests = action.payload;
+        state.requestsError = null;
+      })
+      .addCase(fetchSupportRequests.rejected, (state, action) => {
+        state.isLoadingRequests = false;
+        state.requestsError = action.payload as string || 'Failed to fetch support requests';
+      })
+      .addCase(classifyRequestThunk.fulfilled, (state, action) => {
+        const index = state.requests.findIndex(r => r.id === action.payload.id);
+        if (index !== -1) {
+          state.requests[index] = action.payload;
+        }
+      })
+      .addCase(classifyRequestThunk.rejected, (state, action) => {
+        // Optional: set error state for failed classification
+        console.error('Failed to classify request:', action.payload);
+      })
+      .addCase(attachEstimateThunk.fulfilled, (state, action) => {
+        const index = state.requests.findIndex(r => r.id === action.payload.id);
+        if (index !== -1) {
+          state.requests[index] = action.payload;
+        }
+      })
+      .addCase(attachEstimateThunk.rejected, (state, action) => {
+        // Optional: set error state for failed estimate attachment
+        console.error('Failed to attach estimate:', action.payload);
+      })
+      .addCase(approveEstimateThunk.fulfilled, (state, action) => {
+        const index = state.requests.findIndex(r => r.id === action.payload.id);
+        if (index !== -1) {
+          state.requests[index] = action.payload;
+        }
+      })
+      .addCase(approveEstimateThunk.rejected, (state, action) => {
+        // Optional: set error state for failed estimate approval
+        console.error('Failed to approve estimate:', action.payload);
+      })
+      .addCase(updateRequestStatusThunk.fulfilled, (state, action) => {
+        const index = state.requests.findIndex(r => r.id === action.payload.id);
+        if (index !== -1) {
+          state.requests[index] = action.payload;
+        }
+      })
+      .addCase(updateRequestStatusThunk.rejected, (state, action) => {
+        // Optional: set error state for failed status updates
+        console.error('Failed to update request status:', action.payload);
+      });
+
+    // Invoices
+    builder
+      .addCase(fetchInvoices.pending, (state) => {
+        state.isLoadingInvoices = true;
+        state.invoicesError = null;
+      })
+      .addCase(fetchInvoices.fulfilled, (state, action) => {
+        state.isLoadingInvoices = false;
+        state.invoices = action.payload;
+        state.invoicesError = null;
+      })
+      .addCase(fetchInvoices.rejected, (state, action) => {
+        state.isLoadingInvoices = false;
+        state.invoicesError = action.payload as string || 'Failed to fetch invoices';
+      })
+      .addCase(markInvoicePaidThunk.fulfilled, (state, action) => {
+        const index = state.invoices.findIndex(i => i.id === action.payload.id);
+        if (index !== -1) {
+          state.invoices[index] = action.payload;
+        }
+      })
+      .addCase(markInvoicePaidThunk.rejected, (state, action) => {
+        // Optional: set error state for failed payment marking
+        console.error('Failed to mark invoice as paid:', action.payload);
+      });
   }
 });
 
 export const {
   submitPublicInquiry,
   createSupportRequest,
-  classifyRequest,
-  attachEstimate,
-  clientApproveEstimate,
-  updateRequestStatus,
+  classifyRequestLocal,
+  attachEstimateLocal,
+  clientApproveEstimateLocal,
+  updateRequestStatusLocal,
   approveOutreachDraft,
   sendApprovedOutreach,
   updateOutreachDraft,
@@ -801,5 +1490,13 @@ export const {
   payInvoice,
   toggleTaskStatus
 } = agencySlice.actions;
+
+// Export async thunks with proper names
+export const classifyRequest = classifyRequestThunk;
+export const attachEstimate = attachEstimateThunk;
+export const approveEstimate = approveEstimateThunk;
+export const updateRequestStatus = updateRequestStatusThunk;
+export const clientApproveEstimate = clientApproveEstimateLocal;
+export const markInvoicePaid = markInvoicePaidThunk;
 
 export default agencySlice.reducer;

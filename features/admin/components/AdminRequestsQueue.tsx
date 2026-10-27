@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks.ts';
-import { classifyRequest, attachEstimate, updateRequestStatus, addToast } from '../../../store/index.ts';
+import { classifyRequest, attachEstimate, updateRequestStatus, addToast, fetchSupportRequests } from '../../../store/index.ts';
 import { StatusBadge, PriorityBadge } from '../../../components/ui/Badges.tsx';
 import { DataTable, type ColumnDef } from '../../../components/ui/DataTable.tsx';
 import { CopyButton } from '../../../components/ui/CopyButton.tsx';
@@ -12,13 +12,16 @@ import {
   DollarSign, 
   Layers, 
   Columns,
-  Table as TableIcon
+  Table as TableIcon,
+  RefreshCw
 } from 'lucide-react';
 import type { SupportRequest, SupportCategory, SupportRequestStatus } from '../../../types/agency.ts';
 
 export function AdminRequestsQueue() {
   const dispatch = useAppDispatch();
   const requests = useAppSelector(state => state.agency.requests);
+  const isLoadingRequests = useAppSelector(state => state.agency.isLoadingRequests);
+  const requestsError = useAppSelector(state => state.agency.requestsError);
 
   const [selectedReqId, setSelectedReqId] = useState<string>(requests[0]?.id || '');
   const [statusFilter, setStatusFilter] = useState('ALL');
@@ -36,36 +39,78 @@ export function AdminRequestsQueue() {
   const [deliveryDays, setDeliveryDays] = useState(activeReq?.estimate?.deliveryTimelineDays || 2);
   const [explanation, setExplanation] = useState(activeReq?.estimate?.explanation || '');
 
-  const handleClassify = (e: React.FormEvent) => {
+  // Fetch support requests on mount
+  useEffect(() => {
+    dispatch(fetchSupportRequests());
+  }, [dispatch]);
+
+  const handleClassify = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!activeReq) return;
-    dispatch(classifyRequest({
-      requestId: activeReq.id,
-      category,
-      adminNotes
-    }));
-    dispatch(addToast({
-      type: 'info',
-      title: 'Classification Saved',
-      message: `Ticket ${activeReq.reference} scope verified and saved.`
-    }));
+    try {
+      await dispatch(classifyRequest({
+        requestId: activeReq.id,
+        category,
+        adminNotes
+    })).unwrap();
+      dispatch(addToast({
+        type: 'info',
+        title: 'Classification Saved',
+        message: `Ticket ${activeReq.reference} scope verified and saved.`
+      }));
+    } catch (error) {
+      dispatch(addToast({
+        type: 'error',
+        title: 'Classification Failed',
+        message: 'Failed to save classification. Please try again.'
+      }));
+    }
   };
 
-  const handleSendEstimate = (e: React.FormEvent) => {
+  const handleSendEstimate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!activeReq) return;
-    dispatch(attachEstimate({
-      requestId: activeReq.id,
-      hours: Number(estimateHours),
-      hourlyRate: Number(hourlyRate),
-      explanation: explanation || `Estimated ${estimateHours} engineering hours for resolution.`,
-      deliveryTimelineDays: Number(deliveryDays)
-    }));
-    dispatch(addToast({
-      type: 'success',
-      title: 'Estimate Prepared',
-      message: `Estimate of ${estimateHours}h ($${Number(estimateHours) * Number(hourlyRate)} USD) submitted for client review.`
-    }));
+    try {
+      await dispatch(attachEstimate({
+        requestId: activeReq.id,
+        hours: Number(estimateHours),
+        hourlyRate: Number(hourlyRate),
+        explanation: explanation || `Estimated ${estimateHours} engineering hours for resolution.`,
+        deliveryTimelineDays: Number(deliveryDays)
+      })).unwrap();
+      dispatch(addToast({
+        type: 'success',
+        title: 'Estimate Prepared',
+        message: `Estimate of ${estimateHours}h ($${Number(estimateHours) * Number(hourlyRate)} USD) submitted for client review.`
+      }));
+    } catch (error) {
+      dispatch(addToast({
+        type: 'error',
+        title: 'Estimate Failed',
+        message: 'Failed to prepare estimate. Please try again.'
+      }));
+    }
+  };
+
+  const handleUpdateStatus = async (requestId: string, status: SupportRequestStatus) => {
+    try {
+      await dispatch(updateRequestStatus({ requestId, status })).unwrap();
+      dispatch(addToast({
+        type: 'success',
+        title: 'Status Updated',
+        message: `Ticket status updated to ${status}.`
+      }));
+    } catch (error) {
+      dispatch(addToast({
+        type: 'error',
+        title: 'Status Update Failed',
+        message: 'Failed to update status. Please try again.'
+      }));
+    }
+  };
+
+  const handleRefresh = () => {
+    dispatch(fetchSupportRequests());
   };
 
   const columns: ColumnDef<SupportRequest>[] = [
@@ -150,6 +195,99 @@ export function AdminRequestsQueue() {
     { label: 'Completed', value: 'COMPLETED', count: requests.filter(r => r.status === 'COMPLETED').length }
   ];
 
+  // Loading, error, and empty states
+  if (isLoadingRequests && requests.length === 0) {
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+              Client Support & Maintenance Tickets
+            </h2>
+            <p className="text-xs text-slate-500">
+              Review incoming client tickets, verify retainer coverage, and prepare transparent estimates before touching code.
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <RefreshCw className="w-8 h-8 text-slate-400 animate-spin mx-auto mb-3" />
+            <p className="text-sm text-slate-500">Loading support requests...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (requestsError) {
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+              Client Support & Maintenance Tickets
+            </h2>
+            <p className="text-xs text-slate-500">
+              Review incoming client tickets, verify retainer coverage, and prepare transparent estimates before touching code.
+            </p>
+          </div>
+          <button
+            onClick={handleRefresh}
+            className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-50 flex items-center gap-1.5"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+            <span>Retry</span>
+          </button>
+        </div>
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center max-w-md">
+            <AlertCircle className="w-8 h-8 text-rose-500 mx-auto mb-3" />
+            <p className="text-sm font-medium text-slate-900 mb-1">Failed to load support requests</p>
+            <p className="text-xs text-slate-500 mb-3">{requestsError}</p>
+            <button
+              onClick={handleRefresh}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (requests.length === 0) {
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+              Client Support & Maintenance Tickets
+            </h2>
+            <p className="text-xs text-slate-500">
+              Review incoming client tickets, verify retainer coverage, and prepare transparent estimates before touching code.
+            </p>
+          </div>
+          <button
+            onClick={handleRefresh}
+            disabled={isLoadingRequests}
+            className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isLoadingRequests ? 'animate-spin' : ''}`} />
+            <span>Refresh</span>
+          </button>
+        </div>
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center max-w-md">
+            <TicketCheck className="w-8 h-8 text-slate-400 mx-auto mb-3" />
+            <p className="text-sm font-medium text-slate-900 mb-1">No support requests</p>
+            <p className="text-xs text-slate-500">Support requests from clients will appear here.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -163,24 +301,34 @@ export function AdminRequestsQueue() {
           </p>
         </div>
 
-        <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+            <button
+              onClick={() => setViewMode('SPLIT')}
+              className={`px-3 py-1 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-colors ${
+                viewMode === 'SPLIT' ? 'bg-white text-slate-900 shadow-2xs font-semibold' : 'text-slate-600'
+              }`}
+            >
+              <Columns className="w-3.5 h-3.5" />
+              <span>Triage Split</span>
+            </button>
+            <button
+              onClick={() => setViewMode('FULL_TABLE')}
+              className={`px-3 py-1 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-colors ${
+                viewMode === 'FULL_TABLE' ? 'bg-white text-slate-900 shadow-2xs font-semibold' : 'text-slate-600'
+              }`}
+            >
+              <TableIcon className="w-3.5 h-3.5" />
+              <span>Full Table</span>
+            </button>
+          </div>
           <button
-            onClick={() => setViewMode('SPLIT')}
-            className={`px-3 py-1 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-colors ${
-              viewMode === 'SPLIT' ? 'bg-white text-slate-900 shadow-2xs font-semibold' : 'text-slate-600'
-            }`}
+            onClick={handleRefresh}
+            disabled={isLoadingRequests}
+            className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
           >
-            <Columns className="w-3.5 h-3.5" />
-            <span>Triage Split</span>
-          </button>
-          <button
-            onClick={() => setViewMode('FULL_TABLE')}
-            className={`px-3 py-1 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-colors ${
-              viewMode === 'FULL_TABLE' ? 'bg-white text-slate-900 shadow-2xs font-semibold' : 'text-slate-600'
-            }`}
-          >
-            <TableIcon className="w-3.5 h-3.5" />
-            <span>Full Table</span>
+            <RefreshCw className={`w-3.5 h-3.5 ${isLoadingRequests ? 'animate-spin' : ''}`} />
+            <span>Refresh</span>
           </button>
         </div>
       </div>
@@ -240,7 +388,7 @@ export function AdminRequestsQueue() {
                 <div className="flex items-center gap-2">
                   {activeReq.status === 'READY_TO_START' && (
                     <button
-                      onClick={() => dispatch(updateRequestStatus({ requestId: activeReq.id, status: 'IN_PROGRESS' }))}
+                      onClick={() => handleUpdateStatus(activeReq.id, 'IN_PROGRESS')}
                       className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow-xs"
                     >
                       Start Work
@@ -249,7 +397,7 @@ export function AdminRequestsQueue() {
 
                   {activeReq.status === 'IN_PROGRESS' && (
                     <button
-                      onClick={() => dispatch(updateRequestStatus({ requestId: activeReq.id, status: 'COMPLETED' }))}
+                      onClick={() => handleUpdateStatus(activeReq.id, 'COMPLETED')}
                       className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-xs flex items-center gap-1"
                     >
                       <CheckCircle2 className="w-3.5 h-3.5" />

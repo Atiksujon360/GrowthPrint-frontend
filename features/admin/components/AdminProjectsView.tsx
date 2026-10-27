@@ -1,23 +1,60 @@
-import React, { useState } from 'react';
-import { useAppSelector } from '../../../store/hooks.ts';
+import React, { useState, useEffect } from 'react';
+import { useAppSelector, useAppDispatch } from '../../../store/hooks.ts';
+import { fetchProjects, addToast } from '../../../store/index.ts';
 import { StatusBadge } from '../../../components/ui/Badges.tsx';
 import { DataTable, type ColumnDef } from '../../../components/ui/DataTable.tsx';
 import { CopyButton } from '../../../components/ui/CopyButton.tsx';
-import { 
-  FolderKanban, 
-  CheckCircle2, 
-  Clock, 
-  DollarSign, 
-  Layers, 
-  Columns, 
-  Table as TableIcon 
+import { LoadingSpinner } from '../../../components/ui/LoadingSpinner.tsx';
+import { EmptyState } from '../../../components/ui/AsyncState.tsx';
+import {
+  FolderKanban,
+  CheckCircle2,
+  Clock,
+  DollarSign,
+  Layers,
+  Columns,
+  Table as TableIcon,
+  RefreshCw,
+  AlertCircle
 } from 'lucide-react';
 import type { Project } from '../../../types/agency.ts';
 
 export function AdminProjectsView() {
+  const dispatch = useAppDispatch();
   const projects = useAppSelector(state => state.agency.projects);
+  const isLoadingProjects = useAppSelector(state => state.agency.isLoadingProjects);
+  const projectsError = useAppSelector(state => state.agency.projectsError);
   const [viewMode, setViewMode] = useState<'CARDS' | 'TABLE'>('TABLE');
   const [statusFilter, setStatusFilter] = useState('ALL');
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  useEffect(() => {
+    dispatch(fetchProjects());
+  }, [dispatch]);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await dispatch(fetchProjects()).unwrap();
+      dispatch(addToast({
+        type: 'success',
+        title: 'Projects Refreshed',
+        message: 'Project data has been updated from the server.'
+      }));
+    } catch (error) {
+      dispatch(addToast({
+        type: 'error',
+        title: 'Refresh Failed',
+        message: 'Failed to refresh projects. Please try again.'
+      }));
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  const handleRetry = () => {
+    handleRefresh();
+  };
 
   const columns: ColumnDef<Project>[] = [
     {
@@ -125,36 +162,82 @@ export function AdminProjectsView() {
           </p>
         </div>
 
-        {/* View Switcher */}
-        <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl self-start sm:self-auto border border-slate-200">
+        <div className="flex items-center gap-2">
+          {/* Refresh Button */}
           <button
-            onClick={() => setViewMode('TABLE')}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-all ${
-              viewMode === 'TABLE' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
-            }`}
+            onClick={handleRefresh}
+            disabled={isRefreshing || isLoadingProjects}
+            className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Refresh projects"
           >
-            <TableIcon className="w-3.5 h-3.5" />
-            <span>Table View</span>
+            <RefreshCw className={`w-4 h-4 ${isRefreshing || isLoadingProjects ? 'animate-spin' : ''}`} />
           </button>
-          <button
-            onClick={() => setViewMode('CARDS')}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-all ${
-              viewMode === 'CARDS' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <Columns className="w-3.5 h-3.5" />
-            <span>Card View</span>
-          </button>
+
+          {/* View Switcher */}
+          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
+            <button
+              onClick={() => setViewMode('TABLE')}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-all ${
+                viewMode === 'TABLE' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <TableIcon className="w-3.5 h-3.5" />
+              <span>Table View</span>
+            </button>
+            <button
+              onClick={() => setViewMode('CARDS')}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-all ${
+                viewMode === 'CARDS' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Columns className="w-3.5 h-3.5" />
+              <span>Card View</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      {viewMode === 'TABLE' ? (
-        <DataTable
-          title="Client Projects"
-          subtitle="Overview of active development initiatives, upcoming milestone deadlines, and budget health"
-          data={projects}
-          columns={columns}
-          statusFilter={{
+      {/* Loading State */}
+      {isLoadingProjects && (
+        <div className="flex flex-col items-center justify-center py-16">
+          <LoadingSpinner />
+          <p className="text-sm text-slate-500 mt-4">Loading projects...</p>
+        </div>
+      )}
+
+      {/* Error State */}
+      {!isLoadingProjects && projectsError && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-6 flex flex-col items-center justify-center">
+          <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
+          <h3 className="text-lg font-semibold text-red-900 mb-2">Failed to Load Projects</h3>
+          <p className="text-sm text-red-700 mb-4">{projectsError}</p>
+          <button
+            onClick={handleRetry}
+            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+          >
+            Retry
+          </button>
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!isLoadingProjects && !projectsError && projects.length === 0 && (
+        <EmptyState
+          title="No Projects Yet"
+          message="Projects will appear here when they are created for clients."
+        />
+      )}
+
+      {/* Data View */}
+      {!isLoadingProjects && !projectsError && projects.length > 0 && (
+        <>
+          {viewMode === 'TABLE' ? (
+            <DataTable
+              title="Client Projects"
+              subtitle="Overview of active development initiatives, upcoming milestone deadlines, and budget health"
+              data={projects}
+              columns={columns}
+              statusFilter={{
             statusKey: 'status',
             value: statusFilter,
             onChange: setStatusFilter,
@@ -252,6 +335,8 @@ export function AdminProjectsView() {
             </div>
           ))}
         </div>
+      )}
+        </>
       )}
     </div>
   );

@@ -4,11 +4,8 @@ import {
   addNotification,
   addToast,
   approveOutreachDraft,
-  attachEstimate,
-  classifyRequest,
   clearAllToasts,
   clearNotification,
-  clientApproveEstimate,
   createSupportRequest,
   dismissSystemAlert,
   finishLiveSync,
@@ -27,7 +24,8 @@ import {
   triggerWorkflowRun,
   updateOutreachDraft,
   updateLeadStage,
-  updateRequestStatus,
+  fetchInvoices,
+  markInvoicePaid,
   store
 } from './index.ts';
 
@@ -39,10 +37,6 @@ test('Redux state keys and action type strings remain stable', () => {
       setActiveView,
       submitPublicInquiry,
       createSupportRequest,
-      classifyRequest,
-      attachEstimate,
-      clientApproveEstimate,
-      updateRequestStatus,
       approveOutreachDraft,
       sendApprovedOutreach,
       updateLeadStage,
@@ -68,10 +62,6 @@ test('Redux state keys and action type strings remain stable', () => {
       'auth/setActiveView',
       'agency/submitPublicInquiry',
       'agency/createSupportRequest',
-      'agency/classifyRequest',
-      'agency/attachEstimate',
-      'agency/clientApproveEstimate',
-      'agency/updateRequestStatus',
       'agency/approveOutreachDraft',
       'agency/sendApprovedOutreach',
       'agency/updateLeadStage',
@@ -93,4 +83,8 @@ test('Redux state keys and action type strings remain stable', () => {
       'ui/setShortcutsModalOpen'
     ]
   );
+
+  // Verify new invoice thunks are exported (async thunks don't have .type property)
+  assert.strictEqual(typeof fetchInvoices, 'function');
+  assert.strictEqual(typeof markInvoicePaid, 'function');
 });

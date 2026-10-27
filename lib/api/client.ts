@@ -247,7 +247,9 @@ export const agencyApi = {
   // Projects & Deliveries
   projects: {
     getAll: () => apiClient.get('/projects'),
+    getMyProjects: () => apiClient.get('/projects/my'),
     getById: (id: string) => apiClient.get(`/projects/${id}`),
+    create: (project: any) => apiClient.post('/projects', project),
     updateStatus: (id: string, status: string) => apiClient.patch(`/projects/${id}/status`, { status }),
     createMilestone: (projectId: string, milestone: any) => apiClient.post(`/projects/${projectId}/milestones`, milestone)
   },
@@ -258,7 +260,8 @@ export const agencyApi = {
     create: (data: any) => apiClient.post('/support-requests', data),
     classify: (id: string, classification: any) => apiClient.post(`/support-requests/${id}/classify`, classification),
     attachEstimate: (id: string, estimate: any) => apiClient.post(`/support-requests/${id}/estimate`, estimate),
-    approveEstimate: (id: string, approvedBy: string) => apiClient.post(`/support-requests/${id}/approve-estimate`, { approvedBy })
+    approveEstimate: (id: string, approvedBy: string) => apiClient.post(`/support-requests/${id}/approve-estimate`, { approvedBy }),
+    updateStatus: (id: string, status: string) => apiClient.patch(`/support-requests/${id}/status`, { status })
   },
 
   // Invoices & Billing

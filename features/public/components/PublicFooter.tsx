@@ -1,5 +1,6 @@
 import React from 'react';
 import { useAppDispatch } from '../../../store/hooks.ts';
+import { useRouter } from 'next/navigation';
 import { setActiveView, switchRole } from '../../../store/index.ts';
 import { Mail, Phone, MapPin, ArrowUpRight } from 'lucide-react';
 import { scrollToSection } from '../../../lib/scroll.ts';
@@ -11,6 +12,8 @@ function handleFooterSectionClick(event: React.MouseEvent<HTMLAnchorElement>, se
 
 export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
   const dispatch = useAppDispatch();
+  const router = useRouter();
+  const isMockMode = process.env.NEXT_PUBLIC_USE_MOCK_API !== 'false';
 
   return (
     <footer className="bg-slate-900 text-slate-300 pt-16 pb-12 border-t border-slate-800">
@@ -84,8 +87,12 @@ export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
               <li>
                 <button
                   onClick={() => {
-                    dispatch(switchRole('CLIENT'));
-                    dispatch(setActiveView('PORTAL'));
+                    if (isMockMode) {
+                      dispatch(switchRole('CLIENT'));
+                      dispatch(setActiveView('PORTAL'));
+                    } else {
+                      router.push('/portal/login');
+                    }
                   }}
                   className="hover:text-white transition-colors flex items-center gap-1 text-blue-400"
                 >
@@ -96,8 +103,12 @@ export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
               <li>
                 <button
                   onClick={() => {
-                    dispatch(switchRole('ADMIN'));
-                    dispatch(setActiveView('ADMIN'));
+                    if (isMockMode) {
+                      dispatch(switchRole('ADMIN'));
+                      dispatch(setActiveView('ADMIN'));
+                    } else {
+                      router.push('/admin/login');
+                    }
                   }}
                   className="hover:text-white transition-colors flex items-center gap-1 text-slate-400"
                 >
@@ -143,7 +154,7 @@ export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
         {/* Bottom line */}
         <div className="mt-12 pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div>
-            &copy; {new Date().getFullYear()} GrowthPrint Technology Partners LLC. All rights reserved.
+            &copy; 2026 GrowthPrint Technology Partners LLC. All rights reserved.
           </div>
           <div className="flex items-center gap-6">
             <span className="hover:text-slate-400 cursor-pointer">Privacy Policy</span>

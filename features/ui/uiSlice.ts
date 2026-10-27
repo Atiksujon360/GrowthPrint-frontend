@@ -60,7 +60,7 @@ const initialUiState: UiState = {
   },
   isSystemAlertDismissed: false,
   isLiveSyncing: false,
-  lastSyncTimestamp: new Date().toISOString(),
+  lastSyncTimestamp: null,
   isShortcutsModalOpen: false
 };
 

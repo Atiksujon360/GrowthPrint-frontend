@@ -1,25 +1,29 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useAppSelector } from '../../../store/hooks.ts';
 import { Loader2 } from 'lucide-react';
 
 export default function PortalLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const router = useRouter();
+  const pathname = usePathname();
   const { isAuthenticated, isSessionValidating } = useAppSelector(state => state.auth);
   const [isMounted, setIsMounted] = useState(false);
+
+  // Don't protect the login page itself
+  const isLoginPage = pathname === '/portal/login';
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
   useEffect(() => {
-    if (!isMounted) return;
+    if (!isMounted || isLoginPage) return;
     if (!isSessionValidating && !isAuthenticated) {
       router.push('/portal/login');
     }
-  }, [isAuthenticated, isSessionValidating, router, isMounted]);
+  }, [isAuthenticated, isSessionValidating, router, isMounted, isLoginPage]);
 
   if (!isMounted || isSessionValidating) {
     return (
@@ -32,7 +36,7 @@ export default function PortalLayout({ children }: Readonly<{ children: React.Re
     );
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated && !isLoginPage) {
     return null;
   }
 

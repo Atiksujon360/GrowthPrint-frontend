@@ -1,27 +1,107 @@
-import React from 'react';
-import { useAppSelector } from '../../../store/hooks.ts';
+import React, { useState, useEffect } from 'react';
+import { useAppSelector, useAppDispatch } from '../../../store/hooks.ts';
+import { fetchMyProjects, addToast } from '../../../store/index.ts';
 import { StatusBadge, PriorityBadge } from '../../../components/ui/Badges.tsx';
-import { CheckCircle2, Clock, Calendar, FileText, Layers } from 'lucide-react';
+import { LoadingSpinner } from '../../../components/ui/LoadingSpinner.tsx';
+import { EmptyState } from '../../../components/ui/AsyncState.tsx';
+import { CheckCircle2, Clock, Calendar, FileText, Layers, RefreshCw, AlertCircle } from 'lucide-react';
 
 export function PortalProjectsView() {
+  const dispatch = useAppDispatch();
   const { currentUser } = useAppSelector(state => state.auth);
   const clientId = currentUser.clientId || 'client-meridian';
-  const projects = useAppSelector(state => state.agency.projects.filter(p => p.clientId === clientId));
+  const projects = useAppSelector(state => state.agency.projects);
+  const isLoadingProjects = useAppSelector(state => state.agency.isLoadingProjects);
+  const projectsError = useAppSelector(state => state.agency.projectsError);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
   const tasks = useAppSelector(state => state.agency.tasks.filter(t => t.clientId === clientId && t.isClientVisible));
+
+  useEffect(() => {
+    dispatch(fetchMyProjects());
+  }, [dispatch]);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await dispatch(fetchMyProjects()).unwrap();
+      dispatch(addToast({
+        type: 'success',
+        title: 'Projects Refreshed',
+        message: 'Project data has been updated from the server.'
+      }));
+    } catch (error) {
+      dispatch(addToast({
+        type: 'error',
+        title: 'Refresh Failed',
+        message: 'Failed to refresh projects. Please try again.'
+      }));
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  const handleRetry = () => {
+    handleRefresh();
+  };
 
   return (
     <div className="space-y-8">
-      <div>
-        <h2 className="text-xl font-bold text-slate-900 tracking-tight">
-          Active Projects & Technical Milestones
-        </h2>
-        <p className="text-xs text-slate-500">
-          Real-time visibility into engineering sprints, deliverables, and upcoming delivery target dates.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+            Active Projects & Technical Milestones
+          </h2>
+          <p className="text-xs text-slate-500">
+            Real-time visibility into engineering sprints, deliverables, and upcoming delivery target dates.
+          </p>
+        </div>
+
+        <button
+          onClick={handleRefresh}
+          disabled={isRefreshing || isLoadingProjects}
+          className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed self-start sm:self-auto"
+          title="Refresh projects"
+        >
+          <RefreshCw className={`w-4 h-4 ${isRefreshing || isLoadingProjects ? 'animate-spin' : ''}`} />
+        </button>
       </div>
 
-      <div className="space-y-8">
-        {projects.map((project) => (
+      {/* Loading State */}
+      {isLoadingProjects && (
+        <div className="flex flex-col items-center justify-center py-16">
+          <LoadingSpinner />
+          <p className="text-sm text-slate-500 mt-4">Loading projects...</p>
+        </div>
+      )}
+
+      {/* Error State */}
+      {!isLoadingProjects && projectsError && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-6 flex flex-col items-center justify-center">
+          <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
+          <h3 className="text-lg font-semibold text-red-900 mb-2">Failed to Load Projects</h3>
+          <p className="text-sm text-red-700 mb-4">{projectsError}</p>
+          <button
+            onClick={handleRetry}
+            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+          >
+            Retry
+          </button>
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!isLoadingProjects && !projectsError && projects.length === 0 && (
+        <EmptyState
+          title="No Projects Found"
+          message="Your projects will appear here once they are created by GrowthPrint."
+        />
+      )}
+
+      {/* Data View */}
+      {!isLoadingProjects && !projectsError && projects.length > 0 && (
+        <div className="space-y-8">
+          {projects.map((project) => (
           <div key={project.id} className="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
             {/* Project Header */}
             <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-50/50">
@@ -127,7 +207,8 @@ export function PortalProjectsView() {
             </div>
           </div>
         ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

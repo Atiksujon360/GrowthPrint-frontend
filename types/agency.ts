@@ -5,6 +5,34 @@ export type ServiceCategory =
   | 'BUSINESS_AUTOMATION'
   | 'AI_INTEGRATION';
 
+// Backend response types for Projects API
+export interface BackendProjectResponse {
+  id: string;
+  reference: string;
+  name: string;
+  clientId: string;
+  clientName: string;
+  serviceCategory: string;
+  description: string;
+  status: string;
+  progressPercent: number;
+  startDate: string;
+  targetCompletionDate: string;
+  budgetTotal: number;
+  budgetSpent: number;
+  milestones: BackendMilestoneResponse[];
+  deliverables: string[];
+  assignedLead: string;
+  updatedAt: string;
+}
+
+export interface BackendMilestoneResponse {
+  id: string;
+  title: string;
+  dueDate: string;
+  status: string;
+}
+
 export interface Client {
   id: string;
   name: string;
@@ -126,6 +154,44 @@ export interface SupportRequest {
   resolutionSummary?: string;
 }
 
+// Backend response types for Support Requests API
+export interface BackendSupportEstimateResponse {
+  id: string;
+  requestId: string;
+  estimatedHours: string;
+  hourlyRate: string;
+  subtotal: string;
+  discount: string;
+  totalAmount: string;
+  currency: string;
+  deliveryTimelineDays: number;
+  explanation: string;
+  status: string;
+  createdAt: string;
+  acceptedAt?: string;
+  acceptedBy?: string;
+}
+
+export interface BackendSupportRequestResponse {
+  id: string;
+  reference: string;
+  clientId: string;
+  clientName: string;
+  projectId?: string;
+  projectName?: string;
+  title: string;
+  category: string;
+  description: string;
+  businessImpact: string;
+  urgency: string;
+  status: string;
+  adminNotes?: string;
+  resolutionSummary?: string;
+  createdAt: string;
+  updatedAt: string;
+  estimate?: BackendSupportEstimateResponse;
+}
+
 export type LeadPipelineStage = 'DISCOVERED' | 'RESEARCHING' | 'QUALIFIED' | 'NEEDS_REVIEW' | 'READY_FOR_OUTREACH' | 'OUTREACH_APPROVED' | 'CONTACTED' | 'REPLIED' | 'MEETING_SCHEDULED' | 'PROPOSAL_SENT' | 'WON' | 'LOST' | 'DO_NOT_CONTACT';
 
 export interface LeadScoreBreakdown {
@@ -238,6 +304,35 @@ export interface InvoiceLineItem {
   amount: number;
 }
 
+// Backend response types for Invoices API
+export interface BackendInvoiceLineItemResponse {
+  id: string;
+  description: string;
+  quantity: number;
+  unitPrice: string; // BigDecimal from backend
+  amount: string; // BigDecimal from backend
+}
+
+export interface BackendInvoiceResponse {
+  id: string;
+  invoiceNumber: string;
+  clientId: string;
+  clientName: string;
+  clientEmail: string;
+  issueDate: string;
+  dueDate: string;
+  lineItems: BackendInvoiceLineItemResponse[];
+  subtotal: string; // BigDecimal from backend
+  taxPercent: string; // BigDecimal from backend
+  taxAmount: string; // BigDecimal from backend
+  totalAmount: string; // BigDecimal from backend
+  currency: string;
+  status: string;
+  paidAt?: string;
+  notes?: string;
+  updatedAt: string;
+}
+
 export interface Invoice {
   id: string;
   invoiceNumber: string;
@@ -309,6 +404,12 @@ export interface AgencyState {
   // API loading and error states
   isLoadingClients: boolean;
   isLoadingLeads: boolean;
+  isLoadingProjects: boolean;
+  isLoadingRequests: boolean;
+  isLoadingInvoices: boolean;
   clientsError: string | null;
   leadsError: string | null;
+  projectsError: string | null;
+  requestsError: string | null;
+  invoicesError: string | null;
 }

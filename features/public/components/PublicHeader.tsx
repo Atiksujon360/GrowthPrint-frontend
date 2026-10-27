@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { useAppDispatch } from '../../../store/hooks.ts';
+import { useRouter } from 'next/navigation';
 import { setActiveView, switchRole } from '../../../store/index.ts';
-import { ArrowRight, Menu, X, ShieldCheck } from 'lucide-react';
 import { scrollToSection } from '../../../lib/scroll.ts';
+import { ArrowRight, Menu, X, ShieldCheck } from 'lucide-react';
 
 export function PublicHeader({ onOpenQuote }: { onOpenQuote: () => void }) {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const isMockMode = process.env.NEXT_PUBLIC_USE_MOCK_API !== 'false';
 
   const handleSectionClick = (event: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
     event.preventDefault();
@@ -46,10 +49,14 @@ export function PublicHeader({ onOpenQuote }: { onOpenQuote: () => void }) {
           <a href="#faq" onClick={(event) => handleSectionClick(event, 'faq')} className="hover:text-slate-900 transition-colors whitespace-nowrap shrink-0">
             FAQ
           </a>
-          <button 
+          <button
             onClick={() => {
-              dispatch(switchRole('CLIENT'));
-              dispatch(setActiveView('PORTAL'));
+              if (isMockMode) {
+                dispatch(switchRole('CLIENT'));
+                dispatch(setActiveView('PORTAL'));
+              } else {
+                router.push('/portal/login');
+              }
             }}
             className="hover:text-blue-600 transition-colors whitespace-nowrap shrink-0 flex items-center gap-1 font-medium"
           >
@@ -118,11 +125,15 @@ export function PublicHeader({ onOpenQuote }: { onOpenQuote: () => void }) {
           >
             Why GrowthPrint
           </a>
-          <button 
+          <button
             onClick={() => {
               setMobileMenuOpen(false);
-              dispatch(switchRole('CLIENT'));
-              dispatch(setActiveView('PORTAL'));
+              if (isMockMode) {
+                dispatch(switchRole('CLIENT'));
+                dispatch(setActiveView('PORTAL'));
+              } else {
+                router.push('/portal/login');
+              }
             }}
             className="w-full text-left py-2 text-base font-medium text-blue-600"
           >

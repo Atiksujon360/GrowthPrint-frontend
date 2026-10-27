@@ -45,6 +45,6 @@ export interface UiState {
   systemAlert: SystemAlert | null;
   isSystemAlertDismissed: boolean;
   isLiveSyncing: boolean;
-  lastSyncTimestamp: string;
+  lastSyncTimestamp: string | null;
   isShortcutsModalOpen: boolean;
 }
