@@ -1,28 +1,64 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks.ts';
-import { updateLeadStage, addToast } from '../../../store/index.ts';
+import { updateLeadStage, addToast, fetchCrmLeads, updateCrmLeadPipelineStage } from '../../../store/index.ts';
 import { StatusBadge } from '../../../components/ui/Badges.tsx';
 import { DataTable, type ColumnDef } from '../../../components/ui/DataTable.tsx';
 import { CopyButton } from '../../../components/ui/CopyButton.tsx';
-import { 
-  Sparkles, 
-  ExternalLink, 
-  Mail, 
-  Building, 
-  Calendar, 
-  CheckCircle2, 
-  Table as TableIcon, 
-  Columns 
+import {
+  Sparkles,
+  ExternalLink,
+  Mail,
+  Building,
+  Calendar,
+  CheckCircle2,
+  Table as TableIcon,
+  Columns,
+  RefreshCw,
+  AlertCircle
 } from 'lucide-react';
 import type { Lead, LeadPipelineStage } from '../../../types/agency.ts';
 
 export function AdminLeadsView({ onOpenOutreach }: { onOpenOutreach: (leadId: string) => void }) {
   const dispatch = useAppDispatch();
   const leads = useAppSelector(state => state.agency.leads);
+  const isLoadingLeads = useAppSelector(state => state.agency.isLoadingLeads);
+  const leadsError = useAppSelector(state => state.agency.leadsError);
 
   const [selectedLeadId, setSelectedLeadId] = useState<string>(leads[0]?.id || '');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [viewMode, setViewMode] = useState<'SPLIT' | 'FULL_TABLE'>('SPLIT');
+
+  // Fetch leads on mount
+  useEffect(() => {
+    dispatch(fetchCrmLeads());
+  }, [dispatch]);
+
+  const handleRefresh = () => {
+    dispatch(fetchCrmLeads());
+    dispatch(addToast({
+      type: 'info',
+      title: 'Refreshing',
+      message: 'Fetching latest CRM leads...'
+    }));
+  };
+
+  const handleStageChange = async (leadId: string, newStage: LeadPipelineStage) => {
+    // Call the API to persist the change - no optimistic update
+    try {
+      await dispatch(updateCrmLeadPipelineStage({ id: leadId, pipelineStage: newStage })).unwrap();
+      dispatch(addToast({
+        type: 'success',
+        title: 'Stage Updated',
+        message: 'Pipeline stage updated successfully.'
+      }));
+    } catch (error) {
+      dispatch(addToast({
+        type: 'error',
+        title: 'Update Failed',
+        message: 'Failed to update pipeline stage. Please try again.'
+      }));
+    }
+  };
 
   const activeLead = leads.find(l => l.id === selectedLeadId) || leads[0];
 
@@ -134,6 +170,14 @@ export function AdminLeadsView({ onOpenOutreach }: { onOpenOutreach: (leadId: st
             <span className="text-xs font-semibold bg-blue-100 text-blue-800 px-2.5 py-0.5 rounded-full">
               Opportunity Matcher
             </span>
+            <button
+              onClick={handleRefresh}
+              disabled={isLoadingLeads}
+              className="p-1.5 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-50"
+              title="Refresh leads"
+            >
+              <RefreshCw className={`w-4 h-4 text-slate-500 ${isLoadingLeads ? 'animate-spin' : ''}`} />
+            </button>
           </div>
           <p className="text-xs text-slate-500">
             Searchable pipeline with stage tracking, technical qualification notes, and founder outreach links.
@@ -163,8 +207,45 @@ export function AdminLeadsView({ onOpenOutreach }: { onOpenOutreach: (leadId: st
         </div>
       </div>
 
+      {/* Loading State */}
+      {isLoadingLeads && (
+        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-8 flex items-center justify-center">
+          <div className="flex items-center gap-3 text-slate-500">
+            <RefreshCw className="w-5 h-5 animate-spin" />
+            <span className="text-sm">Loading CRM leads...</span>
+          </div>
+        </div>
+      )}
+
+      {/* Error State */}
+      {leadsError && !isLoadingLeads && (
+        <div className="bg-red-50 border border-red-200 rounded-2xl p-6 flex items-start gap-4">
+          <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <h3 className="text-sm font-semibold text-red-900">Failed to load CRM leads</h3>
+            <p className="text-xs text-red-700 mt-1">{leadsError}</p>
+            <button
+              onClick={handleRefresh}
+              className="mt-3 px-3 py-1.5 text-xs font-semibold text-red-900 bg-red-100 hover:bg-red-200 rounded-lg transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!isLoadingLeads && !leadsError && leads.length === 0 && (
+        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-12 text-center">
+          <Sparkles className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+          <h3 className="text-base font-semibold text-slate-900 mb-2">No leads yet</h3>
+          <p className="text-sm text-slate-500">CRM leads will appear here once they are added to the pipeline.</p>
+        </div>
+      )}
+
       {/* Main Content Area */}
-      <div className={viewMode === 'SPLIT' ? 'grid grid-cols-1 lg:grid-cols-12 gap-6' : 'space-y-6'}>
+      {!isLoadingLeads && !leadsError && leads.length > 0 && (
+        <div className={viewMode === 'SPLIT' ? 'grid grid-cols-1 lg:grid-cols-12 gap-6' : 'space-y-6'}>
         {/* Table Container */}
         <div className={viewMode === 'SPLIT' ? 'lg:col-span-7' : 'w-full'}>
           <DataTable
@@ -228,12 +309,7 @@ export function AdminLeadsView({ onOpenOutreach }: { onOpenOutreach: (leadId: st
                   value={activeLead.pipelineStage}
                   onChange={(e) => {
                     const newStage = e.target.value as LeadPipelineStage;
-                    dispatch(updateLeadStage({ leadId: activeLead.id, stage: newStage }));
-                    dispatch(addToast({
-                      type: 'info',
-                      title: 'Stage Updated',
-                      message: `${activeLead.companyName} moved to ${newStage.replace(/_/g, ' ')}.`
-                    }));
+                    handleStageChange(activeLead.id, newStage);
                   }}
                   className="w-full px-3 py-1.5 text-xs font-semibold border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-white"
                 >
@@ -311,6 +387,7 @@ export function AdminLeadsView({ onOpenOutreach }: { onOpenOutreach: (leadId: st
           </div>
         )}
       </div>
+      )}
     </div>
   );
 }

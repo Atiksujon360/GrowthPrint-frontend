@@ -227,13 +227,14 @@ export const apiClient = new ApiClient();
  * When real Spring Boot microservices are running, these endpoints connect directly.
  */
 export const agencyApi = {
-  // Leads & CRM
-  leads: {
-    getAll: () => apiClient.get('/leads'),
-    getById: (id: string) => apiClient.get(`/leads/${id}`),
-    create: (lead: any) => apiClient.post('/leads', lead),
-    updateStage: (id: string, stage: string) => apiClient.patch(`/leads/${id}/stage`, { stage }),
-    delete: (id: string) => apiClient.delete(`/leads/${id}`)
+  // CRM Leads
+  crmLeads: {
+    getAll: () => apiClient.get('/crm-leads'),
+    getById: (id: string) => apiClient.get(`/crm-leads/${id}`),
+    create: (lead: any) => apiClient.post('/crm-leads', lead),
+    convertFromInquiry: (inquiryId: string, lead: any) => apiClient.post(`/crm-leads/inquiry/${inquiryId}/convert`, lead),
+    updatePipelineStage: (id: string, pipelineStage: string) => apiClient.put(`/crm-leads/${id}/pipeline-stage`, { pipelineStage }),
+    delete: (id: string) => apiClient.delete(`/crm-leads/${id}`)
   },
 
   // Clients

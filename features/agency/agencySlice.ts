@@ -1,14 +1,16 @@
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { 
-  type Client, 
-  type Project, 
-  type Task, 
-  type SupportRequest, 
-  type Lead, 
-  type OutreachDraft, 
-  type Proposal, 
-  type Invoice, 
-  type WorkflowDefinition, 
+import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
+import {
+  type Client,
+  type BackendClientResponse,
+  type Project,
+  type Task,
+  type SupportRequest,
+  type Lead,
+  type BackendCrmLeadResponse,
+  type OutreachDraft,
+  type Proposal,
+  type Invoice,
+  type WorkflowDefinition,
   type ActivityEvent,
   type PublicInquiryFormData,
   type SupportCategory,
@@ -28,8 +30,12 @@ import {
   INITIAL_ACTIVITY_EVENTS
 } from './initialData.ts';
 import { calculateLeadScore, calculateEstimateCost, calculateInvoiceTotals } from '../../lib/domain-rules.ts';
+import { agencyApi } from '../../lib/api/client.ts';
 
 import type { AgencyState } from '../../types/agency.ts';
+
+// Check if mock mode is enabled
+const isMockMode = process.env.NEXT_PUBLIC_USE_MOCK_API !== 'false';
 
 const initialAgencyState: AgencyState = {
   clients: INITIAL_CLIENTS,
@@ -41,8 +47,294 @@ const initialAgencyState: AgencyState = {
   proposals: INITIAL_PROPOSALS,
   invoices: INITIAL_INVOICES,
   workflows: INITIAL_WORKFLOWS,
-  activities: INITIAL_ACTIVITY_EVENTS
+  activities: INITIAL_ACTIVITY_EVENTS,
+  isLoadingClients: false,
+  isLoadingLeads: false,
+  clientsError: null,
+  leadsError: null
 };
+
+// Async thunks for Clients API
+export const fetchClients = createAsyncThunk(
+  'agency/fetchClients',
+  async (_, { rejectWithValue }) => {
+    if (isMockMode) {
+      return INITIAL_CLIENTS;
+    }
+
+    try {
+      const response = await agencyApi.clients.getAll();
+      const backendClients = response.data as BackendClientResponse[];
+
+      // Map backend response to frontend Client type
+      const clients: Client[] = backendClients.map(bc => ({
+        id: bc.id,
+        name: bc.name,
+        legalName: bc.legalName,
+        contactEmail: bc.contactEmail,
+        phone: bc.phone,
+        website: bc.website,
+        status: bc.status,
+        retainerTier: bc.retainerTier,
+        monthlyRetainerHours: bc.monthlyRetainerHours,
+        consumedHoursCurrentMonth: bc.consumedHoursCurrentMonth,
+        contractStartDate: bc.contractStartDate,
+        accountManager: bc.accountManager,
+        billingCurrency: bc.billingCurrency,
+        notes: bc.notes
+      }));
+
+      return clients;
+    } catch (error: any) {
+      console.error('Failed to fetch clients:', error.message);
+      return rejectWithValue(error.message || 'Failed to fetch clients');
+    }
+  }
+);
+
+export const updateClient = createAsyncThunk(
+  'agency/updateClient',
+  async ({ id, updates }: { id: string; updates: Partial<Client> }, { rejectWithValue }) => {
+    if (isMockMode) {
+      // In mock mode, skip optimistic update - let the reducer handle it
+      return rejectWithValue('Mock mode: updateClient not implemented');
+    }
+
+    try {
+      const response = await agencyApi.clients.update(id, updates);
+      const backendClient = response.data as BackendClientResponse;
+
+      const client: Client = {
+        id: backendClient.id,
+        name: backendClient.name,
+        legalName: backendClient.legalName,
+        contactEmail: backendClient.contactEmail,
+        phone: backendClient.phone,
+        website: backendClient.website,
+        status: backendClient.status,
+        retainerTier: backendClient.retainerTier,
+        monthlyRetainerHours: backendClient.monthlyRetainerHours,
+        consumedHoursCurrentMonth: backendClient.consumedHoursCurrentMonth,
+        contractStartDate: backendClient.contractStartDate,
+        accountManager: backendClient.accountManager,
+        billingCurrency: backendClient.billingCurrency,
+        notes: backendClient.notes
+      };
+
+      return client;
+    } catch (error: any) {
+      console.error('Failed to update client:', error.message);
+      return rejectWithValue(error.message || 'Failed to update client');
+    }
+  }
+);
+
+// Async thunks for CRM Leads API
+export const fetchCrmLeads = createAsyncThunk(
+  'agency/fetchCrmLeads',
+  async (_, { rejectWithValue }) => {
+    if (isMockMode) {
+      return INITIAL_LEADS;
+    }
+
+    try {
+      const response = await agencyApi.crmLeads.getAll();
+      const backendLeads = response.data as BackendCrmLeadResponse[];
+
+      // Map backend response to frontend Lead type
+      const leads: Lead[] = backendLeads.map(bl => ({
+        id: bl.id,
+        companyName: bl.companyName,
+        website: bl.website,
+        industry: bl.industry,
+        location: bl.location,
+        contactName: bl.contactName,
+        contactEmail: bl.contactEmail,
+        contactTitle: bl.contactTitle,
+        source: bl.source,
+        sourceUrl: bl.sourceUrl,
+        discoveredDate: bl.discoveredDate,
+        targetService: bl.targetService,
+        identifiedProblem: bl.identifiedProblem,
+        researchSummary: bl.researchSummary,
+        qualificationScore: bl.qualificationScore,
+        qualificationBreakdown: {
+          businessFit: bl.businessFitScore || 0,
+          evidenceOfNeed: bl.evidenceOfNeedScore || 0,
+          contactability: bl.contactabilityScore || 0,
+          serviceRelevance: bl.serviceRelevanceScore || 0,
+          totalScore: bl.qualificationScore
+        },
+        pipelineStage: bl.pipelineStage,
+        lastContactDate: bl.lastContactDate,
+        nextAction: bl.nextAction,
+        doNotContact: bl.doNotContact,
+        notes: bl.notes,
+        inquiryId: bl.inquiryId,
+        createdAt: bl.createdAt,
+        updatedAt: bl.updatedAt
+      }));
+
+      return leads;
+    } catch (error: any) {
+      console.error('Failed to fetch CRM leads:', error.message);
+      return rejectWithValue(error.message || 'Failed to fetch CRM leads');
+    }
+  }
+);
+
+export const createCrmLead = createAsyncThunk(
+  'agency/createCrmLead',
+  async (leadData: Partial<Lead>, { rejectWithValue }) => {
+    if (isMockMode) {
+      // In mock mode, create a mock lead
+      const newLead: Lead = {
+        id: `lead-${Date.now()}`,
+        companyName: leadData.companyName || 'New Company',
+        website: leadData.website || 'https://example.com',
+        industry: leadData.industry || 'Technology',
+        location: leadData.location || 'Unknown',
+        contactName: leadData.contactName || 'Contact',
+        contactEmail: leadData.contactEmail || 'contact@example.com',
+        contactTitle: leadData.contactTitle,
+        source: leadData.source || 'INBOUND_INQUIRY',
+        sourceUrl: leadData.sourceUrl,
+        discoveredDate: leadData.discoveredDate || new Date().toISOString().split('T')[0],
+        targetService: leadData.targetService || 'SOFTWARE_DEV',
+        identifiedProblem: leadData.identifiedProblem || 'Problem description',
+        researchSummary: leadData.researchSummary || 'Research summary',
+        qualificationScore: leadData.qualificationScore || 50,
+        qualificationBreakdown: leadData.qualificationBreakdown || {
+          businessFit: 12,
+          evidenceOfNeed: 13,
+          contactability: 12,
+          serviceRelevance: 13,
+          totalScore: 50
+        },
+        pipelineStage: leadData.pipelineStage || 'DISCOVERED',
+        lastContactDate: leadData.lastContactDate,
+        nextAction: leadData.nextAction || 'Follow up',
+        doNotContact: leadData.doNotContact || false,
+        notes: leadData.notes || ''
+      };
+      return newLead;
+    }
+
+    try {
+      const response = await agencyApi.crmLeads.create(leadData);
+      const backendLead = response.data as BackendCrmLeadResponse;
+
+      const lead: Lead = {
+        id: backendLead.id,
+        companyName: backendLead.companyName,
+        website: backendLead.website,
+        industry: backendLead.industry,
+        location: backendLead.location,
+        contactName: backendLead.contactName,
+        contactEmail: backendLead.contactEmail,
+        contactTitle: backendLead.contactTitle,
+        source: backendLead.source,
+        sourceUrl: backendLead.sourceUrl,
+        discoveredDate: backendLead.discoveredDate,
+        targetService: backendLead.targetService,
+        identifiedProblem: backendLead.identifiedProblem,
+        researchSummary: backendLead.researchSummary,
+        qualificationScore: backendLead.qualificationScore,
+        qualificationBreakdown: {
+          businessFit: backendLead.businessFitScore || 0,
+          evidenceOfNeed: backendLead.evidenceOfNeedScore || 0,
+          contactability: backendLead.contactabilityScore || 0,
+          serviceRelevance: backendLead.serviceRelevanceScore || 0,
+          totalScore: backendLead.qualificationScore
+        },
+        pipelineStage: backendLead.pipelineStage,
+        lastContactDate: backendLead.lastContactDate,
+        nextAction: backendLead.nextAction,
+        doNotContact: backendLead.doNotContact,
+        notes: backendLead.notes,
+        inquiryId: backendLead.inquiryId,
+        createdAt: backendLead.createdAt,
+        updatedAt: backendLead.updatedAt
+      };
+
+      return lead;
+    } catch (error: any) {
+      console.error('Failed to create CRM lead:', error.message);
+      return rejectWithValue(error.message || 'Failed to create CRM lead');
+    }
+  }
+);
+
+export const updateCrmLeadPipelineStage = createAsyncThunk(
+  'agency/updateCrmLeadPipelineStage',
+  async ({ id, pipelineStage }: { id: string; pipelineStage: LeadPipelineStage }, { rejectWithValue }) => {
+    if (isMockMode) {
+      // In mock mode, skip optimistic update - let the reducer handle it
+      return rejectWithValue('Mock mode: updateCrmLeadPipelineStage not implemented');
+    }
+
+    try {
+      const response = await agencyApi.crmLeads.updatePipelineStage(id, pipelineStage);
+      const backendLead = response.data as BackendCrmLeadResponse;
+
+      const lead: Lead = {
+        id: backendLead.id,
+        companyName: backendLead.companyName,
+        website: backendLead.website,
+        industry: backendLead.industry,
+        location: backendLead.location,
+        contactName: backendLead.contactName,
+        contactEmail: backendLead.contactEmail,
+        contactTitle: backendLead.contactTitle,
+        source: backendLead.source,
+        sourceUrl: backendLead.sourceUrl,
+        discoveredDate: backendLead.discoveredDate,
+        targetService: backendLead.targetService,
+        identifiedProblem: backendLead.identifiedProblem,
+        researchSummary: backendLead.researchSummary,
+        qualificationScore: backendLead.qualificationScore,
+        qualificationBreakdown: {
+          businessFit: backendLead.businessFitScore || 0,
+          evidenceOfNeed: backendLead.evidenceOfNeedScore || 0,
+          contactability: backendLead.contactabilityScore || 0,
+          serviceRelevance: backendLead.serviceRelevanceScore || 0,
+          totalScore: backendLead.qualificationScore
+        },
+        pipelineStage: backendLead.pipelineStage,
+        lastContactDate: backendLead.lastContactDate,
+        nextAction: backendLead.nextAction,
+        doNotContact: backendLead.doNotContact,
+        notes: backendLead.notes,
+        inquiryId: backendLead.inquiryId,
+        createdAt: backendLead.createdAt,
+        updatedAt: backendLead.updatedAt
+      };
+
+      return lead;
+    } catch (error: any) {
+      console.error('Failed to update CRM lead pipeline stage:', error.message);
+      return rejectWithValue(error.message || 'Failed to update CRM lead pipeline stage');
+    }
+  }
+);
+
+export const deleteCrmLead = createAsyncThunk(
+  'agency/deleteCrmLead',
+  async (id: string, { rejectWithValue }) => {
+    if (isMockMode) {
+      // In mock mode, just return the id (optimistic delete)
+      return id;
+    }
+
+    try {
+      await agencyApi.crmLeads.delete(id);
+      return id;
+    } catch (error: any) {
+      console.error('Failed to delete CRM lead:', error.message);
+      return rejectWithValue(error.message || 'Failed to delete CRM lead');
+    }
+  }
+);
 
 const agencySlice = createSlice({
   name: 'agency',
@@ -432,6 +724,65 @@ const agencySlice = createSlice({
         task.status = task.status === 'COMPLETED' ? 'TODO' : 'COMPLETED';
       }
     }
+  },
+  extraReducers: (builder) => {
+    // Clients
+    builder
+      .addCase(fetchClients.pending, (state) => {
+        state.isLoadingClients = true;
+        state.clientsError = null;
+      })
+      .addCase(fetchClients.fulfilled, (state, action) => {
+        state.isLoadingClients = false;
+        state.clients = action.payload;
+        state.clientsError = null;
+      })
+      .addCase(fetchClients.rejected, (state, action) => {
+        state.isLoadingClients = false;
+        state.clientsError = action.payload as string || 'Failed to fetch clients';
+      })
+      .addCase(updateClient.fulfilled, (state, action) => {
+        const index = state.clients.findIndex(c => c.id === action.payload.id);
+        if (index !== -1) {
+          state.clients[index] = action.payload;
+        }
+      })
+      .addCase(updateClient.rejected, (state, action) => {
+        // Optional: set error state for failed client updates
+        console.error('Failed to update client:', action.payload);
+      });
+
+    // CRM Leads
+    builder
+      .addCase(fetchCrmLeads.pending, (state) => {
+        state.isLoadingLeads = true;
+        state.leadsError = null;
+      })
+      .addCase(fetchCrmLeads.fulfilled, (state, action) => {
+        state.isLoadingLeads = false;
+        state.leads = action.payload;
+        state.leadsError = null;
+      })
+      .addCase(fetchCrmLeads.rejected, (state, action) => {
+        state.isLoadingLeads = false;
+        state.leadsError = action.payload as string || 'Failed to fetch CRM leads';
+      })
+      .addCase(createCrmLead.fulfilled, (state, action) => {
+        state.leads.unshift(action.payload);
+      })
+      .addCase(updateCrmLeadPipelineStage.fulfilled, (state, action) => {
+        const index = state.leads.findIndex(l => l.id === action.payload.id);
+        if (index !== -1) {
+          state.leads[index] = action.payload;
+        }
+      })
+      .addCase(updateCrmLeadPipelineStage.rejected, (state, action) => {
+        // Optional: set error state for failed pipeline stage updates
+        console.error('Failed to update pipeline stage:', action.payload);
+      })
+      .addCase(deleteCrmLead.fulfilled, (state, action) => {
+        state.leads = state.leads.filter(l => l.id !== action.payload);
+      });
   }
 });
 

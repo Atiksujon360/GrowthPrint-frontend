@@ -22,6 +22,23 @@ export interface Client {
   notes?: string;
 }
 
+export interface BackendClientResponse {
+  id: string;
+  name: string;
+  legalName: string;
+  contactEmail: string;
+  phone?: string;
+  website: string;
+  status: 'ACTIVE' | 'INVITED' | 'SUSPENDED';
+  retainerTier?: 'ESSENTIAL_MAINTENANCE' | 'PRO_GROWTH' | 'NONE';
+  monthlyRetainerHours?: number;
+  consumedHoursCurrentMonth?: number;
+  contractStartDate: string;
+  accountManager: string;
+  billingCurrency: 'USD' | 'EUR' | 'GBP';
+  notes?: string;
+}
+
 export type ProjectStatus = 'DISCOVERY' | 'PLANNED' | 'IN_PROGRESS' | 'WAITING_FOR_CLIENT' | 'IN_REVIEW' | 'COMPLETED' | 'ON_HOLD';
 
 export interface ProjectMilestone {
@@ -141,6 +158,39 @@ export interface Lead {
   nextAction: string;
   doNotContact: boolean;
   notes: string;
+  inquiryId?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface BackendCrmLeadResponse {
+  id: string;
+  companyName: string;
+  website: string;
+  industry: string;
+  location: string;
+  contactName: string;
+  contactEmail: string;
+  contactTitle?: string;
+  source: 'INBOUND_INQUIRY' | 'PUBLIC_DIRECTORY' | 'TECH_AUDIT_DISCOVERY' | 'REFERRAL';
+  sourceUrl?: string;
+  discoveredDate: string;
+  targetService: ServiceCategory;
+  identifiedProblem: string;
+  researchSummary: string;
+  qualificationScore: number;
+  businessFitScore?: number;
+  evidenceOfNeedScore?: number;
+  contactabilityScore?: number;
+  serviceRelevanceScore?: number;
+  pipelineStage: LeadPipelineStage;
+  lastContactDate?: string;
+  nextAction: string;
+  doNotContact: boolean;
+  notes: string;
+  inquiryId?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface OutreachDraft {
@@ -256,4 +306,9 @@ export interface AgencyState {
   workflows: WorkflowDefinition[];
   activities: ActivityEvent[];
   lastInquiryReference?: string;
+  // API loading and error states
+  isLoadingClients: boolean;
+  isLoadingLeads: boolean;
+  clientsError: string | null;
+  leadsError: string | null;
 }

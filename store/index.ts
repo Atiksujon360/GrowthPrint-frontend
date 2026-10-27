@@ -13,7 +13,13 @@ import agencyReducer, {
   triggerWorkflowRun,
   updateOutreachDraft,
   updateLeadStage,
-  updateRequestStatus
+  updateRequestStatus,
+  fetchClients,
+  updateClient,
+  fetchCrmLeads,
+  createCrmLead,
+  updateCrmLeadPipelineStage,
+  deleteCrmLead
 } from '../features/agency/agencySlice.ts';
 import uiReducer, {
   addNotification,
@@ -48,6 +54,12 @@ export {
   triggerWorkflowRun,
   payInvoice,
   toggleTaskStatus,
+  fetchClients,
+  updateClient,
+  fetchCrmLeads,
+  createCrmLead,
+  updateCrmLeadPipelineStage,
+  deleteCrmLead,
   addToast,
   removeToast,
   clearAllToasts,
