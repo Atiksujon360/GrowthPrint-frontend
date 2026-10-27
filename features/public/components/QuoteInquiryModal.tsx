@@ -99,14 +99,19 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="relative bg-white rounded-2xl max-w-2xl w-full border border-slate-200 shadow-2xl overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-150">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="quote-modal-title"
+        className="relative bg-white rounded-2xl max-w-2xl w-full border border-slate-200 shadow-2xl overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-150"
+      >
         {/* Modal Header */}
         <div className="px-6 py-5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
           <div>
             <div className="text-sm font-semibold uppercase tracking-wider text-blue-600">
               A quick conversation
             </div>
-            <h3 className="text-lg font-bold text-slate-900">
+            <h3 id="quote-modal-title" className="text-lg font-bold text-slate-900">
               {referenceNumber ? 'Thanks — we got it' : 'Tell us what you need'}
             </h3>
           </div>
