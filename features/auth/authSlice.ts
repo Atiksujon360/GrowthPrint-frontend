@@ -73,7 +73,7 @@ const login = createAsyncThunk(
       };
 
       // Store JWT token in sessionStorage
-      if (typeof window !== 'undefined') {
+      if (typeof window !== 'undefined' && data.accessToken) {
         window.sessionStorage.setItem('gp_auth_token', data.accessToken);
       }
 
