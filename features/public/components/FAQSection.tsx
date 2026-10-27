@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 
 const questions = [
   {
@@ -24,10 +25,25 @@ const questions = [
 ];
 
 export function FAQSection() {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  const toggleQuestion = (index: number) => {
+    setOpenIndex(openIndex === index ? null : index);
+  };
+
   return (
-    <section id="faq" className="py-20 bg-slate-50 border-t border-slate-200">
+    <section id="faq" className="py-20 bg-slate-50 border-t border-slate-200 relative overflow-hidden">
+      {/* Subtle gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-white to-blue-50/30 -z-10" />
+
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="max-w-2xl">
+        <motion.div
+          className="max-w-2xl"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-100px' }}
+          transition={{ duration: 0.6 }}
+        >
           <div className="text-sm font-semibold uppercase tracking-wider text-blue-600">
             Good to know
           </div>
@@ -37,21 +53,56 @@ export function FAQSection() {
           <p className="mt-4 text-lg text-slate-600 leading-relaxed">
             Here is what clients usually want to know before starting a conversation.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="mt-10 divide-y divide-slate-200 border-y border-slate-200">
-          {questions.map((item) => (
-            <details key={item.question} className="group py-5">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-6 text-lg font-semibold text-slate-900 marker:hidden">
+        <motion.div
+          className="mt-10 divide-y divide-slate-200 border-y border-slate-200"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          {questions.map((item, index) => (
+            <motion.div
+              key={item.question}
+              className="py-5"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: index * 0.1 }}
+            >
+              <motion.button
+                onClick={() => toggleQuestion(index)}
+                className="w-full flex cursor-pointer items-center justify-between gap-6 text-lg font-semibold text-slate-900 text-left"
+                whileHover={{ x: 5 }}
+                transition={{ type: 'spring', stiffness: 300 }}
+              >
                 <span>{item.question}</span>
-                <span aria-hidden="true" className="text-2xl font-normal text-blue-600 transition-transform group-open:rotate-45">+</span>
-              </summary>
-              <p className="mt-3 max-w-3xl pr-10 text-base leading-relaxed text-slate-600">
-                {item.answer}
-              </p>
-            </details>
+                <motion.span
+                  className="text-2xl font-normal text-blue-600"
+                  animate={{ rotate: openIndex === index ? 45 : 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  +
+                </motion.span>
+              </motion.button>
+
+              <AnimatePresence>
+                {openIndex === index && (
+                  <motion.p
+                    className="mt-3 max-w-3xl pr-10 text-base leading-relaxed text-slate-600"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3, ease: 'easeInOut' }}
+                  >
+                    {item.answer}
+                  </motion.p>
+                )}
+              </AnimatePresence>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
