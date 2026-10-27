@@ -35,6 +35,7 @@ export function PortalDashboard({ onNavigateTab, onOpenNewRequest }: PortalDashb
   const { currentUser } = useAppSelector(state => state.auth);
   const clientId = currentUser.clientId || 'client-meridian';
   const [showCelebration, setShowCelebration] = useState(false);
+  const [isApproving, setIsApproving] = useState<string | null>(null);
 
   const projects = useAppSelector(state => state.agency.projects.filter(p => p.clientId === clientId));
   const requests = useAppSelector(state => state.agency.requests.filter(r => r.clientId === clientId));
@@ -46,14 +47,25 @@ export function PortalDashboard({ onNavigateTab, onOpenNewRequest }: PortalDashb
   const tasksRequiringAction = tasks.filter(t => t.requiresClientAction && t.status !== 'COMPLETED');
   const unpaidInvoices = invoices.filter(i => i.status === 'ISSUED');
 
-  const handleApprove = (req: any) => {
-    dispatch(clientApproveEstimate({ requestId: req.id, clientUser: currentUser.name }));
-    dispatch(addToast({
-      type: 'success',
-      title: 'Work Authorized',
-      message: `Estimate of $${req.estimate?.totalAmount} authorized. Engineering sprint scheduled.`
-    }));
-    setShowCelebration(true);
+  const handleApprove = async (req: any) => {
+    setIsApproving(req.id);
+    try {
+      await dispatch(clientApproveEstimate({ requestId: req.id, approvedBy: currentUser.name })).unwrap();
+      dispatch(addToast({
+        type: 'success',
+        title: 'Work Authorized',
+        message: `Estimate of $${req.estimate?.totalAmount} authorized. Engineering sprint scheduled.`
+      }));
+      setShowCelebration(true);
+    } catch (error: any) {
+      dispatch(addToast({
+        type: 'error',
+        title: 'Approval Failed',
+        message: error || 'Failed to authorize estimate. Please try again.'
+      }));
+    } finally {
+      setIsApproving(null);
+    }
   };
 
   return (
@@ -167,12 +179,13 @@ export function PortalDashboard({ onNavigateTab, onOpenNewRequest }: PortalDashb
                 <div className="flex items-center gap-2 shrink-0">
                   <motion.button
                     onClick={() => handleApprove(req)}
-                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs flex items-center gap-1.5 transition-colors"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    disabled={isApproving === req.id}
+                    className={`px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs flex items-center gap-1.5 transition-colors ${isApproving === req.id ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    whileHover={isApproving !== req.id ? { scale: 1.05 } : {}}
+                    whileTap={isApproving !== req.id ? { scale: 0.95 } : {}}
                   >
                     <CheckCircle2 className="w-4 h-4" />
-                    <span>Authorize Work ($ {req.estimate?.totalAmount})</span>
+                    <span>{isApproving === req.id ? 'Authorizing...' : `Authorize Work ($${req.estimate?.totalAmount})`}</span>
                   </motion.button>
                 </div>
               </motion.div>

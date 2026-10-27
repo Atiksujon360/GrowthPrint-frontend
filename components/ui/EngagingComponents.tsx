@@ -360,7 +360,7 @@ export function AchievementBadge({
 
   return (
     <motion.div
-      className={`relative ${unlocked ? '' : 'opacity-50 grayscale'} bg-gradient-to-br ${colorClasses[color]} p-4 rounded-2xl text-white shadow-lg`}
+      className={`relative ${unlocked ? '' : 'opacity-50 grayscale'} bg-linear-to-br ${colorClasses[color]} p-4 rounded-2xl text-white shadow-lg`}
       whileHover={{ scale: 1.05, rotate: 2 }}
       transition={{ type: 'spring', stiffness: 300 }}
     >

@@ -15,7 +15,7 @@ export const DEMO_USERS: Record<UserRole, User> = {
   CLIENT: {
     id: "user-client-meridian",
     name: "Sarah Chen",
-    email: "sarah.chen@meridianretail.com",
+    email: "clientb@growthprint.dev",
     role: "CLIENT",
     clientId: "client-meridian",
     clientName: "Meridian Retail Group",
@@ -32,35 +32,46 @@ export const DEMO_USERS: Record<UserRole, User> = {
 };
 
 // Check if mock mode is enabled
-const isMockMode = process.env.NEXT_PUBLIC_USE_MOCK_API !== 'false';
+const isMockMode = process.env.NEXT_PUBLIC_USE_MOCK_API !== "false";
 
 // Async thunks for real authentication
 const login = createAsyncThunk(
-  'auth/login',
-  async (credentials: { email: string; password: string }, { rejectWithValue }) => {
+  "auth/login",
+  async (
+    credentials: { email: string; password: string },
+    { rejectWithValue },
+  ) => {
     if (isMockMode) {
       // In mock mode, use demo users
       const normalizedEmail = credentials.email.toLowerCase().trim();
-      if (normalizedEmail.includes('admin') || normalizedEmail.includes('alex')) {
+      if (
+        normalizedEmail.includes("admin") ||
+        normalizedEmail.includes("alex")
+      ) {
         return {
           user: DEMO_USERS.ADMIN,
-          token: 'mock-jwt-token-admin',
-          expiresAt: new Date(Date.now() + 3600000).toISOString()
+          token: "mock-jwt-token-admin",
+          expiresAt: new Date(Date.now() + 3600000).toISOString(),
         };
-      } else if (normalizedEmail.includes('client') || normalizedEmail.includes('sarah')) {
+      } else if (
+        normalizedEmail.includes("client") ||
+        normalizedEmail.includes("sarah")
+      ) {
         return {
           user: DEMO_USERS.CLIENT,
-          token: 'mock-jwt-token-client',
-          expiresAt: new Date(Date.now() + 3600000).toISOString()
+          token: "mock-jwt-token-client",
+          expiresAt: new Date(Date.now() + 3600000).toISOString(),
         };
       }
-      return rejectWithValue('Invalid credentials in mock mode. Use admin@growthprint.agency or sarah.chen@meridianretail.com');
+      return rejectWithValue(
+        "Invalid credentials in mock mode. Use admin@growthprint.agency or clientb@growthprint.dev",
+      );
     }
 
     try {
-      const response = await apiClient.post('/auth/login', {
+      const response = await apiClient.post("/auth/login", {
         email: credentials.email,
-        password: credentials.password
+        password: credentials.password,
       });
 
       const data = response.data as {
@@ -75,33 +86,36 @@ const login = createAsyncThunk(
       };
 
       // Store JWT token in sessionStorage
-      if (typeof window !== 'undefined' && data.accessToken) {
-        window.sessionStorage.setItem('gp_auth_token', data.accessToken);
+      if (typeof window !== "undefined" && data.accessToken) {
+        window.sessionStorage.setItem("gp_auth_token", data.accessToken);
       }
 
       // Map backend role to frontend role
-      const frontendRole: UserRole = data.user.role === 'ADMIN' ? 'ADMIN' : 'CLIENT';
+      const frontendRole: UserRole =
+        data.user.role === "ADMIN" ? "ADMIN" : "CLIENT";
 
       const user: User = {
         id: data.user.id,
-        name: data.user.email.split('@')[0], // Use email prefix as name for now
+        name: data.user.email.split("@")[0], // Use email prefix as name for now
         email: data.user.email,
         role: frontendRole,
-        title: frontendRole === 'ADMIN' ? 'Administrator' : 'Client User',
-        avatarUrl: `https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80`
+        title: frontendRole === "ADMIN" ? "Administrator" : "Client User",
+        avatarUrl: `https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80`,
       };
 
       return {
         user,
         token: data.accessToken,
-        expiresAt: data.expiresAt
+        expiresAt: data.expiresAt,
       };
     } catch (error: any) {
       // Log error message only, not the full error object to avoid exposing tokens
-      console.error('Login failed:', error.message);
-      return rejectWithValue(error.message || 'Login failed. Please check your credentials.');
+      console.error("Login failed:", error.message);
+      return rejectWithValue(
+        error.message || "Login failed. Please check your credentials.",
+      );
     }
-  }
+  },
 );
 
 const logout = createAsyncThunk('auth/logout', async (_, { rejectWithValue }) => {

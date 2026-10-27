@@ -483,6 +483,330 @@ export const createProject = createAsyncThunk(
   }
 );
 
+export const createSupportRequestThunk = createAsyncThunk(
+  'agency/createSupportRequest',
+  async (requestData: {
+    clientId: string;
+    clientName: string;
+    projectId?: string;
+    projectName?: string;
+    title: string;
+    category: SupportCategory;
+    description: string;
+    businessImpact: 'LOW' | 'MEDIUM' | 'CRITICAL_BLOCKER';
+    urgency: 'NORMAL' | 'URGENT';
+  }, { rejectWithValue }) => {
+    if (isMockMode) {
+      // In mock mode, return mock data
+      const p = requestData;
+      const ref = `GP-REQ-2026-${Math.floor(100 + Math.random() * 900)}`;
+      const newReq: SupportRequest = {
+        id: `req-${Date.now()}`,
+        reference: ref,
+        clientId: p.clientId,
+        clientName: p.clientName,
+        projectId: p.projectId,
+        projectName: p.projectName,
+        title: p.title,
+        category: p.category,
+        description: p.description,
+        businessImpact: p.businessImpact,
+        urgency: p.urgency,
+        status: 'NEW',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      return newReq;
+    }
+
+    try {
+      const response = await agencyApi.support.create({
+        clientId: requestData.clientId,
+        projectId: requestData.projectId,
+        title: requestData.title,
+        category: requestData.category,
+        description: requestData.description,
+        businessImpact: requestData.businessImpact,
+        urgency: requestData.urgency
+      });
+      const backendRequest = response.data as BackendSupportRequestResponse;
+
+      const request: SupportRequest = {
+        id: backendRequest.id,
+        reference: backendRequest.reference,
+        clientId: backendRequest.clientId,
+        clientName: backendRequest.clientName,
+        projectId: backendRequest.projectId,
+        projectName: backendRequest.projectName,
+        title: backendRequest.title,
+        category: backendRequest.category as SupportCategory,
+        description: backendRequest.description,
+        businessImpact: backendRequest.businessImpact as 'LOW' | 'MEDIUM' | 'CRITICAL_BLOCKER',
+        urgency: backendRequest.urgency as 'NORMAL' | 'URGENT',
+        status: backendRequest.status as SupportRequestStatus,
+        createdAt: backendRequest.createdAt,
+        updatedAt: backendRequest.updatedAt,
+        adminNotes: backendRequest.adminNotes,
+        resolutionSummary: backendRequest.resolutionSummary,
+        estimate: backendRequest.estimate ? {
+          id: backendRequest.estimate.id,
+          requestId: backendRequest.estimate.requestId,
+          estimatedHours: parseFloat(backendRequest.estimate.estimatedHours),
+          hourlyRate: parseFloat(backendRequest.estimate.hourlyRate),
+          subtotal: parseFloat(backendRequest.estimate.subtotal),
+          discount: parseFloat(backendRequest.estimate.discount),
+          totalAmount: parseFloat(backendRequest.estimate.totalAmount),
+          currency: backendRequest.estimate.currency,
+          deliveryTimelineDays: backendRequest.estimate.deliveryTimelineDays,
+          explanation: backendRequest.estimate.explanation,
+          createdAt: backendRequest.estimate.createdAt,
+          status: backendRequest.estimate.status as 'PENDING_APPROVAL' | 'ACCEPTED' | 'DECLINED',
+          acceptedAt: backendRequest.estimate.acceptedAt,
+          acceptedBy: backendRequest.estimate.acceptedBy
+        } : undefined
+      };
+
+      return request;
+    } catch (error: any) {
+      console.error('Failed to create support request:', error.message);
+      return rejectWithValue(error.message || 'Failed to create support request');
+    }
+  }
+);
+
+export const submitPublicInquiryThunk = createAsyncThunk(
+  'agency/submitPublicInquiry',
+  async (inquiryData: {
+    name: string;
+    businessEmail: string;
+    company: string;
+    website?: string;
+    serviceCategory: ServiceCategory;
+    projectType: string;
+    budgetRange: string;
+    preferredTimeline: string;
+    projectDescription: string;
+    preferredContactMethod: 'EMAIL' | 'PHONE' | 'VIDEO_CALL';
+    consent: boolean;
+  }, { rejectWithValue }) => {
+    if (isMockMode) {
+      // In mock mode, use the local action logic
+      return rejectWithValue('Mock mode: use local submitPublicInquiry action');
+    }
+
+    try {
+      const response = await agencyApi.publicInquiries.submit(inquiryData);
+      const backendResponse = response.data as any;
+
+      // Map backend response to Lead type
+      const lead: Lead = {
+        id: backendResponse.id,
+        companyName: inquiryData.company,
+        industry: 'Unknown', // Not provided in public inquiry
+        location: 'Unknown', // Not provided in public inquiry
+        contactName: inquiryData.name,
+        contactEmail: inquiryData.businessEmail,
+        contactTitle: undefined,
+        source: 'INBOUND_INQUIRY', // Public inquiries come from web submission
+        sourceUrl: undefined,
+        discoveredDate: backendResponse.receivedAt || new Date().toISOString(),
+        targetService: inquiryData.serviceCategory,
+        identifiedProblem: inquiryData.projectDescription.substring(0, 2000),
+        researchSummary: inquiryData.projectDescription,
+        qualificationScore: 70, // Default score for founder-sourced
+        qualificationBreakdown: {
+          businessFit: 18,
+          evidenceOfNeed: 17,
+          contactability: 18,
+          serviceRelevance: 17,
+          totalScore: 70
+        },
+        pipelineStage: 'DISCOVERED',
+        nextAction: 'Contact for discovery call',
+        doNotContact: false,
+        notes: `Budget: ${inquiryData.budgetRange}, Timeline: ${inquiryData.preferredTimeline}`,
+        website: inquiryData.website || '',
+        createdAt: backendResponse.receivedAt || new Date().toISOString(),
+        updatedAt: backendResponse.receivedAt || new Date().toISOString()
+      };
+
+      return lead;
+    } catch (error: any) {
+      console.error('Failed to submit public inquiry:', error.message);
+      return rejectWithValue(error.message || 'Failed to submit public inquiry');
+    }
+  }
+);
+
+export const createMySupportRequestThunk = createAsyncThunk(
+  'agency/createMySupportRequest',
+  async (requestData: {
+    projectId?: string;
+    title: string;
+    category: SupportCategory;
+    description: string;
+    businessImpact: 'LOW' | 'MEDIUM' | 'CRITICAL_BLOCKER';
+    urgency: 'NORMAL' | 'URGENT';
+  }, { rejectWithValue }) => {
+    if (isMockMode) {
+      // In mock mode, return mock data
+      const p = requestData;
+      const ref = `GP-REQ-2026-${Math.floor(100 + Math.random() * 900)}`;
+      const newReq: SupportRequest = {
+        id: `req-${Date.now()}`,
+        reference: ref,
+        clientId: 'client-meridian',
+        clientName: 'Meridian Retail Group',
+        projectId: p.projectId,
+        projectName: p.projectId ? 'Mock Project' : null,
+        title: p.title,
+        category: p.category,
+        description: p.description,
+        businessImpact: p.businessImpact,
+        urgency: p.urgency,
+        status: 'NEW',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        adminNotes: null,
+        resolutionSummary: null,
+        estimate: null
+      };
+      return newReq;
+    }
+
+    try {
+      const response = await agencyApi.support.createMyRequest({
+        projectId: requestData.projectId,
+        title: requestData.title,
+        category: requestData.category,
+        description: requestData.description,
+        businessImpact: requestData.businessImpact,
+        urgency: requestData.urgency
+      });
+      const backendRequest = response.data as BackendSupportRequestResponse;
+
+      const request: SupportRequest = {
+        id: backendRequest.id,
+        reference: backendRequest.reference,
+        clientId: backendRequest.clientId,
+        clientName: backendRequest.clientName,
+        projectId: backendRequest.projectId,
+        projectName: backendRequest.projectName,
+        title: backendRequest.title,
+        category: backendRequest.category as SupportCategory,
+        description: backendRequest.description,
+        businessImpact: backendRequest.businessImpact as 'LOW' | 'MEDIUM' | 'CRITICAL_BLOCKER',
+        urgency: backendRequest.urgency as 'NORMAL' | 'URGENT',
+        status: backendRequest.status as SupportRequestStatus,
+        createdAt: backendRequest.createdAt,
+        updatedAt: backendRequest.updatedAt,
+        adminNotes: backendRequest.adminNotes,
+        resolutionSummary: backendRequest.resolutionSummary,
+        estimate: backendRequest.estimate ? {
+          id: backendRequest.estimate.id,
+          requestId: backendRequest.estimate.requestId,
+          estimatedHours: parseFloat(backendRequest.estimate.estimatedHours),
+          hourlyRate: parseFloat(backendRequest.estimate.hourlyRate),
+          subtotal: parseFloat(backendRequest.estimate.subtotal),
+          discount: parseFloat(backendRequest.estimate.discount),
+          totalAmount: parseFloat(backendRequest.estimate.totalAmount),
+          currency: backendRequest.estimate.currency,
+          deliveryTimelineDays: backendRequest.estimate.deliveryTimelineDays,
+          explanation: backendRequest.estimate.explanation,
+          createdAt: backendRequest.estimate.createdAt,
+          status: backendRequest.estimate.status as 'PENDING_APPROVAL' | 'ACCEPTED' | 'DECLINED',
+          acceptedAt: backendRequest.estimate.acceptedAt,
+          acceptedBy: backendRequest.estimate.acceptedBy
+        } : undefined
+      };
+
+      return request;
+    } catch (error: any) {
+      console.error('Failed to create support request:', error.message);
+      return rejectWithValue(error.message || 'Failed to create support request');
+    }
+  }
+);
+
+// Proposal thunks
+export const fetchMyProposals = createAsyncThunk(
+  'agency/fetchMyProposals',
+  async (_, { rejectWithValue }) => {
+    if (isMockMode) {
+      return INITIAL_PROPOSALS;
+    }
+
+    try {
+      const response = await agencyApi.proposals.getMyProposals();
+      const backendProposals = response.data as any[];
+
+      return backendProposals.map(p => ({
+        id: p.id,
+        proposalNumber: p.proposalNumber,
+        clientId: p.clientId,
+        clientName: p.clientName,
+        title: p.title,
+        serviceCategory: p.serviceCategory as ServiceCategory,
+        scopeSummary: p.scopeSummary,
+        deliverables: p.deliverables || [],
+        exclusions: p.exclusions || [],
+        totalPrice: parseFloat(p.totalPrice),
+        currency: p.currency,
+        paymentMilestones: p.paymentMilestones || [],
+        timelineDuration: p.timelineDuration,
+        validUntil: p.validUntil,
+        status: p.status as 'DRAFT' | 'SENT_FOR_REVIEW' | 'ACCEPTED' | 'DECLINED' | 'EXPIRED',
+        acceptedAt: p.acceptedAt,
+        acceptedBy: p.acceptedBy,
+        declinedAt: p.declinedAt,
+        declinedBy: p.declinedBy
+      }));
+    } catch (error: any) {
+      console.error('Failed to fetch proposals:', error.message);
+      return rejectWithValue(error.message || 'Failed to fetch proposals');
+    }
+  }
+);
+
+export const recordProposalDecision = createAsyncThunk(
+  'agency/recordProposalDecision',
+  async ({ id, decision, notes }: { id: string; decision: 'ACCEPT' | 'DECLINE'; notes?: string }, { rejectWithValue }) => {
+    if (isMockMode) {
+      return rejectWithValue('Mock mode: proposal decisions not implemented');
+    }
+
+    try {
+      const response = await agencyApi.proposals.recordDecision(id, { decision, notes });
+      const backendProposal = response.data as any;
+
+      return {
+        id: backendProposal.id,
+        proposalNumber: backendProposal.proposalNumber,
+        clientId: backendProposal.clientId,
+        clientName: backendProposal.clientName,
+        title: backendProposal.title,
+        serviceCategory: backendProposal.serviceCategory as ServiceCategory,
+        scopeSummary: backendProposal.scopeSummary,
+        deliverables: backendProposal.deliverables || [],
+        exclusions: backendProposal.exclusions || [],
+        totalPrice: parseFloat(backendProposal.totalPrice),
+        currency: backendProposal.currency,
+        paymentMilestones: backendProposal.paymentMilestones || [],
+        timelineDuration: backendProposal.timelineDuration,
+        validUntil: backendProposal.validUntil,
+        status: backendProposal.status as 'DRAFT' | 'SENT_FOR_REVIEW' | 'ACCEPTED' | 'DECLINED' | 'EXPIRED',
+        acceptedAt: backendProposal.acceptedAt,
+        acceptedBy: backendProposal.acceptedBy,
+        declinedAt: backendProposal.declinedAt,
+        declinedBy: backendProposal.declinedBy
+      };
+    } catch (error: any) {
+      console.error('Failed to record proposal decision:', error.message);
+      return rejectWithValue(error.message || 'Failed to record proposal decision');
+    }
+  }
+);
+
 export const updateProjectStatus = createAsyncThunk(
   'agency/updateProjectStatus',
   async ({ id, status }: { id: string; status: ProjectStatus }, { rejectWithValue }) => {
@@ -811,6 +1135,61 @@ export const approveEstimateThunk = createAsyncThunk(
   }
 );
 
+export const clientApproveEstimateThunk = createAsyncThunk(
+  'agency/clientApproveEstimate',
+  async ({ requestId, approvedBy }: { requestId: string; approvedBy: string }, { rejectWithValue }) => {
+    if (isMockMode) {
+      // In mock mode, return mock data
+      return rejectWithValue('Mock mode: clientApproveEstimate not implemented');
+    }
+
+    try {
+      const response = await agencyApi.support.approveMyEstimate(requestId, approvedBy);
+      const backendRequest = response.data as BackendSupportRequestResponse;
+
+      const request: SupportRequest = {
+        id: backendRequest.id,
+        reference: backendRequest.reference,
+        clientId: backendRequest.clientId,
+        clientName: backendRequest.clientName,
+        projectId: backendRequest.projectId,
+        projectName: backendRequest.projectName,
+        title: backendRequest.title,
+        category: backendRequest.category as SupportCategory,
+        description: backendRequest.description,
+        businessImpact: backendRequest.businessImpact as 'LOW' | 'MEDIUM' | 'CRITICAL_BLOCKER',
+        urgency: backendRequest.urgency as 'NORMAL' | 'URGENT',
+        status: backendRequest.status as SupportRequestStatus,
+        createdAt: backendRequest.createdAt,
+        updatedAt: backendRequest.updatedAt,
+        adminNotes: backendRequest.adminNotes,
+        resolutionSummary: backendRequest.resolutionSummary,
+        estimate: backendRequest.estimate ? {
+          id: backendRequest.estimate.id,
+          requestId: backendRequest.estimate.requestId,
+          estimatedHours: parseFloat(backendRequest.estimate.estimatedHours),
+          hourlyRate: parseFloat(backendRequest.estimate.hourlyRate),
+          subtotal: parseFloat(backendRequest.estimate.subtotal),
+          discount: parseFloat(backendRequest.estimate.discount),
+          totalAmount: parseFloat(backendRequest.estimate.totalAmount),
+          currency: backendRequest.estimate.currency,
+          deliveryTimelineDays: backendRequest.estimate.deliveryTimelineDays,
+          explanation: backendRequest.estimate.explanation,
+          createdAt: backendRequest.estimate.createdAt,
+          status: backendRequest.estimate.status as 'PENDING_APPROVAL' | 'ACCEPTED' | 'DECLINED',
+          acceptedAt: backendRequest.estimate.acceptedAt,
+          acceptedBy: backendRequest.estimate.acceptedBy
+        } : undefined
+      };
+
+      return request;
+    } catch (error: any) {
+      console.error('Failed to approve estimate:', error.message);
+      return rejectWithValue(error.message || 'Failed to approve estimate');
+    }
+  }
+);
+
 export const updateRequestStatusThunk = createAsyncThunk(
   'agency/updateRequestStatus',
   async ({ requestId, status }: { requestId: string; status: SupportRequestStatus }, { rejectWithValue }) => {
@@ -1003,12 +1382,85 @@ export const markInvoicePaidThunk = createAsyncThunk(
   }
 );
 
+// Async thunks for Outreach Studio
+export const fetchOutreachDrafts = createAsyncThunk(
+  'agency/fetchOutreachDrafts',
+  async (_, { rejectWithValue }) => {
+    if (isMockMode) {
+      return INITIAL_OUTREACH_DRAFTS;
+    }
+
+    try {
+      const response = await agencyApi.outreach.getDrafts();
+      const backendDrafts = response.data as any[];
+
+      // Map backend response to frontend OutreachDraft type
+      const drafts: OutreachDraft[] = backendDrafts.map(bd => ({
+        id: bd.id,
+        leadId: bd.leadId,
+        companyName: bd.companyName,
+        recipientName: bd.recipientName,
+        recipientEmail: bd.recipientEmail,
+        subject: bd.subject,
+        messageBody: bd.messageBody,
+        personalizationEvidence: bd.personalizationEvidence,
+        relevantService: bd.relevantService as ServiceCategory,
+        riskFlags: bd.riskFlags || [],
+        status: bd.status as 'DRAFT' | 'AWAITING_HUMAN_APPROVAL' | 'APPROVED' | 'SENT' | 'REJECTED',
+        approvedByFounder: bd.approvedByFounder,
+        approvedAt: bd.approvedAt,
+        sentAt: bd.sentAt,
+        updatedAt: bd.updatedAt
+      }));
+
+      return drafts;
+    } catch (error: any) {
+      console.error('Failed to fetch outreach drafts:', error.message);
+      return rejectWithValue(error.message || 'Failed to fetch outreach drafts');
+    }
+  }
+);
+
+export const approveOutreachDraftThunk = createAsyncThunk(
+  'agency/approveOutreachDraft',
+  async (draftId: string, { rejectWithValue }) => {
+    if (isMockMode) {
+      return draftId;
+    }
+
+    try {
+      const response = await agencyApi.outreach.approveDraft(draftId);
+      return response.data;
+    } catch (error: any) {
+      console.error('Failed to approve outreach draft:', error.message);
+      return rejectWithValue(error.message || 'Failed to approve outreach draft');
+    }
+  }
+);
+
+export const sendOutreachDraftThunk = createAsyncThunk(
+  'agency/sendOutreachDraft',
+  async (draftId: string, { rejectWithValue }) => {
+    if (isMockMode) {
+      return draftId;
+    }
+
+    try {
+      const response = await agencyApi.outreach.sendDraft(draftId);
+      return response.data;
+    } catch (error: any) {
+      console.error('Failed to send outreach draft:', error.message);
+      return rejectWithValue(error.message || 'Failed to send outreach draft');
+    }
+  }
+);
+
 const agencySlice = createSlice({
   name: 'agency',
   initialState: initialAgencyState,
   reducers: {
-    // A. Public Inquiry Submission
-    submitPublicInquiry: (state, action: PayloadAction<PublicInquiryFormData>) => {
+    // A. Public Inquiry Submission (local-only for mock mode)
+    submitPublicInquiryLocal: (state, action: PayloadAction<PublicInquiryFormData>) => {
       const form = action.payload;
       const refNumber = `GP-INQ-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
       state.lastInquiryReference = refNumber;
@@ -1057,8 +1509,8 @@ const agencySlice = createSlice({
       });
     },
 
-    // B. Client Support Ticket Creation
-    createSupportRequest: (state, action: PayloadAction<{
+    // B. Client Support Ticket Creation (local/sync - for mock mode)
+    createSupportRequestLocal: (state, action: PayloadAction<{
       clientId: string;
       clientName: string;
       projectId?: string;
@@ -1521,6 +1973,24 @@ const agencySlice = createSlice({
         state.isLoadingRequests = false;
         state.requestsError = action.payload as string || 'Failed to fetch my support requests';
       })
+      .addCase(createSupportRequestThunk.fulfilled, (state, action) => {
+        state.requests.unshift(action.payload);
+      })
+      .addCase(createSupportRequestThunk.rejected, (state, action) => {
+        console.error('Failed to create support request:', action.payload);
+      })
+      .addCase(submitPublicInquiryThunk.fulfilled, (state, action) => {
+        state.leads.unshift(action.payload);
+      })
+      .addCase(submitPublicInquiryThunk.rejected, (state, action) => {
+        console.error('Failed to submit public inquiry:', action.payload);
+      })
+      .addCase(createMySupportRequestThunk.fulfilled, (state, action) => {
+        state.requests.unshift(action.payload);
+      })
+      .addCase(createMySupportRequestThunk.rejected, (state, action) => {
+        console.error('Failed to create support request:', action.payload);
+      })
       .addCase(classifyRequestThunk.fulfilled, (state, action) => {
         const index = state.requests.findIndex(r => r.id === action.payload.id);
         if (index !== -1) {
@@ -1551,6 +2021,16 @@ const agencySlice = createSlice({
         // Optional: set error state for failed estimate approval
         console.error('Failed to approve estimate:', action.payload);
       })
+      .addCase(clientApproveEstimateThunk.fulfilled, (state, action) => {
+        const index = state.requests.findIndex(r => r.id === action.payload.id);
+        if (index !== -1) {
+          state.requests[index] = action.payload;
+        }
+      })
+      .addCase(clientApproveEstimateThunk.rejected, (state, action) => {
+        // Optional: set error state for failed estimate approval
+        console.error('Failed to approve estimate:', action.payload);
+      })
       .addCase(updateRequestStatusThunk.fulfilled, (state, action) => {
         const index = state.requests.findIndex(r => r.id === action.payload.id);
         if (index !== -1) {
@@ -1560,6 +2040,45 @@ const agencySlice = createSlice({
       .addCase(updateRequestStatusThunk.rejected, (state, action) => {
         // Optional: set error state for failed status updates
         console.error('Failed to update request status:', action.payload);
+      });
+
+    // Outreach
+    builder
+      .addCase(fetchOutreachDrafts.pending, (state) => {
+        state.isLoadingLeads = true;
+      })
+      .addCase(fetchOutreachDrafts.fulfilled, (state, action) => {
+        state.isLoadingLeads = false;
+        state.outreachDrafts = action.payload;
+      })
+      .addCase(fetchOutreachDrafts.rejected, (state, action) => {
+        state.isLoadingLeads = false;
+        console.error('Failed to fetch outreach drafts:', action.payload);
+      })
+      .addCase(approveOutreachDraftThunk.fulfilled, (state, action) => {
+        const payload = action.payload as { id: string; status: string; approvedByFounder: boolean; approvedAt: string | null; updatedAt: string };
+        const draft = state.outreachDrafts.find(d => d.id === payload.id);
+        if (draft) {
+          draft.status = payload.status as 'DRAFT' | 'AWAITING_HUMAN_APPROVAL' | 'APPROVED' | 'SENT' | 'REJECTED';
+          draft.approvedByFounder = payload.approvedByFounder;
+          draft.approvedAt = payload.approvedAt || undefined;
+          draft.updatedAt = payload.updatedAt;
+        }
+      })
+      .addCase(approveOutreachDraftThunk.rejected, (state, action) => {
+        console.error('Failed to approve outreach draft:', action.payload);
+      })
+      .addCase(sendOutreachDraftThunk.fulfilled, (state, action) => {
+        const payload = action.payload as { id: string; status: string; sentAt: string | null; updatedAt: string };
+        const draft = state.outreachDrafts.find(d => d.id === payload.id);
+        if (draft) {
+          draft.status = payload.status as 'DRAFT' | 'AWAITING_HUMAN_APPROVAL' | 'APPROVED' | 'SENT' | 'REJECTED';
+          draft.sentAt = payload.sentAt || undefined;
+          draft.updatedAt = payload.updatedAt;
+        }
+      })
+      .addCase(sendOutreachDraftThunk.rejected, (state, action) => {
+        console.error('Failed to send outreach draft:', action.payload);
       });
 
     // Invoices
@@ -1600,18 +2119,34 @@ const agencySlice = createSlice({
         // Optional: set error state for failed payment marking
         console.error('Failed to mark invoice as paid:', action.payload);
       });
+
+    // Proposals
+    builder
+      .addCase(fetchMyProposals.fulfilled, (state, action) => {
+        state.proposals = action.payload;
+      })
+      .addCase(fetchMyProposals.rejected, (state, action) => {
+        console.error('Failed to fetch proposals:', action.payload);
+      })
+      .addCase(recordProposalDecision.fulfilled, (state, action) => {
+        const index = state.proposals.findIndex(p => p.id === action.payload.id);
+        if (index !== -1) {
+          state.proposals[index] = action.payload;
+        }
+      })
+      .addCase(recordProposalDecision.rejected, (state, action) => {
+        console.error('Failed to record proposal decision:', action.payload);
+      });
   }
 });
 
 export const {
-  submitPublicInquiry,
-  createSupportRequest,
+  submitPublicInquiryLocal,
+  createSupportRequestLocal,
   classifyRequestLocal,
   attachEstimateLocal,
   clientApproveEstimateLocal,
   updateRequestStatusLocal,
-  approveOutreachDraft,
-  sendApprovedOutreach,
   updateOutreachDraft,
   updateLeadStage,
   triggerWorkflowRun,
@@ -1623,8 +2158,13 @@ export const {
 export const classifyRequest = classifyRequestThunk;
 export const attachEstimate = attachEstimateThunk;
 export const approveEstimate = approveEstimateThunk;
+export const createSupportRequest = createSupportRequestThunk;
+export const createMySupportRequest = createMySupportRequestThunk;
 export const updateRequestStatus = updateRequestStatusThunk;
-export const clientApproveEstimate = clientApproveEstimateLocal;
+export const clientApproveEstimate = clientApproveEstimateThunk;
 export const markInvoicePaid = markInvoicePaidThunk;
+export const approveOutreachDraft = approveOutreachDraftThunk;
+export const sendApprovedOutreach = sendOutreachDraftThunk;
+export const submitPublicInquiry = submitPublicInquiryThunk;
 
 export default agencySlice.reducer;

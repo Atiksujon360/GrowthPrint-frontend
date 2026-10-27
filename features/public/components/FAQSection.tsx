@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 
 const questions = [
   {
@@ -32,77 +31,48 @@ export function FAQSection() {
   };
 
   return (
-    <section id="faq" className="py-20 bg-slate-50 border-t border-slate-200 relative overflow-hidden">
+    <section id="faq" className="py-20 bg-slate-50 border-t border-slate-200 relative overflow-hidden overflow-x-hidden">
       {/* Subtle gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-white to-blue-50/30 -z-10" />
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-white to-blue-50 -z-10" />
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          className="max-w-2xl"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-100px' }}
-          transition={{ duration: 0.6 }}
-        >
+      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-2xl">
           <div className="text-sm font-semibold uppercase tracking-wider text-blue-600">
             Good to know
           </div>
-          <h2 className="mt-2 text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
+          <h2 className="mt-2 text-[clamp(1.875rem,4vw,2.25rem)] font-bold text-slate-900 tracking-tight">
             A few practical answers before we start.
           </h2>
-          <p className="mt-4 text-lg text-slate-600 leading-relaxed">
+          <p className="mt-4 text-[clamp(1rem,1.5vw,1.125rem)] text-slate-600 leading-relaxed">
             Here is what clients usually want to know before starting a conversation.
           </p>
-        </motion.div>
+        </div>
 
-        <motion.div
-          className="mt-10 divide-y divide-slate-200 border-y border-slate-200"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
+        <div className="mt-10 divide-y divide-slate-200 border-y border-slate-200">
           {questions.map((item, index) => (
-            <motion.div
-              key={item.question}
-              className="py-5"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: index * 0.1 }}
-            >
-              <motion.button
+            <div key={item.question} className="py-5">
+              <button
                 onClick={() => toggleQuestion(index)}
-                className="w-full flex cursor-pointer items-center justify-between gap-6 text-lg font-semibold text-slate-900 text-left"
-                whileHover={{ x: 5 }}
-                transition={{ type: 'spring', stiffness: 300 }}
+                className="w-full flex cursor-pointer items-center justify-between gap-6 text-lg font-semibold text-slate-900 text-left py-3 px-2 min-h-[44px] hover:translate-x-1 transition-transform"
+                aria-expanded={openIndex === index}
               >
                 <span>{item.question}</span>
-                <motion.span
-                  className="text-2xl font-normal text-blue-600"
-                  animate={{ rotate: openIndex === index ? 45 : 0 }}
-                  transition={{ duration: 0.2 }}
+                <span
+                  className="text-2xl font-normal text-blue-600 min-w-[28px] min-h-[28px] flex items-center justify-center transition-transform"
+                  style={{ transform: openIndex === index ? 'rotate(45deg)' : 'rotate(0deg)' }}
                 >
                   +
-                </motion.span>
-              </motion.button>
+                </span>
+              </button>
 
-              <AnimatePresence>
-                {openIndex === index && (
-                  <motion.p
-                    className="mt-3 max-w-3xl pr-10 text-base leading-relaxed text-slate-600"
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.3, ease: 'easeInOut' }}
-                  >
-                    {item.answer}
-                  </motion.p>
-                )}
-              </AnimatePresence>
-            </motion.div>
+              {openIndex === index && (
+                <p className="mt-3 max-w-3xl pr-10 text-base leading-relaxed text-slate-600">
+                  {item.answer}
+                </p>
+              )}
+            </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

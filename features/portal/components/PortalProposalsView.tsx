@@ -1,13 +1,88 @@
-import React from 'react';
-import { useAppSelector } from '../../../store/hooks.ts';
+import React, { useState, useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks.ts';
+import { fetchMyProposals, recordProposalDecision, addToast } from '../../../store/index.ts';
 import { StatusBadge } from '../../../components/ui/Badges.tsx';
 import { EmptyState } from '../../../components/ui/AsyncState.tsx';
-import { FileCheck, CheckCircle2, Clock, Calendar, ShieldCheck } from 'lucide-react';
+import { FileCheck, CheckCircle2, Clock, Calendar, ShieldCheck, Loader2, X } from 'lucide-react';
 
 export function PortalProposalsView() {
+  const dispatch = useAppDispatch();
   const { currentUser } = useAppSelector(state => state.auth);
   const clientId = currentUser.clientId || 'client-meridian';
   const proposals = useAppSelector(state => state.agency.proposals.filter(p => p.clientId === clientId));
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  // Fetch proposals on mount
+  useEffect(() => {
+    setIsLoading(true);
+    dispatch(fetchMyProposals()).unwrap().catch(err => {
+      setError(err || 'Failed to load proposals');
+    }).finally(() => {
+      setIsLoading(false);
+    });
+  }, [dispatch]);
+
+  const handleDecision = async (proposalId: string, decision: 'ACCEPT' | 'DECLINE') => {
+    try {
+      await dispatch(recordProposalDecision({ id: proposalId, decision })).unwrap();
+      dispatch(addToast({
+        type: 'success',
+        title: decision === 'ACCEPT' ? 'Proposal Accepted' : 'Proposal Declined',
+        message: decision === 'ACCEPT' 
+          ? 'Your acceptance has been recorded. We will begin work shortly.'
+          : 'Your decision has been recorded. Thank you for your feedback.'
+      }));
+    } catch (err: any) {
+      dispatch(addToast({
+        type: 'error',
+        title: 'Action Failed',
+        message: err || 'Failed to record your decision. Please try again.'
+      }));
+    }
+  };
+
+  if (isLoading && proposals.length === 0) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+            Commercial Proposals & Scope Specifications
+          </h2>
+          <p className="text-xs text-slate-500">
+            Formal engineering statements of work, payment milestones, and accepted contract deliverables.
+          </p>
+        </div>
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <Loader2 className="w-8 h-8 text-slate-400 animate-spin mx-auto mb-3" />
+            <p className="text-sm text-slate-500">Loading proposals...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+            Commercial Proposals & Scope Specifications
+          </h2>
+          <p className="text-xs text-slate-500">
+            Formal engineering statements of work, payment milestones, and accepted contract deliverables.
+          </p>
+        </div>
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center max-w-md">
+            <p className="text-sm font-medium text-slate-900 mb-1">Failed to load proposals</p>
+            <p className="text-xs text-slate-500 mb-3">{error}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -100,6 +175,25 @@ export function PortalProposalsView() {
                     Legally accepted & signed by {prop.acceptedBy}
                   </span>
                   <span>Timestamp: {new Date(prop.acceptedAt || '').toLocaleDateString()}</span>
+                </div>
+              )}
+
+              {/* Decision buttons for SENT_FOR_REVIEW proposals */}
+              {prop.status === 'SENT_FOR_REVIEW' && (
+                <div className="mt-4 pt-3 border-t border-slate-200/80 flex items-center justify-end gap-3">
+                  <button
+                    onClick={() => handleDecision(prop.id, 'DECLINE')}
+                    className="px-4 py-2 text-xs font-medium text-slate-600 hover:text-slate-900 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+                  >
+                    Decline
+                  </button>
+                  <button
+                    onClick={() => handleDecision(prop.id, 'ACCEPT')}
+                    className="px-4 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-xs transition-colors flex items-center gap-1.5"
+                  >
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>Accept Proposal</span>
+                  </button>
                 </div>
               )}
             </div>

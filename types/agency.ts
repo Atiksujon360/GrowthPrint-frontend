@@ -274,6 +274,7 @@ export interface OutreachDraft {
   approvedByFounder?: boolean;
   approvedAt?: string;
   sentAt?: string;
+  updatedAt?: string;
 }
 
 export interface Proposal {

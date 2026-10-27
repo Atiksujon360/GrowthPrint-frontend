@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks.ts';
-import { createSupportRequest, clientApproveEstimate, addToast, addNotification, fetchMySupportRequests, approveEstimate } from '../../../store/index.ts';
+import { createMySupportRequest, clientApproveEstimate, addToast, addNotification, fetchMySupportRequests, approveEstimate } from '../../../store/index.ts';
 import { StatusBadge } from '../../../components/ui/Badges.tsx';
 import { EmptyState } from '../../../components/ui/AsyncState.tsx';
-import { 
-  PlusCircle, 
-  TicketCheck, 
-  CheckCircle2, 
-  AlertCircle, 
-  Clock, 
+import {
+  PlusCircle,
+  TicketCheck,
+  CheckCircle2,
+  AlertCircle,
+  Clock,
   X,
   FileText,
-  RefreshCw
+  RefreshCw,
+  Loader2
 } from 'lucide-react';
 import type { SupportCategory } from '../../../types/agency.ts';
 
@@ -41,6 +42,7 @@ export function PortalRequestsView({ isModalOpen, onOpenModal, onCloseModal }: P
   });
 
   const [formError, setFormError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch support requests on mount
   useEffect(() => {
@@ -51,7 +53,7 @@ export function PortalRequestsView({ isModalOpen, onOpenModal, onCloseModal }: P
     dispatch(fetchMySupportRequests());
   };
 
-  const handleCreateRequest = (e: React.FormEvent) => {
+  const handleCreateRequest = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.title.trim()) {
       setFormError('Please provide a descriptive title for this request.');
@@ -62,44 +64,50 @@ export function PortalRequestsView({ isModalOpen, onOpenModal, onCloseModal }: P
       return;
     }
 
-    const matchedProject = projects.find(p => p.id === formData.projectId);
-
-    dispatch(createSupportRequest({
-      clientId,
-      clientName: currentUser.clientName || 'Meridian Retail Group',
-      projectId: formData.projectId,
-      projectName: matchedProject?.name || 'General Operations',
-      title: formData.title,
-      category: formData.category,
-      description: formData.description,
-      businessImpact: formData.businessImpact,
-      urgency: formData.urgency
-    }));
-
-    dispatch(addToast({
-      type: 'success',
-      title: 'Ticket Submitted',
-      message: `Your request "${formData.title}" has been logged. GrowthPrint team will review within 4 hours.`
-    }));
-
-    dispatch(addNotification({
-      category: 'ACTION_REQUIRED',
-      title: 'New Client Support Ticket',
-      message: `${currentUser.clientName || 'Client'} logged: "${formData.title}".`,
-      priority: 'HIGH',
-      targetTab: 'REQUESTS'
-    }));
-
-    setFormData({
-      title: '',
-      category: 'PAID_AD_HOC_SUPPORT',
-      projectId: projects[0]?.id || '',
-      businessImpact: 'MEDIUM',
-      urgency: 'NORMAL',
-      description: ''
-    });
+    setIsSubmitting(true);
     setFormError('');
-    onCloseModal();
+
+    try {
+      await dispatch(createMySupportRequest({
+        projectId: formData.projectId || undefined,
+        title: formData.title,
+        category: formData.category,
+        description: formData.description,
+        businessImpact: formData.businessImpact,
+        urgency: formData.urgency
+      })).unwrap();
+
+      // Refresh requests list to show the new request
+      dispatch(fetchMySupportRequests());
+
+      dispatch(addToast({
+        type: 'success',
+        title: 'Ticket Submitted',
+        message: `Your request "${formData.title}" has been logged. GrowthPrint team will review within 4 hours.`
+      }));
+
+      dispatch(addNotification({
+        category: 'ACTION_REQUIRED',
+        title: 'New Client Support Ticket',
+        message: `${currentUser.clientName || 'Client'} logged: "${formData.title}".`,
+        priority: 'HIGH',
+        targetTab: 'REQUESTS'
+      }));
+
+      setFormData({
+        title: '',
+        category: 'PAID_AD_HOC_SUPPORT',
+        projectId: projects[0]?.id || '',
+        businessImpact: 'MEDIUM',
+        urgency: 'NORMAL',
+        description: ''
+      });
+      onCloseModal();
+    } catch (error: any) {
+      setFormError(error || 'Failed to submit support request. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Loading, error, and empty states
@@ -373,15 +381,18 @@ export function PortalRequestsView({ isModalOpen, onOpenModal, onCloseModal }: P
                   <button
                     type="button"
                     onClick={onCloseModal}
-                    className="px-3 py-1.5 text-xs text-slate-600 hover:text-slate-900"
+                    disabled={isSubmitting}
+                    className="px-3 py-1.5 text-xs text-slate-600 hover:text-slate-900 disabled:opacity-50"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-xs"
+                    disabled={isSubmitting}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-xs flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Submit Ticket
+                    {isSubmitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+                    <span>{isSubmitting ? 'Submitting...' : 'Submit Ticket'}</span>
                   </button>
                 </div>
               </div>

@@ -32,7 +32,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8FAFD] text-[#182230]">
+    <div className="min-h-screen flex flex-col bg-[#F8FAFD] text-[#182230] overflow-x-hidden">
       {/* Universal Top Switcher Bar allowing instant testing between Agency Public, Client Portal, and Admin Workspace */}
       <RoleSwitcherBar />
 

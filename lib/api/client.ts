@@ -28,18 +28,21 @@ export class ApiError extends Error {
   public isTimeout: boolean;
   public correlationId?: string;
 
-  constructor(message: string, options: {
-    status?: number;
-    statusText?: string;
-    data?: any;
-    isNetworkError?: boolean;
-    isTimeout?: boolean;
-    correlationId?: string;
-  } = {}) {
+  constructor(
+    message: string,
+    options: {
+      status?: number;
+      statusText?: string;
+      data?: any;
+      isNetworkError?: boolean;
+      isTimeout?: boolean;
+      correlationId?: string;
+    } = {},
+  ) {
     super(message);
-    this.name = 'ApiError';
+    this.name = "ApiError";
     this.status = options.status || 500;
-    this.statusText = options.statusText || 'Internal Server Error';
+    this.statusText = options.statusText || "Internal Server Error";
     this.data = options.data;
     this.isNetworkError = options.isNetworkError || false;
     this.isTimeout = options.isTimeout || false;
@@ -52,12 +55,15 @@ export class ApiClient {
   private defaultTimeoutMs: number;
   private isMockMode: boolean;
 
-  constructor(config: { baseUrl?: string; timeoutMs?: number; isMockMode?: boolean } = {}) {
+  constructor(
+    config: { baseUrl?: string; timeoutMs?: number; isMockMode?: boolean } = {},
+  ) {
     // Read public runtime configuration without depending on Vite globals.
-    this.baseUrl = config.baseUrl || process.env.NEXT_PUBLIC_API_BASE_URL || '/api/v1';
+    this.baseUrl =
+      config.baseUrl || process.env.NEXT_PUBLIC_API_BASE_URL || "/api/v1";
     this.defaultTimeoutMs = config.timeoutMs || 10000;
-    this.isMockMode = config.isMockMode ?? 
-      process.env.NEXT_PUBLIC_USE_MOCK_API !== 'false';
+    this.isMockMode =
+      config.isMockMode ?? process.env.NEXT_PUBLIC_USE_MOCK_API !== "false";
   }
 
   public setMockMode(enabled: boolean): void {
@@ -72,8 +78,8 @@ export class ApiClient {
    * Internal request executor with timeout and retry logic
    */
   public async request<T = any>(
-    endpoint: string, 
-    options: ApiRequestOptions = {}
+    endpoint: string,
+    options: ApiRequestOptions = {},
   ): Promise<ApiResponse<T>> {
     const {
       params,
@@ -86,7 +92,9 @@ export class ApiClient {
     } = options;
 
     // Build URL with query parameters
-    let url = endpoint.startsWith('http') ? endpoint : `${this.baseUrl}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
+    let url = endpoint.startsWith("http")
+      ? endpoint
+      : `${this.baseUrl}${endpoint.startsWith("/") ? "" : "/"}${endpoint}`;
     if (params) {
       const searchParams = new URLSearchParams();
       Object.entries(params).forEach(([key, val]) => {
@@ -94,22 +102,28 @@ export class ApiClient {
       });
       const queryString = searchParams.toString();
       if (queryString) {
-        url += (url.includes('?') ? '&' : '?') + queryString;
+        url += (url.includes("?") ? "&" : "?") + queryString;
       }
     }
 
     // Default headers
     const headers = new Headers(customHeaders);
-    if (!headers.has('Content-Type') && !(fetchOptions.body instanceof FormData)) {
-      headers.set('Content-Type', 'application/json');
+    if (
+      !headers.has("Content-Type") &&
+      !(fetchOptions.body instanceof FormData)
+    ) {
+      headers.set("Content-Type", "application/json");
     }
-    headers.set('Accept', 'application/json');
+    headers.set("Accept", "application/json");
 
     // In a real OAuth or JWT setup, inject the bearer token here
-    if (!skipAuth && !headers.has('Authorization')) {
-      const token = typeof window !== 'undefined' ? window.sessionStorage?.getItem('gp_auth_token') : null;
+    if (!skipAuth && !headers.has("Authorization")) {
+      const token =
+        typeof window !== "undefined"
+          ? window.sessionStorage?.getItem("gp_auth_token")
+          : null;
       if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
+        headers.set("Authorization", `Bearer ${token}`);
       }
     }
 
@@ -124,15 +138,15 @@ export class ApiClient {
         const response = await fetch(url, {
           ...fetchOptions,
           headers,
-          signal: controller.signal
+          signal: controller.signal,
         });
 
         clearTimeout(timeoutId);
 
         // Parse body based on content type
         let data: any = null;
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
           data = await response.json().catch(() => null);
         } else {
           data = await response.text().catch(() => null);
@@ -140,13 +154,14 @@ export class ApiClient {
 
         if (!response.ok) {
           throw new ApiError(
-            data?.message || `HTTP ${response.status}: ${response.statusText}`, 
+            data?.message || `HTTP ${response.status}: ${response.statusText}`,
             {
               status: response.status,
               statusText: response.statusText,
               data,
-              correlationId: response.headers.get('x-correlation-id') || undefined
-            }
+              correlationId:
+                response.headers.get("x-correlation-id") || undefined,
+            },
           );
         }
 
@@ -155,22 +170,32 @@ export class ApiClient {
           status: response.status,
           statusText: response.statusText,
           headers: response.headers,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         };
       } catch (err: any) {
         clearTimeout(timeoutId);
 
-        const isTimeout = err.name === 'AbortError';
+        const isTimeout = err.name === "AbortError";
         const isNetworkError = !isTimeout && !(err instanceof ApiError);
 
         lastError = isTimeout
-          ? new ApiError(`Request timed out after ${timeoutMs}ms`, { isTimeout: true, status: 408 })
+          ? new ApiError(`Request timed out after ${timeoutMs}ms`, {
+              isTimeout: true,
+              status: 408,
+            })
           : err instanceof ApiError
             ? err
-            : new ApiError(err.message || 'Network connection failed', { isNetworkError: true, status: 0 });
+            : new ApiError(err.message || "Network connection failed", {
+                isNetworkError: true,
+                status: 0,
+              });
 
         // Don't retry client 4xx errors (except 429 rate limit or 408 timeout)
-        const isClientError = lastError.status >= 400 && lastError.status < 500 && lastError.status !== 429 && lastError.status !== 408;
+        const isClientError =
+          lastError.status >= 400 &&
+          lastError.status < 500 &&
+          lastError.status !== 429 &&
+          lastError.status !== 408;
         if (isClientError || attempt >= retries) {
           break;
         }
@@ -186,36 +211,54 @@ export class ApiClient {
   }
 
   // Convenience verbs
-  public get<T>(endpoint: string, options?: Omit<ApiRequestOptions, 'method' | 'body'>) {
-    return this.request<T>(endpoint, { ...options, method: 'GET' });
+  public get<T>(
+    endpoint: string,
+    options?: Omit<ApiRequestOptions, "method" | "body">,
+  ) {
+    return this.request<T>(endpoint, { ...options, method: "GET" });
   }
 
-  public post<T>(endpoint: string, body?: any, options?: Omit<ApiRequestOptions, 'method'>) {
+  public post<T>(
+    endpoint: string,
+    body?: any,
+    options?: Omit<ApiRequestOptions, "method">,
+  ) {
     return this.request<T>(endpoint, {
       ...options,
-      method: 'POST',
-      body: body ? JSON.stringify(body) : undefined
+      method: "POST",
+      body: body ? JSON.stringify(body) : undefined,
     });
   }
 
-  public put<T>(endpoint: string, body?: any, options?: Omit<ApiRequestOptions, 'method'>) {
+  public put<T>(
+    endpoint: string,
+    body?: any,
+    options?: Omit<ApiRequestOptions, "method">,
+  ) {
     return this.request<T>(endpoint, {
       ...options,
-      method: 'PUT',
-      body: body ? JSON.stringify(body) : undefined
+      method: "PUT",
+      body: body ? JSON.stringify(body) : undefined,
     });
   }
 
-  public patch<T>(endpoint: string, body?: any, options?: Omit<ApiRequestOptions, 'method'>) {
+  public patch<T>(
+    endpoint: string,
+    body?: any,
+    options?: Omit<ApiRequestOptions, "method">,
+  ) {
     return this.request<T>(endpoint, {
       ...options,
-      method: 'PATCH',
-      body: body ? JSON.stringify(body) : undefined
+      method: "PATCH",
+      body: body ? JSON.stringify(body) : undefined,
     });
   }
 
-  public delete<T>(endpoint: string, options?: Omit<ApiRequestOptions, 'method' | 'body'>) {
-    return this.request<T>(endpoint, { ...options, method: 'DELETE' });
+  public delete<T>(
+    endpoint: string,
+    options?: Omit<ApiRequestOptions, "method" | "body">,
+  ) {
+    return this.request<T>(endpoint, { ...options, method: "DELETE" });
   }
 }
 
@@ -229,65 +272,103 @@ export const apiClient = new ApiClient();
 export const agencyApi = {
   // CRM Leads
   crmLeads: {
-    getAll: () => apiClient.get('/crm-leads'),
+    getAll: () => apiClient.get("/crm-leads"),
     getById: (id: string) => apiClient.get(`/crm-leads/${id}`),
-    create: (lead: any) => apiClient.post('/crm-leads', lead),
-    convertFromInquiry: (inquiryId: string, lead: any) => apiClient.post(`/crm-leads/inquiry/${inquiryId}/convert`, lead),
-    updatePipelineStage: (id: string, pipelineStage: string) => apiClient.put(`/crm-leads/${id}/pipeline-stage`, { pipelineStage }),
-    delete: (id: string) => apiClient.delete(`/crm-leads/${id}`)
+    create: (lead: any) => apiClient.post("/crm-leads", lead),
+    convertFromInquiry: (inquiryId: string, lead: any) =>
+      apiClient.post(`/crm-leads/inquiry/${inquiryId}/convert`, lead),
+    updatePipelineStage: (id: string, pipelineStage: string) =>
+      apiClient.put(`/crm-leads/${id}/pipeline-stage`, { pipelineStage }),
+    delete: (id: string) => apiClient.delete(`/crm-leads/${id}`),
+  },
+
+  // Public Inquiries
+  publicInquiries: {
+    submit: (inquiry: any) =>
+      apiClient.post("/public/inquiries", inquiry, { skipAuth: true }),
   },
 
   // Clients
   clients: {
-    getAll: () => apiClient.get('/clients'),
+    getAll: () => apiClient.get("/clients"),
     getById: (id: string) => apiClient.get(`/clients/${id}`),
-    update: (id: string, data: any) => apiClient.patch(`/clients/${id}`, data)
+    update: (id: string, data: any) => apiClient.patch(`/clients/${id}`, data),
   },
 
   // Projects & Deliveries
   projects: {
-    getAll: () => apiClient.get('/projects'),
-    getMyProjects: () => apiClient.get('/projects/my'),
+    getAll: () => apiClient.get("/projects"),
+    getMyProjects: () => apiClient.get("/projects/my"),
     getById: (id: string) => apiClient.get(`/projects/${id}`),
-    create: (project: any) => apiClient.post('/projects', project),
-    updateStatus: (id: string, status: string) => apiClient.patch(`/projects/${id}/status`, { status }),
-    createMilestone: (projectId: string, milestone: any) => apiClient.post(`/projects/${projectId}/milestones`, milestone)
+    create: (project: any) => apiClient.post("/projects", project),
+    updateStatus: (id: string, status: string) =>
+      apiClient.patch(`/projects/${id}/status`, { status }),
+    createMilestone: (projectId: string, milestone: any) =>
+      apiClient.post(`/projects/${projectId}/milestones`, milestone),
   },
 
   // Support & Service Requests
   support: {
-    getAll: () => apiClient.get('/support-requests'),
-    getMyRequests: () => apiClient.get('/support-requests/my'),
-    create: (data: any) => apiClient.post('/support-requests', data),
-    classify: (id: string, classification: any) => apiClient.post(`/support-requests/${id}/classify`, classification),
-    attachEstimate: (id: string, estimate: any) => apiClient.post(`/support-requests/${id}/estimate`, estimate),
-    approveEstimate: (id: string, approvedBy: string) => apiClient.post(`/support-requests/${id}/approve-estimate`, { approvedBy }),
-    updateStatus: (id: string, status: string) => apiClient.patch(`/support-requests/${id}/status`, { status })
+    getAll: () => apiClient.get("/support-requests"),
+    getMyRequests: () => apiClient.get("/support-requests/my"),
+    create: (data: any) => apiClient.post("/support-requests", data),
+    createMyRequest: (data: any) =>
+      apiClient.post("/support-requests/my", data),
+    classify: (id: string, classification: any) =>
+      apiClient.post(`/support-requests/${id}/classify`, classification),
+    attachEstimate: (id: string, estimate: any) =>
+      apiClient.post(`/support-requests/${id}/estimate`, estimate),
+    approveEstimate: (id: string, approvedBy: string) =>
+      apiClient.post(`/support-requests/${id}/approve-estimate`, {
+        approvedBy,
+      }),
+    approveMyEstimate: (id: string, approvedBy: string) =>
+      apiClient.post(`/support-requests/my/${id}/approve-estimate`, {
+        approvedBy,
+      }),
+    updateStatus: (id: string, status: string) =>
+      apiClient.patch(`/support-requests/${id}/status`, { status }),
   },
 
   // Invoices & Billing
   invoices: {
-    getAll: () => apiClient.get('/invoices'),
-    getMyInvoices: () => apiClient.get('/invoices/my'),
+    getAll: () => apiClient.get("/invoices"),
+    getMyInvoices: () => apiClient.get("/invoices/my"),
     getById: (id: string) => apiClient.get(`/invoices/${id}`),
-    markPaid: (id: string, details?: any) => apiClient.post(`/invoices/${id}/reconcile`, details)
+    markPaid: (id: string, details?: any) =>
+      apiClient.post(`/invoices/${id}/reconcile`, details),
+  },
+
+  // Proposals
+  proposals: {
+    getAll: () => apiClient.get("/proposals"),
+    getMyProposals: () => apiClient.get("/proposals/my"),
+    getById: (id: string) => apiClient.get(`/proposals/${id}`),
+    create: (proposal: any) => apiClient.post("/proposals", proposal),
+    update: (id: string, proposal: any) =>
+      apiClient.put(`/proposals/${id}`, proposal),
+    publish: (id: string, validUntil: string) =>
+      apiClient.post(`/proposals/${id}/publish`, { validUntil }),
+    recordDecision: (id: string, decision: any) =>
+      apiClient.post(`/proposals/my/${id}/decision`, decision),
   },
 
   // Outreach Studio
   outreach: {
-    getDrafts: () => apiClient.get('/outreach/drafts'),
-    approveDraft: (id: string) => apiClient.post(`/outreach/drafts/${id}/approve`),
-    sendDraft: (id: string) => apiClient.post(`/outreach/drafts/${id}/send`)
+    getDrafts: () => apiClient.get("/outreach/drafts"),
+    approveDraft: (id: string) =>
+      apiClient.post(`/outreach/drafts/${id}/approve`),
+    sendDraft: (id: string) => apiClient.post(`/outreach/drafts/${id}/send`),
   },
 
   // Automation Engine
   automations: {
-    getAll: () => apiClient.get('/automations'),
-    trigger: (id: string) => apiClient.post(`/automations/${id}/run`)
+    getAll: () => apiClient.get("/automations"),
+    trigger: (id: string) => apiClient.post(`/automations/${id}/run`),
   },
 
   // Integration Health Check
   systemHealth: {
-    checkAll: () => apiClient.get('/health/services')
-  }
+    checkAll: () => apiClient.get("/health/services"),
+  },
 };

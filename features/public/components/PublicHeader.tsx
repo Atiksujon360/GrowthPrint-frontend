@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAppDispatch } from '../../../store/hooks.ts';
 import { useRouter } from 'next/navigation';
 import { setActiveView, switchRole } from '../../../store/index.ts';
@@ -11,6 +10,8 @@ export function PublicHeader({ onOpenQuote }: { onOpenQuote: () => void }) {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
   const isMockMode = process.env.NEXT_PUBLIC_USE_MOCK_API !== 'false';
 
   useEffect(() => {
@@ -22,6 +23,54 @@ export function PublicHeader({ onOpenQuote }: { onOpenQuote: () => void }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Handle escape key to close menu
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && mobileMenuOpen) {
+        setMobileMenuOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    };
+
+    if (mobileMenuOpen) {
+      document.addEventListener('keydown', handleEscape);
+    }
+
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [mobileMenuOpen]);
+
+  // Focus trap for mobile menu
+  useEffect(() => {
+    if (mobileMenuOpen && menuRef.current) {
+      const focusableElements = menuRef.current.querySelectorAll(
+        'a, button, [tabindex]:not([tabindex="-1"])'
+      );
+      const firstElement = focusableElements[0] as HTMLElement;
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+      firstElement?.focus();
+
+      const handleTab = (e: KeyboardEvent) => {
+        if (e.key === 'Tab') {
+          if (e.shiftKey) {
+            if (document.activeElement === firstElement) {
+              e.preventDefault();
+              lastElement?.focus();
+            }
+          } else {
+            if (document.activeElement === lastElement) {
+              e.preventDefault();
+              firstElement?.focus();
+            }
+          }
+        }
+      };
+
+      menuRef.current.addEventListener('keydown', handleTab);
+      return () => menuRef.current?.removeEventListener('keydown', handleTab);
+    }
+  }, [mobileMenuOpen]);
+
   const handleSectionClick = (event: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
     event.preventDefault();
     setMobileMenuOpen(false);
@@ -29,52 +78,39 @@ export function PublicHeader({ onOpenQuote }: { onOpenQuote: () => void }) {
   };
 
   return (
-    <motion.header
+    <header
       className={`sticky top-0 z-40 transition-all duration-300 ${
         isScrolled
           ? 'bg-white/95 backdrop-blur-xl border-b border-slate-200/80 shadow-sm'
           : 'bg-white/80 backdrop-blur-md border-b border-slate-200/50'
       }`}
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.5 }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-8">
         {/* Zone 1: Brand Wordmark (Single text element) */}
-        <motion.a
+        <a
           href="/"
           onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-          className="text-xl font-bold tracking-tight text-slate-900 whitespace-nowrap shrink-0 flex items-center gap-2"
-          whileHover={{ scale: 1.05 }}
-          transition={{ type: 'spring', stiffness: 300 }}
+          className="text-xl font-bold tracking-tight text-slate-900 whitespace-nowrap shrink-0 flex items-center gap-2 hover:scale-105 transition-all"
         >
-          <motion.span
-            className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white font-black text-sm"
-            whileHover={{ rotate: 10 }}
-            transition={{ type: 'spring', stiffness: 300 }}
-          >
+          <span className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white font-black text-sm">
             GP
-          </motion.span>
+          </span>
           <span>GrowthPrint</span>
-        </motion.a>
+        </a>
 
         {/* Zone 2: Navigation Links (Single-line clean text) */}
         <nav className="hidden md:flex items-center gap-7 text-base font-medium text-slate-600">
-          {['Services', 'Process', 'Case Studies', 'Why GrowthPrint', 'FAQ'].map((item, index) => (
-            <motion.a
+          {['Services', 'Process', 'Case Studies', 'Why GrowthPrint', 'FAQ'].map((item) => (
+            <a
               key={item}
               href={`#${item.toLowerCase().replace(' ', '-')}`}
               onClick={(event) => handleSectionClick(event, item.toLowerCase().replace(' ', '-'))}
-              className="hover:text-slate-900 transition-colors whitespace-nowrap shrink-0"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.05 }}
-              whileHover={{ y: -2 }}
+              className="hover:text-slate-900 hover:-translate-y-0.5 transition-all whitespace-nowrap shrink-0"
             >
               {item}
-            </motion.a>
+            </a>
           ))}
-          <motion.button
+          <button
             onClick={() => {
               if (isMockMode) {
                 dispatch(switchRole('CLIENT'));
@@ -83,87 +119,66 @@ export function PublicHeader({ onOpenQuote }: { onOpenQuote: () => void }) {
                 router.push('/portal/login');
               }
             }}
-            className="hover:text-blue-600 transition-colors whitespace-nowrap shrink-0 flex items-center gap-1 font-medium"
-            whileHover={{ x: 3 }}
-            transition={{ type: 'spring', stiffness: 300 }}
+            className="hover:text-blue-600 hover:translate-x-0.5 transition-all whitespace-nowrap shrink-0 flex items-center gap-1 font-medium"
           >
             <span>Client Portal</span>
-          </motion.button>
+          </button>
         </nav>
 
         {/* Zone 3: Single Primary Action */}
         <div className="hidden md:flex items-center gap-3 shrink-0">
-          <motion.button
+          <button
             onClick={onOpenQuote}
-            className="px-4 py-2.5 text-base font-semibold text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 rounded-lg shadow-xs hover:shadow-md transition-all whitespace-nowrap shrink-0 flex items-center gap-2"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            className="px-4 py-2.5 text-base font-semibold text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 rounded-lg shadow-xs hover:shadow-md hover:scale-105 active:scale-95 transition-all whitespace-nowrap shrink-0 flex items-center gap-2"
           >
             <span>Tell us what you need</span>
             <ArrowRight className="w-4 h-4" />
-          </motion.button>
+          </button>
         </div>
 
         {/* Mobile menu trigger */}
         <div className="md:hidden flex items-center gap-2">
-          <motion.button
+          <button
+            ref={menuButtonRef}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 text-slate-600 hover:text-slate-900"
+            className="p-3 text-slate-600 hover:text-slate-900 min-w-[44px] min-h-[44px] active:scale-95 transition-transform"
             aria-label="Toggle Navigation Menu"
-            whileTap={{ scale: 0.9 }}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-menu"
           >
-            <AnimatePresence mode="wait">
-              {mobileMenuOpen ? (
-                <motion.div
-                  key="close"
-                  initial={{ rotate: -90, opacity: 0 }}
-                  animate={{ rotate: 0, opacity: 1 }}
-                  exit={{ rotate: 90, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
+            {mobileMenuOpen ? (
+              <div key="close">
                   <X className="w-6 h-6" />
-                </motion.div>
+                </div>
               ) : (
-                <motion.div
-                  key="menu"
-                  initial={{ rotate: 90, opacity: 0 }}
-                  animate={{ rotate: 0, opacity: 1 }}
-                  exit={{ rotate: -90, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
+                <div key="menu">
                   <Menu className="w-6 h-6" />
-                </motion.div>
+                </div>
               )}
-            </AnimatePresence>
-          </motion.button>
+          </button>
         </div>
       </div>
 
       {/* Mobile drawer */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div
-            className="md:hidden border-b border-slate-200 bg-white/95 backdrop-blur-xl px-4 py-4 space-y-3"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            {['Services', 'Process', 'Case Studies', 'FAQ', 'Why GrowthPrint'].map((item, index) => (
-              <motion.a
+      {mobileMenuOpen && (
+        <div
+          ref={menuRef}
+          id="mobile-menu"
+          className="md:hidden border-b border-slate-200 bg-white/95 backdrop-blur-xl px-4 py-4 space-y-3"
+          role="navigation"
+          aria-label="Mobile navigation"
+        >
+          {['Services', 'Process', 'Case Studies', 'FAQ', 'Why GrowthPrint'].map((item) => (
+              <a
                 key={item}
                 href={`#${item.toLowerCase().replace(' ', '-')}`}
                 onClick={(event) => handleSectionClick(event, item.toLowerCase().replace(' ', '-'))}
-                className="block py-2 text-base font-medium text-slate-700 hover:text-blue-600"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.2, delay: index * 0.05 }}
-                whileHover={{ x: 5 }}
+                className="block py-3 px-2 text-base font-medium text-slate-700 hover:text-blue-600 min-h-[44px] flex items-center hover:translate-x-1 transition-transform"
               >
                 {item}
-              </motion.a>
+              </a>
             ))}
-            <motion.button
+            <button
               onClick={() => {
                 setMobileMenuOpen(false);
                 if (isMockMode) {
@@ -173,27 +188,23 @@ export function PublicHeader({ onOpenQuote }: { onOpenQuote: () => void }) {
                   router.push('/portal/login');
                 }
               }}
-              className="w-full text-left py-2 text-base font-medium text-blue-600"
-              whileHover={{ x: 5 }}
+              className="w-full text-left py-3 px-2 text-base font-medium text-blue-600 min-h-[44px] flex items-center hover:translate-x-1 transition-transform"
             >
               Client Portal Sign In
-            </motion.button>
+            </button>
             <div className="pt-2">
-              <motion.button
+              <button
                 onClick={() => {
                   setMobileMenuOpen(false);
                   onOpenQuote();
                 }}
-                className="w-full py-2.5 px-4 text-center text-sm font-semibold text-white bg-blue-600 rounded-lg shadow-xs"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                className="w-full py-3.5 px-4 text-center text-sm font-semibold text-white bg-blue-600 rounded-lg shadow-xs min-h-[44px] hover:scale-102 active:scale-95 transition-transform"
               >
                 Tell us what you need
-              </motion.button>
+              </button>
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-    </motion.header>
+      </header>
   );
 }

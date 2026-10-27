@@ -51,27 +51,27 @@ export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
             </h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="#services" onClick={(event) => handleFooterSectionClick(event, 'services')} className="hover:text-white transition-colors">
+                <a href="#services" onClick={(event) => handleFooterSectionClick(event, 'services')} className="hover:text-white transition-colors block py-2">
                   Custom Software Development
                 </a>
               </li>
               <li>
-                <a href="#services" onClick={(event) => handleFooterSectionClick(event, 'services')} className="hover:text-white transition-colors">
+                <a href="#services" onClick={(event) => handleFooterSectionClick(event, 'services')} className="hover:text-white transition-colors block py-2">
                   Website & Application Support
                 </a>
               </li>
               <li>
-                <a href="#services" onClick={(event) => handleFooterSectionClick(event, 'services')} className="hover:text-white transition-colors">
+                <a href="#services" onClick={(event) => handleFooterSectionClick(event, 'services')} className="hover:text-white transition-colors block py-2">
                   Technical SEO & Optimization
                 </a>
               </li>
               <li>
-                <a href="#services" onClick={(event) => handleFooterSectionClick(event, 'services')} className="hover:text-white transition-colors">
+                <a href="#services" onClick={(event) => handleFooterSectionClick(event, 'services')} className="hover:text-white transition-colors block py-2">
                   Business Process Automation
                 </a>
               </li>
               <li>
-                <a href="#services" onClick={(event) => handleFooterSectionClick(event, 'services')} className="hover:text-white transition-colors">
+                <a href="#services" onClick={(event) => handleFooterSectionClick(event, 'services')} className="hover:text-white transition-colors block py-2">
               Useful AI and automation
                 </a>
               </li>
@@ -94,7 +94,7 @@ export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
                       router.push('/portal/login');
                     }
                   }}
-                  className="hover:text-white transition-colors flex items-center gap-1 text-blue-400"
+                  className="hover:text-white transition-colors flex items-center gap-1 text-blue-400 py-2 min-h-[44px]"
                 >
                   <span>Open the client portal</span>
                   <ArrowUpRight className="w-3 h-3" />
@@ -110,24 +110,24 @@ export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
                       router.push('/admin/login');
                     }
                   }}
-                  className="hover:text-white transition-colors flex items-center gap-1 text-slate-400"
+                  className="hover:text-white transition-colors flex items-center gap-1 text-slate-400 py-2 min-h-[44px]"
                 >
                   <span>Open the team workspace</span>
                   <ArrowUpRight className="w-3 h-3" />
                 </button>
               </li>
               <li>
-                <a href="#process" onClick={(event) => handleFooterSectionClick(event, 'process')} className="hover:text-white transition-colors">
+                <a href="#process" onClick={(event) => handleFooterSectionClick(event, 'process')} className="hover:text-white transition-colors block py-2">
                   How we work
                 </a>
               </li>
               <li>
-                <a href="#work" onClick={(event) => handleFooterSectionClick(event, 'work')} className="hover:text-white transition-colors">
+                <a href="#work" onClick={(event) => handleFooterSectionClick(event, 'work')} className="hover:text-white transition-colors block py-2">
                   Client work
                 </a>
               </li>
               <li>
-                <a href="#faq" onClick={(event) => handleFooterSectionClick(event, 'faq')} className="hover:text-white transition-colors">
+                <a href="#faq" onClick={(event) => handleFooterSectionClick(event, 'faq')} className="hover:text-white transition-colors block py-2">
                   Common questions
                 </a>
               </li>
@@ -144,7 +144,7 @@ export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
             </p>
             <button
               onClick={onOpenQuote}
-              className="mt-2 w-full py-3 px-3 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-500 transition-colors shadow-xs"
+              className="mt-2 w-full py-3.5 px-3 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-500 transition-colors shadow-xs min-h-[44px]"
             >
               Tell us what you need
             </button>
@@ -156,10 +156,10 @@ export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
           <div>
             &copy; 2026 GrowthPrint Technology Partners LLC. All rights reserved.
           </div>
-          <div className="flex items-center gap-6">
-            <span className="hover:text-slate-400 cursor-pointer">Privacy Policy</span>
-            <span className="hover:text-slate-400 cursor-pointer">Terms of Service</span>
-            <span className="hover:text-slate-400 cursor-pointer">Security Standards</span>
+          <div className="flex items-center gap-4 sm:gap-6">
+            <span className="hover:text-slate-400 cursor-pointer py-2 min-h-[44px] flex items-center">Privacy Policy</span>
+            <span className="hover:text-slate-400 cursor-pointer py-2 min-h-[44px] flex items-center">Terms of Service</span>
+            <span className="hover:text-slate-400 cursor-pointer py-2 min-h-[44px] flex items-center">Security Standards</span>
           </div>
         </div>
       </div>

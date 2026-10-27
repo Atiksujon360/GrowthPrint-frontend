@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks.ts';
 import { setActiveView, switchRole } from '../../../store/index.ts';
-import { 
-  LayoutDashboard, 
-  Users, 
-  FolderKanban, 
-  TicketCheck, 
-  Sparkles, 
-  Send, 
-  CreditCard, 
-  Workflow, 
-  History, 
+import {
+  LayoutDashboard,
+  Users,
+  FolderKanban,
+  TicketCheck,
+  Sparkles,
+  Send,
+  CreditCard,
+  Workflow,
+  History,
   LogOut,
   Shield,
   Search,
@@ -59,12 +59,62 @@ export function AdminLayout({ currentTab, onTabChange, children }: AdminLayoutPr
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [isQuickCreateOpen, setIsQuickCreateOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   const pendingClassification = requests.filter(r => r.status === 'NEW' || r.status === 'NEEDS_CLASSIFICATION').length;
   const pendingOutreachApprovals = outreach.filter(d => d.status === 'AWAITING_HUMAN_APPROVAL').length;
   const readyOutreachLeads = leads.filter(l => l.pipelineStage === 'READY_FOR_OUTREACH').length;
 
   const totalNotifications = pendingClassification + pendingOutreachApprovals;
+
+  // Handle escape key to close menu
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && mobileMenuOpen) {
+        setMobileMenuOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    };
+
+    if (mobileMenuOpen) {
+      document.addEventListener('keydown', handleEscape);
+    }
+
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [mobileMenuOpen]);
+
+  // Focus trap for mobile menu
+  useEffect(() => {
+    if (mobileMenuOpen && menuRef.current) {
+      const focusableElements = menuRef.current.querySelectorAll(
+        'button, [tabindex]:not([tabindex="-1"])'
+      );
+      const firstElement = focusableElements[0] as HTMLElement;
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+      firstElement?.focus();
+
+      const handleTab = (e: KeyboardEvent) => {
+        if (e.key === 'Tab') {
+          if (e.shiftKey) {
+            if (document.activeElement === firstElement) {
+              e.preventDefault();
+              lastElement?.focus();
+            }
+          } else {
+            if (document.activeElement === lastElement) {
+              e.preventDefault();
+              firstElement?.focus();
+            }
+          }
+        }
+      };
+
+      menuRef.current.addEventListener('keydown', handleTab);
+      return () => menuRef.current?.removeEventListener('keydown', handleTab);
+    }
+  }, [mobileMenuOpen]);
 
   // Grouped Navigation structure according to Master Prompt Section 5
   const navGroups = [
@@ -175,7 +225,7 @@ export function AdminLayout({ currentTab, onTabChange, children }: AdminLayoutPr
                     <motion.button
                       key={item.id}
                       onClick={() => onTabChange(item.id)}
-                      className={`w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium transition-colors min-h-[44px] ${
                         isActive
                           ? 'bg-blue-600 text-white font-semibold shadow-xs'
                           : 'text-slate-400 hover:text-white hover:bg-slate-800'
@@ -224,7 +274,7 @@ export function AdminLayout({ currentTab, onTabChange, children }: AdminLayoutPr
               dispatch(switchRole('GUEST'));
               dispatch(setActiveView('PUBLIC'));
             }}
-            className="w-full py-1.5 px-3 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors flex items-center gap-2"
+            className="w-full py-2.5 px-3 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors flex items-center gap-2 min-h-[44px]"
             whileHover={{ x: 3 }}
             transition={{ type: 'spring', stiffness: 300 }}
           >
@@ -241,8 +291,12 @@ export function AdminLayout({ currentTab, onTabChange, children }: AdminLayoutPr
           {/* Left: Mobile trigger & Search trigger */}
           <div className="flex items-center gap-3 flex-1 max-w-lg">
             <motion.button
+              ref={menuButtonRef}
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-1.5 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100"
+              className="md:hidden p-3 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100 min-w-[44px] min-h-[44px]"
+              aria-label="Toggle navigation menu"
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-menu"
               whileTap={{ scale: 0.9 }}
             >
               <AnimatePresence mode="wait">
@@ -273,7 +327,7 @@ export function AdminLayout({ currentTab, onTabChange, children }: AdminLayoutPr
             {/* Global Search Command Bar */}
             <motion.button
               onClick={() => setIsCommandPaletteOpen(true)}
-              className="flex items-center justify-between w-full max-w-md px-3 py-1.5 bg-slate-100/80 hover:bg-slate-100 border border-slate-200/90 rounded-xl text-xs text-slate-500 transition-colors group"
+              className="flex items-center justify-between w-full max-w-md px-3 py-2.5 bg-slate-100/80 hover:bg-slate-100 border border-slate-200/90 rounded-xl text-xs text-slate-500 transition-colors group min-h-[44px]"
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.99 }}
             >
@@ -293,7 +347,7 @@ export function AdminLayout({ currentTab, onTabChange, children }: AdminLayoutPr
 
             <motion.button
               onClick={() => setIsQuickCreateOpen(true)}
-              className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-xs flex items-center gap-1.5 transition-colors"
+              className="px-3 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-xs flex items-center gap-1.5 transition-colors min-h-[44px]"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -309,7 +363,7 @@ export function AdminLayout({ currentTab, onTabChange, children }: AdminLayoutPr
               onClick={() => dispatch(setShortcutsModalOpen(true))}
               title="Keyboard Shortcuts (?)"
               aria-label="Keyboard Shortcuts"
-              className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl border border-slate-200 transition-colors hidden sm:flex items-center justify-center"
+              className="p-3 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl border border-slate-200 transition-colors hidden sm:flex items-center justify-center min-w-[44px] min-h-[44px]"
               whileHover={{ scale: 1.1, rotate: 5 }}
               transition={{ type: 'spring', stiffness: 300 }}
             >
@@ -341,11 +395,15 @@ export function AdminLayout({ currentTab, onTabChange, children }: AdminLayoutPr
         <AnimatePresence>
           {mobileMenuOpen && (
             <motion.div
+              ref={menuRef}
+              id="mobile-menu"
               className="md:hidden bg-slate-900 text-slate-300 p-4 border-b border-slate-800 space-y-3"
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
+              role="navigation"
+              aria-label="Mobile navigation"
             >
               {navGroups.flatMap(g => g.items).map((item, idx) => (
                 <motion.button
@@ -354,7 +412,7 @@ export function AdminLayout({ currentTab, onTabChange, children }: AdminLayoutPr
                     onTabChange(item.id);
                     setMobileMenuOpen(false);
                   }}
-                  className={`w-full flex items-center justify-between p-2 rounded-lg text-xs ${
+                  className={`w-full flex items-center justify-between p-3 rounded-lg text-xs min-h-[44px] ${
                     currentTab === item.id ? 'bg-blue-600 text-white font-bold' : 'text-slate-300'
                   }`}
                   initial={{ opacity: 0, x: -10 }}

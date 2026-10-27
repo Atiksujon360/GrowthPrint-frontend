@@ -16,16 +16,21 @@ export default function PortalPage() {
   const [portalTab, setPortalTab] = useState<PortalTab>('DASHBOARD');
   const [isNewRequestModalOpen, setIsNewRequestModalOpen] = useState(false);
 
+  const handleOpenNewRequest = () => {
+    setPortalTab('REQUESTS');
+    setIsNewRequestModalOpen(true);
+  };
+
   return (
     <PortalLayout
       currentTab={portalTab}
       onTabChange={setPortalTab}
-      onOpenNewRequest={() => setIsNewRequestModalOpen(true)}
+      onOpenNewRequest={handleOpenNewRequest}
     >
       {portalTab === 'DASHBOARD' && (
         <PortalDashboard
           onNavigateTab={setPortalTab}
-          onOpenNewRequest={() => setIsNewRequestModalOpen(true)}
+          onOpenNewRequest={handleOpenNewRequest}
         />
       )}
 

@@ -1,0 +1,983 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Test Verifier Report</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+			rel="stylesheet"
+		/>
+		<style>
+			:root {
+				--primary: #0d9488;
+				--primary-light: rgba(13, 148, 136, 0.08);
+				--primary-border: rgba(13, 148, 136, 0.25);
+				--green: #16a34a;
+				--green-bg: #f0fdf4;
+				--green-border: #bbf7d0;
+				--amber: #d97706;
+				--amber-bg: #fffbeb;
+				--amber-border: #fde68a;
+				--red: #dc2626;
+				--red-bg: #fef2f2;
+				--red-border: #fecaca;
+				--bg: #f8f9fa;
+				--card: #ffffff;
+				--text: #1a1a1a;
+				--muted: #6b7280;
+				--border: #e5e7eb;
+				--border-light: #f3f4f6;
+				--radius: 12px;
+				--radius-pill: 9999px;
+				--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+				--shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+				--shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.03);
+			}
+
+			*,
+			*::before,
+			*::after {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+
+			body {
+				font-family:
+					'Inter',
+					ui-sans-serif,
+					system-ui,
+					-apple-system,
+					sans-serif;
+				font-size: 1rem;
+				background: var(--bg);
+				color: var(--text);
+				line-height: 1.7;
+				-webkit-font-smoothing: antialiased;
+				-moz-osx-font-smoothing: grayscale;
+			}
+
+			.container {
+				max-width: 960px;
+				margin: 0 auto;
+				padding: 48px 32px;
+			}
+
+			/* ── Header ── */
+			.header {
+				margin-bottom: 40px;
+			}
+
+			.header-top {
+				display: flex;
+				align-items: center;
+				gap: 16px;
+				margin-bottom: 12px;
+			}
+
+			.header-icon {
+				flex-shrink: 0;
+				font-size: 10px;
+				line-height: 1.1;
+				letter-spacing: 0;
+				color: var(--primary);
+				white-space: pre;
+				font-family: monospace;
+			}
+
+			.header h1 {
+				font-size: 2.25rem;
+				font-weight: 800;
+				color: var(--text);
+				letter-spacing: -0.04em;
+			}
+
+			.header-meta {
+				display: flex;
+				gap: 24px;
+				font-size: 0.88rem;
+				color: var(--muted);
+				flex-wrap: wrap;
+			}
+
+			.header-meta span {
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+			}
+
+			/* ── Summary cards ── */
+			.cards {
+				display: grid;
+				grid-template-columns: repeat(5, 1fr);
+				gap: 16px;
+				margin-bottom: 36px;
+			}
+
+			@media (max-width: 768px) {
+				.cards {
+					grid-template-columns: repeat(2, 1fr);
+				}
+			}
+
+			.card {
+				background: var(--card);
+				border-radius: var(--radius);
+				padding: 22px 24px;
+				box-shadow: var(--shadow-sm);
+				border: 1px solid var(--border);
+				position: relative;
+				overflow: hidden;
+			}
+
+			.card::before {
+				content: '';
+				position: absolute;
+				inset: 0 0 auto 0;
+				height: 3px;
+			}
+
+			.card-green::before {
+				background: var(--primary);
+			}
+			.card-amber::before {
+				background: var(--amber);
+			}
+			.card-red::before {
+				background: var(--red);
+			}
+
+			.card-label {
+				font-size: 0.72rem;
+				text-transform: uppercase;
+				letter-spacing: 0.8px;
+				color: var(--muted);
+				font-weight: 600;
+				margin-bottom: 10px;
+			}
+
+			.card-value {
+				font-size: 2rem;
+				font-weight: 800;
+				letter-spacing: -0.03em;
+				line-height: 1;
+			}
+
+			.card-detail {
+				font-size: 0.82rem;
+				color: var(--muted);
+				margin-top: 8px;
+			}
+
+			.val-green {
+				color: var(--primary);
+			}
+			.val-amber {
+				color: var(--amber);
+			}
+			.val-red {
+				color: var(--red);
+			}
+
+			/* ── Collapsible sections ── */
+			.section {
+				background: var(--card);
+				border-radius: var(--radius);
+				margin-bottom: 16px;
+				box-shadow: var(--shadow-sm);
+				border: 1px solid var(--border);
+				overflow: hidden;
+			}
+
+			.section-header {
+				padding: 20px 24px;
+				cursor: pointer;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				user-select: none;
+				transition: background 0.15s;
+			}
+
+			.section-header:hover {
+				background: var(--bg);
+			}
+
+			.section-title {
+				font-size: 1rem;
+				font-weight: 600;
+				color: var(--text);
+				display: inline-flex;
+				align-items: center;
+				gap: 10px;
+			}
+
+			.section-title .icon {
+				font-size: 1.1rem;
+			}
+
+			.section-right {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+			}
+
+			.section-count {
+				font-size: 0.78rem;
+				background: var(--border-light);
+				color: var(--muted);
+				padding: 4px 12px;
+				border-radius: var(--radius-pill);
+				font-weight: 600;
+			}
+
+			.chevron {
+				transition: transform 0.2s ease;
+				font-size: 0.75rem;
+				color: var(--muted);
+			}
+
+			.section.open .chevron {
+				transform: rotate(90deg);
+			}
+
+			.section-body {
+				display: none;
+			}
+
+			.section.open .section-body {
+				display: block;
+			}
+
+			.section-body-padded {
+				padding: 24px;
+			}
+
+			/* ── Tables ── */
+			table {
+				width: 100%;
+				border-collapse: collapse;
+				font-size: 0.9rem;
+			}
+
+			th {
+				text-align: left;
+				padding: 12px 18px;
+				background: var(--bg);
+				font-weight: 600;
+				font-size: 0.72rem;
+				text-transform: uppercase;
+				letter-spacing: 0.5px;
+				color: var(--muted);
+				border-bottom: 1px solid var(--border);
+			}
+
+			td {
+				padding: 14px 18px;
+				border-bottom: 1px solid var(--border-light);
+				color: var(--text);
+			}
+
+			tbody tr:last-child td {
+				border-bottom: none;
+			}
+
+			tbody tr:hover td {
+				background: var(--bg);
+			}
+
+			/* ── Badges ── */
+			.badge {
+				display: inline-flex;
+				align-items: center;
+				padding: 3px 12px;
+				border-radius: var(--radius-pill);
+				font-size: 0.75rem;
+				font-weight: 600;
+				letter-spacing: 0.2px;
+			}
+
+			.badge-green {
+				background: var(--green-bg);
+				color: var(--green);
+			}
+			.badge-amber {
+				background: var(--amber-bg);
+				color: var(--amber);
+			}
+			.badge-red {
+				background: var(--red-bg);
+				color: var(--red);
+			}
+
+			/* ── Inline progress bar ── */
+			.progress-bar {
+				width: 64px;
+				height: 6px;
+				background: var(--border);
+				border-radius: 3px;
+				overflow: hidden;
+				display: inline-block;
+				vertical-align: middle;
+				margin-left: 8px;
+			}
+
+			.progress-fill {
+				height: 100%;
+				border-radius: 3px;
+				transition: width 0.3s;
+			}
+
+			.progress-green {
+				background: var(--primary);
+			}
+			.progress-amber {
+				background: var(--amber);
+			}
+			.progress-red {
+				background: var(--red);
+			}
+
+			/* ── Expandable test rows ── */
+			.expandable-row {
+				cursor: pointer;
+			}
+
+			.expandable-row:hover td {
+				background: var(--primary-light) !important;
+			}
+
+			.expand-icon {
+				display: inline-grid;
+				place-items: center;
+				width: 22px;
+				height: 22px;
+				border-radius: 6px;
+				background: var(--border-light);
+				font-size: 0.6rem;
+				color: var(--muted);
+				margin-right: 10px;
+				transition:
+					background 0.15s,
+					color 0.15s;
+				vertical-align: middle;
+			}
+
+			.expandable-row:hover .expand-icon {
+				background: var(--primary-border);
+				color: var(--primary);
+			}
+
+			/* ── Test detail panel ── */
+			.test-detail {
+				background: var(--bg);
+				padding: 24px;
+				border-top: 1px solid var(--border-light);
+			}
+
+			.detail-grid {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 16px;
+			}
+
+			@media (max-width: 640px) {
+				.detail-grid {
+					grid-template-columns: 1fr;
+				}
+			}
+
+			.detail-block {
+				background: var(--card);
+				border-radius: var(--radius);
+				padding: 18px;
+				border: 1px solid var(--border);
+			}
+
+			.detail-block h4 {
+				font-size: 0.75rem;
+				text-transform: uppercase;
+				letter-spacing: 0.5px;
+				color: var(--muted);
+				font-weight: 600;
+				margin-bottom: 12px;
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+			}
+
+			.detail-block table {
+				font-size: 0.85rem;
+			}
+
+			.detail-block th {
+				padding: 8px 12px;
+				font-size: 0.7rem;
+			}
+
+			.detail-block td {
+				padding: 8px 12px;
+			}
+
+			.violation-item {
+				padding: 12px 0;
+				border-bottom: 1px solid var(--border-light);
+				font-size: 0.9rem;
+				line-height: 1.6;
+			}
+
+			.violation-item:last-child {
+				border-bottom: none;
+			}
+
+			.violation-rule {
+				font-weight: 700;
+				color: var(--amber);
+				font-size: 0.82rem;
+			}
+
+			.violation-fix {
+				color: var(--muted);
+				font-size: 0.82rem;
+				font-style: italic;
+				margin-top: 4px;
+			}
+
+			/* ── Plan coverage ── */
+			.coverage-status-ok {
+				color: var(--primary);
+				font-weight: 600;
+				font-size: 1rem;
+				padding: 16px 0;
+				display: inline-flex;
+				align-items: center;
+				gap: 8px;
+			}
+
+			/* ── Assessment ── */
+			.assessment-grid {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 20px;
+			}
+
+			@media (max-width: 640px) {
+				.assessment-grid {
+					grid-template-columns: 1fr;
+				}
+			}
+
+			.assessment-block {
+				border-radius: var(--radius);
+				padding: 22px;
+			}
+
+			.assessment-block.strengths {
+				background: var(--primary-light);
+				border: 1px solid var(--primary-border);
+			}
+
+			.assessment-block.issues {
+				background: var(--amber-bg);
+				border: 1px solid var(--amber-border);
+			}
+
+			.assessment-block h4 {
+				font-size: 0.88rem;
+				font-weight: 700;
+				margin-bottom: 12px;
+			}
+
+			.assessment-block.strengths h4 {
+				color: var(--primary);
+			}
+			.assessment-block.issues h4 {
+				color: var(--amber);
+			}
+
+			.assessment-block ul {
+				list-style: none;
+				padding: 0;
+			}
+
+			.assessment-block li {
+				font-size: 0.92rem;
+				padding: 5px 0 5px 22px;
+				position: relative;
+				line-height: 1.6;
+			}
+
+			.assessment-block li::before {
+				content: '';
+				position: absolute;
+				left: 0;
+				top: 14px;
+				width: 7px;
+				height: 7px;
+				border-radius: 50%;
+			}
+
+			.assessment-block.strengths li::before {
+				background: var(--primary);
+			}
+			.assessment-block.issues li::before {
+				background: var(--amber);
+			}
+
+			/* ── Monospace ── */
+			.mono {
+				font-family: 'SF Mono', SFMono-Regular, ui-monospace, Menlo, Consolas, monospace;
+				font-size: 0.84rem;
+			}
+
+			/* ── Empty state ── */
+			.empty-msg {
+				color: var(--muted);
+				font-style: italic;
+				padding: 16px 0;
+				font-size: 0.9rem;
+			}
+
+			/* ── Footer ── */
+			.footer {
+				text-align: center;
+				padding: 36px 0 12px;
+				font-size: 0.78rem;
+				color: var(--muted);
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container" id="app"></div>
+
+		<script id="report-data" type="application/json">
+			__REPORT_DATA__
+		</script>
+
+		<script>
+			(function () {
+				const raw = document.getElementById('report-data').textContent.trim();
+				let data;
+				try {
+					data = JSON.parse(raw);
+				} catch (e) {
+					document.getElementById('app').innerHTML =
+						'<p style="color:var(--red);padding:40px;">Failed to parse report data: ' + e.message + '</p>';
+					return;
+				}
+
+				const app = document.getElementById('app');
+				let html = '';
+
+				// ── Header ──
+				const eyeArt =
+					'\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u28C0\u28C0\u2864\u2864\u2864\u2864\u2864\u2864\u2864\u2864\u2864\u2864\u28C0\u28C0\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\n\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u28C0\u28C0\u2836\u285B\u2809\u2809\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2809\u2809\u285B\u2836\u2876\u28C0\u28C0\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\n\u2800\u2800\u2800\u2800\u28C0\u2864\u280B\u2801\u2800\u2800\u2800\u2800\u2800\u2800\u28C0\u28C0\u2864\u2864\u2864\u2864\u28C4\u28C0\u2800\u2800\u2800\u2800\u2800\u2800\u2801\u2809\u2836\u2864\u28C0\u2800\u2800\u2800\u2800\u2800\n\u2800\u2800\u28E0\u285E\u2801\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u28C0\u28F4\u283F\u285B\u2809\u2800\u2800\u2809\u285B\u283F\u28BF\u28E6\u28C0\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2801\u2873\u28C4\u2800\u2800\u2800\n\u28C0\u2874\u2801\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u28F4\u28BF\u280F\u2801\u2800\u2800\u28E0\u2864\u2864\u28C4\u2800\u2800\u2801\u283B\u28BF\u28E6\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2801\u28A6\u28C0\u2800\n\u285E\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u28C0\u28BE\u283F\u2801\u2800\u2800\u2800\u28BC\u28BF\u28BF\u28BF\u28BF\u28A7\u2800\u2800\u2800\u2801\u283F\u28B7\u28C0\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u28B3\u28C0\n\u2847\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u28BE\u28BF\u2801\u2800\u2800\u2800\u2800\u28BF\u28BF\u28BF\u28BF\u28BF\u28BF\u2800\u2800\u2800\u2800\u2801\u28BF\u28B7\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2847\n\u2800\u2839\u28C0\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2878\u28BF\u28A7\u28C0\u2800\u2800\u2800\u283B\u28BF\u28BF\u28BF\u280F\u2800\u2800\u2800\u28C0\u28BC\u28BF\u280F\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u285C\u2800\n\u2800\u2800\u2809\u28A6\u28C0\u2800\u2800\u2800\u2800\u2800\u2800\u2809\u283F\u28BF\u28E6\u28C0\u2800\u2800\u2801\u285B\u285B\u2801\u2800\u2800\u28C0\u28F4\u28BF\u283F\u2801\u2800\u2800\u2800\u2800\u2800\u2800\u28C0\u2874\u2801\u2800\n\u2800\u2800\u2800\u2809\u2836\u28C0\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2801\u285B\u283F\u28BF\u28F6\u2864\u2864\u2864\u28F4\u28F6\u28BF\u283F\u285B\u2801\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u28C0\u2874\u2801\u2800\u2800\n\u2800\u2800\u2800\u2800\u2800\u2801\u2873\u2836\u28C4\u28C0\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2801\u2809\u2809\u2809\u2809\u2801\u2800\u2800\u2800\u2800\u2800\u2800\u28C0\u28E0\u2876\u280B\u2801\u2800\u2800\u2800\u2800\u2800\n\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2809\u2873\u2836\u2864\u28C0\u28C0\u28C0\u28C0\u28C0\u28C0\u28C0\u28C0\u28C0\u28C0\u2864\u2836\u280B\u2809\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800';
+				html += '<div class="header">';
+				html += '<div class="header-top">';
+				html += '<div class="header-icon">' + eyeArt + '</div>';
+				html += '<h1>Test Verifier Report</h1>';
+				html += '</div>';
+				html += '<div class="header-meta">';
+				if (data.timestamp) html += '<span>&#128197; ' + esc(data.timestamp) + '</span>';
+				if (data.testPlanPath) html += '<span>&#128196; ' + esc(data.testPlanPath) + '</span>';
+				html += '</div></div>';
+
+				const s = data.summary || {};
+
+				// ── Summary Cards (At a Glance — always visible) ──
+				html += '<div class="cards">';
+				html += makeCard(
+					'Plan Coverage',
+					fmtFrac(s.coveredTests, s.totalPlanned),
+					statusPlan(s.coveredTests, s.totalPlanned),
+					fracDetail(s.coveredTests, s.totalPlanned, 'covered'),
+				);
+				html += makeCard(
+					'Stability',
+					fmtPct(s.stabilityPct),
+					statusStability(s.stabilityPct),
+					s.stabilityRuns ? s.stabilityRuns + ' total runs' : '',
+				);
+				html += makeCard(
+					'Violations',
+					s.violationCount != null ? String(s.violationCount) : '-',
+					statusViolation(s.violationCount),
+					s.violationCount === 0 ? 'Clean' : 'needs review',
+				);
+				html += makeCard(
+					'Coverage',
+					fmtDelta(s.coverageDelta),
+					statusCoverage(s.coverageDelta),
+					'line coverage',
+				);
+				html += makeCard(
+					'Mutations',
+					fmtPct(s.mutationPct),
+					statusMutation(s.mutationPct),
+					s.mutationCaught != null ? s.mutationCaught + '/' + s.mutationTotal + ' caught' : '',
+				);
+				html += '</div>';
+
+				// ── Test Breakdown (collapsed by default) ──
+				const tests = data.tests || [];
+				if (tests.length) {
+					html += section('breakdown', '&#128202; Test Breakdown', tests.length, false, () => {
+						let h =
+							'<table><thead><tr><th style="width:35%">Test</th><th>Stability</th><th>Violations</th><th>Time</th><th>Mutants</th><th>Coverage</th></tr></thead><tbody>';
+						for (let i = 0; i < tests.length; i++) {
+							const t = tests[i];
+							const rid = 'td-' + i;
+							h += '<tr class="expandable-row" onclick="toggleDetail(\'' + rid + '\',this)">';
+							h += '<td><span class="expand-icon">&#9654;</span>' + esc(t.title || 'Untitled') + '</td>';
+							h +=
+								'<td>' +
+								badgeFor(
+									statusStabilityCell(t.stabilityPass, t.stabilityTotal),
+									fmtFrac(t.stabilityPass, t.stabilityTotal),
+								) +
+								progressBar(t.stabilityPass, t.stabilityTotal) +
+								'</td>';
+							h +=
+								'<td>' +
+								badgeFor(
+									statusViolation(t.violationCount),
+									t.violationCount != null ? String(t.violationCount) : '-',
+								) +
+								'</td>';
+							h += '<td>' + (t.avgTime != null ? t.avgTime + 's' : '-') + '</td>';
+							h +=
+								'<td>' +
+								badgeFor(
+									statusMutationCell(t.mutantsCaught, t.mutantsTotal),
+									fmtFrac(t.mutantsCaught, t.mutantsTotal),
+								) +
+								'</td>';
+							h +=
+								'<td class="' +
+								(t.coverageDelta >= 0 ? 'val-green' : 'val-red') +
+								'">' +
+								fmtDelta(t.coverageDelta) +
+								'</td>';
+							h += '</tr>';
+
+							// Detail row
+							h +=
+								'<tr id="' +
+								rid +
+								'" style="display:none"><td colspan="6"><div class="test-detail"><div class="detail-grid">';
+
+							// Violations detail
+							h += '<div class="detail-block"><h4>&#9888; Violations</h4>';
+							if (t.violations && t.violations.length) {
+								for (const vl of t.violations) {
+									h += '<div class="violation-item">';
+									h += '<span class="violation-rule">Rule ' + esc(vl.ruleId || '') + '</span>';
+									if (vl.principle) h += ' &mdash; ' + esc(vl.principle);
+									if (vl.lines)
+										h +=
+											' <span style="color:var(--muted)">(lines ' +
+											esc(String(vl.lines)) +
+											')</span>';
+									h += '<br>' + esc(vl.issue || '');
+									if (vl.suggestedFix)
+										h += '<div class="violation-fix">Fix: ' + esc(vl.suggestedFix) + '</div>';
+									h += '</div>';
+								}
+							} else {
+								h += '<p class="empty-msg">No violations</p>';
+							}
+							h += '</div>';
+
+							// Mutations detail
+							h += '<div class="detail-block"><h4>&#129516; Mutations</h4>';
+							if (t.mutations && t.mutations.length) {
+								h += '<table><thead><tr><th>Mutation</th><th>Result</th></tr></thead><tbody>';
+								for (const mu of t.mutations) {
+									h += '<tr><td class="mono">' + esc(mu.description || '') + '</td>';
+									h +=
+										'<td>' +
+										badgeFor(mu.caught ? 'green' : 'red', mu.caught ? 'CAUGHT' : 'SURVIVED') +
+										'</td></tr>';
+								}
+								h += '</tbody></table>';
+							} else {
+								h += '<p class="empty-msg">No mutations tested</p>';
+							}
+							h += '</div>';
+
+							// Coverage detail (full width)
+							if (t.coverageFiles && t.coverageFiles.length) {
+								h += '</div>'; // close detail-grid
+								h +=
+									'<div class="detail-block" style="margin-top:16px"><h4>&#128200; File Coverage</h4>';
+								h +=
+									'<table><thead><tr><th>File</th><th>Before</th><th>After</th><th>Delta</th></tr></thead><tbody>';
+								for (const cf of t.coverageFiles) {
+									h += '<tr><td class="mono">' + esc(cf.file || '') + '</td>';
+									h += '<td>' + fmtPct(cf.before) + '</td>';
+									h += '<td>' + fmtPct(cf.after) + '</td>';
+									h +=
+										'<td class="' +
+										(cf.delta >= 0 ? 'val-green' : 'val-red') +
+										'">' +
+										fmtDelta(cf.delta) +
+										'</td></tr>';
+								}
+								h += '</tbody></table></div>';
+								h += '<div>'; // reopen for closing
+							}
+
+							h += '</div></div></td></tr>';
+						}
+						h += '</tbody></table>';
+						return h;
+					});
+				}
+
+				// ── Plan Coverage (collapsed) ──
+				if (data.planCoverage) {
+					const pc = data.planCoverage;
+					const hasMissing = pc.missingTests?.length;
+					const hasExtra = pc.extraTests?.length;
+					html += section('plan', '&#128203; Plan Coverage', null, false, () => {
+						let h = '<div class="section-body-padded">';
+						if (hasMissing) {
+							h += '<table><thead><tr><th>Planned Test Case</th><th>Status</th></tr></thead><tbody>';
+							for (const mt of pc.missingTests) {
+								h += '<tr><td>' + esc(mt) + '</td><td>' + badgeFor('amber', 'MISSING') + '</td></tr>';
+							}
+							h += '</tbody></table>';
+						} else {
+							h += '<div class="coverage-status-ok">&#10004; All planned tests are covered</div>';
+						}
+						if (hasExtra) {
+							h +=
+								'<p style="margin-top:16px;font-size:0.9rem;font-weight:600;color:var(--text)">Extra tests not in plan (' +
+								pc.extraTests.length +
+								'):</p>';
+							h +=
+								'<table style="margin-top:8px"><thead><tr><th>Location</th><th>Title</th></tr></thead><tbody>';
+							for (const et of pc.extraTests) {
+								h +=
+									'<tr><td class="mono">' +
+									esc(et.location || '') +
+									'</td><td>' +
+									esc(et.title || '') +
+									'</td></tr>';
+							}
+							h += '</tbody></table>';
+						}
+						h += '</div>';
+						return h;
+					});
+				}
+
+				// ── Violations Summary (collapsed) ──
+				if (data.allViolations?.length) {
+					html += section(
+						'violations',
+						'&#9888; Best Practices Violations',
+						data.allViolations.length,
+						false,
+						() => {
+							let h = '<div class="section-body-padded">';
+							for (const v of data.allViolations) {
+								h += '<div class="violation-item">';
+								h += '<span class="violation-rule">Rule ' + esc(v.ruleId || '') + '</span>';
+								h +=
+									' &mdash; <code class="mono" style="background:var(--border-light);padding:2px 8px;border-radius:6px">' +
+									esc(v.location || '') +
+									'</code>';
+								h += ' &mdash; ' + esc(v.description || '');
+								h += '</div>';
+							}
+							h += '</div>';
+							return h;
+						},
+					);
+				}
+
+				// ── Mutation Details (collapsed) ──
+				if (data.mutationSummary) {
+					const ms = data.mutationSummary;
+					html += section(
+						'mutations',
+						'&#129516; Mutation Details',
+						(ms.caught || 0) + '/' + (ms.total || 0) + ' caught',
+						false,
+						() => {
+							let h = '';
+							if (ms.mutations?.length) {
+								h +=
+									'<table><thead><tr><th>#</th><th>Mutation</th><th>Test</th><th>Result</th></tr></thead><tbody>';
+								for (let i = 0; i < ms.mutations.length; i++) {
+									const m = ms.mutations[i];
+									h += '<tr><td>' + (i + 1) + '</td>';
+									h += '<td class="mono">' + esc(m.mutation || m.description || '') + '</td>';
+									h += '<td>' + esc(m.test || '') + '</td>';
+									h +=
+										'<td>' +
+										badgeFor(m.caught ? 'green' : 'red', m.caught ? 'CAUGHT' : 'SURVIVED') +
+										'</td></tr>';
+								}
+								h += '</tbody></table>';
+							}
+							return h;
+						},
+					);
+				}
+
+				// ── Coverage Breakdown (collapsed) ──
+				if (data.coverageBreakdown?.length) {
+					html += section('coverage', '&#128200; Coverage Breakdown', null, false, () => {
+						let h =
+							'<table><thead><tr><th>File</th><th>Before</th><th>After</th><th>Change</th><th></th></tr></thead><tbody>';
+						for (const cb of data.coverageBreakdown) {
+							const st = statusCoverage(cb.delta);
+							h += '<tr><td class="mono">' + esc(cb.file || '') + '</td>';
+							h += '<td>' + fmtPct(cb.before) + '</td>';
+							h += '<td>' + fmtPct(cb.after) + '</td>';
+							h += '<td class="val-' + st + '">' + fmtDelta(cb.delta) + '</td>';
+							h += '<td>' + progressBar(cb.after, 100) + '</td></tr>';
+						}
+						h += '</tbody></table>';
+						return h;
+					});
+				}
+
+				// ── Overall Assessment (collapsed) ──
+				if (data.assessment) {
+					const a = data.assessment;
+					html += section('assessment', '&#128161; Overall Assessment', null, false, () => {
+						let h = '<div class="section-body-padded"><div class="assessment-grid">';
+						if (a.strengths?.length) {
+							h += '<div class="assessment-block strengths"><h4>Strengths</h4><ul>';
+							for (const s of a.strengths) h += '<li>' + esc(s) + '</li>';
+							h += '</ul></div>';
+						}
+						if (a.issues?.length) {
+							h += '<div class="assessment-block issues"><h4>Issues to Address</h4><ul>';
+							for (const s of a.issues) h += '<li>' + esc(s) + '</li>';
+							h += '</ul></div>';
+						}
+						h += '</div></div>';
+						return h;
+					});
+				}
+
+				// Footer
+				html += '<div class="footer">Generated by Test Verifier Skill</div>';
+				app.innerHTML = html;
+
+				// ── Helpers ──
+				function esc(s) {
+					const d = document.createElement('div');
+					d.textContent = s || '';
+					return d.innerHTML;
+				}
+				function fmtPct(v) {
+					return v != null ? v + '%' : '-';
+				}
+				function fmtDelta(v) {
+					if (v == null) return '-';
+					return (v >= 0 ? '+' : '') + v + '%';
+				}
+				function fmtFrac(a, b) {
+					return a != null && b != null ? a + '/' + b : '-';
+				}
+				function fracDetail(a, b, label) {
+					return a == null || b == null ? '' : a + ' of ' + b + ' ' + label;
+				}
+				function badgeFor(status, text) {
+					return '<span class="badge badge-' + status + '">' + text + '</span>';
+				}
+
+				function progressBar(val, total) {
+					if (val == null || total == null || total === 0) return '';
+					const pct = Math.round((val / total) * 100);
+					const st = pct === 100 ? 'green' : pct >= 50 ? 'amber' : 'red';
+					return (
+						'<div class="progress-bar"><div class="progress-fill progress-' +
+						st +
+						'" style="width:' +
+						pct +
+						'%"></div></div>'
+					);
+				}
+
+				function statusPlan(a, b) {
+					if (a == null || b == null) return 'green';
+					return a === b ? 'green' : a >= b * 0.5 ? 'amber' : 'red';
+				}
+				function statusStability(pct) {
+					return pct == null || pct === 100 ? 'green' : 'red';
+				}
+				function statusStabilityCell(pass, total) {
+					return pass == null || total == null || pass === total ? 'green' : 'red';
+				}
+				function statusViolation(count) {
+					if (count == null || count === 0) return 'green';
+					return count === 1 ? 'amber' : 'red';
+				}
+				function statusCoverage(d) {
+					if (d == null || d > 0) return 'green';
+					return d === 0 ? 'amber' : 'red';
+				}
+				function statusMutation(pct) {
+					if (pct == null || pct === 100) return 'green';
+					return pct >= 50 ? 'amber' : 'red';
+				}
+				function statusMutationCell(c, t) {
+					if (c == null || t == null) return 'green';
+					return statusMutation(t > 0 ? (c / t) * 100 : 100);
+				}
+
+				function makeCard(label, value, status, detail) {
+					return (
+						'<div class="card card-' +
+						status +
+						'"><div class="card-label">' +
+						label +
+						'</div><div class="card-value val-' +
+						status +
+						'">' +
+						value +
+						'</div>' +
+						(detail ? '<div class="card-detail">' + detail + '</div>' : '') +
+						'</div>'
+					);
+				}
+
+				function section(id, title, count, openByDefault, bodyFn) {
+					const cls = openByDefault ? 'section open' : 'section';
+					let h = '<div class="' + cls + '" id="sec-' + id + '">';
+					h += '<div class="section-header" onclick="toggle(\'sec-' + id + '\')">';
+					h +=
+						'<span class="section-title"><span class="icon">' +
+						title.split(' ')[0] +
+						'</span>' +
+						title.substring(title.indexOf(' ') + 1) +
+						'</span>';
+					let right = '<span class="chevron">&#9654;</span>';
+					if (count != null) right = '<span class="section-count">' + count + '</span>' + right;
+					h += '<div class="section-right">' + right + '</div>';
+					h += '</div>';
+					h += '<div class="section-body">' + bodyFn() + '</div></div>';
+					return h;
+				}
+
+				window.toggle = (id) => document.getElementById(id).classList.toggle('open');
+				window.toggleDetail = (id, row) => {
+					const el = document.getElementById(id);
+					const show = el.style.display === 'none';
+					el.style.display = show ? 'table-row' : 'none';
+					const icon = row.querySelector('.expand-icon');
+					if (icon) icon.innerHTML = show ? '&#9660;' : '&#9654;';
+				};
+			})();
+		</script>
+	</body>
+</html>

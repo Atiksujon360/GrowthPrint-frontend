@@ -6,6 +6,7 @@ import agencyReducer, {
   classifyRequest,
   clientApproveEstimate,
   createSupportRequest,
+  createMySupportRequest,
   payInvoice,
   sendApprovedOutreach,
   submitPublicInquiry,
@@ -29,8 +30,13 @@ import agencyReducer, {
   updateRequestStatus,
   fetchInvoices,
   fetchMyInvoices,
-  markInvoicePaid
+  markInvoicePaid,
+  fetchMyProposals,
+  recordProposalDecision
 } from '../features/agency/agencySlice.ts';
+
+// Import fetchOutreachDrafts separately to avoid naming conflict
+import { fetchOutreachDrafts } from '../features/agency/agencySlice.ts';
 import uiReducer, {
   addNotification,
   addToast,
@@ -53,6 +59,7 @@ export {
   validateSession,
   submitPublicInquiry,
   createSupportRequest,
+  createMySupportRequest,
   classifyRequest,
   attachEstimate,
   clientApproveEstimate,
@@ -80,6 +87,8 @@ export {
   fetchInvoices,
   fetchMyInvoices,
   markInvoicePaid,
+  fetchMyProposals,
+  recordProposalDecision,
   addToast,
   removeToast,
   clearAllToasts,
@@ -97,6 +106,8 @@ export {
   type AppNotification,
   type SystemAlert
 };
+
+export { fetchOutreachDrafts };
 
 export const store = configureStore({
   reducer: {

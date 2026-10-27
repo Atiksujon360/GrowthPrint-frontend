@@ -3,7 +3,6 @@ import assert from 'node:assert/strict';
 import {
   addNotification,
   addToast,
-  approveOutreachDraft,
   clearAllToasts,
   clearNotification,
   createSupportRequest,
@@ -13,7 +12,6 @@ import {
   markNotificationAsRead,
   payInvoice,
   removeToast,
-  sendApprovedOutreach,
   setActiveView,
   setShortcutsModalOpen,
   setSystemAlert,
@@ -26,6 +24,8 @@ import {
   updateLeadStage,
   fetchInvoices,
   markInvoicePaid,
+  approveOutreachDraft,
+  sendApprovedOutreach,
   store
 } from './index.ts';
 
@@ -35,10 +35,6 @@ test('Redux state keys and action type strings remain stable', () => {
     [
       switchRole,
       setActiveView,
-      submitPublicInquiry,
-      createSupportRequest,
-      approveOutreachDraft,
-      sendApprovedOutreach,
       updateLeadStage,
       triggerWorkflowRun,
       payInvoice,
@@ -60,10 +56,6 @@ test('Redux state keys and action type strings remain stable', () => {
     [
       'auth/switchRole',
       'auth/setActiveView',
-      'agency/submitPublicInquiry',
-      'agency/createSupportRequest',
-      'agency/approveOutreachDraft',
-      'agency/sendApprovedOutreach',
       'agency/updateLeadStage',
       'agency/triggerWorkflowRun',
       'agency/payInvoice',
@@ -84,7 +76,11 @@ test('Redux state keys and action type strings remain stable', () => {
     ]
   );
 
-  // Verify new invoice thunks are exported (async thunks don't have .type property)
+  // Verify async thunks are exported (async thunks don't have .type property)
   assert.strictEqual(typeof fetchInvoices, 'function');
   assert.strictEqual(typeof markInvoicePaid, 'function');
+  assert.strictEqual(typeof approveOutreachDraft, 'function');
+  assert.strictEqual(typeof sendApprovedOutreach, 'function');
+  assert.strictEqual(typeof createSupportRequest, 'function');
+  assert.strictEqual(typeof submitPublicInquiry, 'function');
 });

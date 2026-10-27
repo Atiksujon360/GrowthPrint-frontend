@@ -61,7 +61,7 @@ const LOGIN_CONTENT: Record<
       "Review progress, approve estimates, submit requests, and stay close to the work without chasing updates.",
     workspace: "GrowthPrint Client Portal",
     user: "Sarah Chen",
-    email: "sarah.chen@meridianretail.com",
+    email: "clientb@growthprint.dev",
     avatarUrl:
       "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=120&auto=format&fit=crop&q=80",
     accent: "from-cyan-600 via-blue-600 to-slate-950",
