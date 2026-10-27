@@ -23,39 +23,54 @@ interface WorkspaceLoginScreenProps {
   onBackToPublic: () => void;
 }
 
-const LOGIN_CONTENT: Record<WorkspaceLoginRole, {
-  eyebrow: string;
-  title: string;
-  description: string;
-  workspace: string;
-  user: string;
-  email: string;
-  avatarUrl: string;
-  accent: string;
-  bullets: string[];
-}> = {
+const LOGIN_CONTENT: Record<
+  WorkspaceLoginRole,
+  {
+    eyebrow: string;
+    title: string;
+    description: string;
+    workspace: string;
+    user: string;
+    email: string;
+    avatarUrl: string;
+    accent: string;
+    bullets: string[];
+  }
+> = {
   ADMIN: {
-    eyebrow: 'Private founder workspace',
-    title: 'Run the work behind the work.',
-    description: 'Your operating system for delivery, growth, automation, and the decisions that keep every client moving forward.',
-    workspace: 'GrowthPrint Admin',
-    user: 'Alex Vance',
-    email: 'alex@growthprint.agency',
-    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
-    accent: 'from-blue-600 via-indigo-600 to-slate-950',
-    bullets: ['Executive visibility across every account', 'Human approval gates for every automation', 'A clear audit trail for every decision']
+    eyebrow: "Private founder workspace",
+    title: "Run the work behind the work.",
+    description:
+      "Your operating system for delivery, growth, automation, and the decisions that keep every client moving forward.",
+    workspace: "GrowthPrint Admin",
+    user: "Alex Vance",
+    email: "admin@growthprint.dev",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80",
+    accent: "from-blue-600 via-indigo-600 to-slate-950",
+    bullets: [
+      "Executive visibility across every account",
+      "Human approval gates for every automation",
+      "A clear audit trail for every decision",
+    ],
   },
   CLIENT: {
-    eyebrow: 'Secure client portal',
-    title: 'Everything your team needs, in one place.',
-    description: 'Review progress, approve estimates, submit requests, and stay close to the work without chasing updates.',
-    workspace: 'GrowthPrint Client Portal',
-    user: 'Sarah Chen',
-    email: 'sarah.chen@meridianretail.com',
-    avatarUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=120&auto=format&fit=crop&q=80',
-    accent: 'from-cyan-600 via-blue-600 to-slate-950',
-    bullets: ['One shared view of projects and milestones', 'Fast approvals with a complete context trail', 'Direct, transparent communication with GrowthPrint']
-  }
+    eyebrow: "Secure client portal",
+    title: "Everything your team needs, in one place.",
+    description:
+      "Review progress, approve estimates, submit requests, and stay close to the work without chasing updates.",
+    workspace: "GrowthPrint Client Portal",
+    user: "Sarah Chen",
+    email: "sarah.chen@meridianretail.com",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=120&auto=format&fit=crop&q=80",
+    accent: "from-cyan-600 via-blue-600 to-slate-950",
+    bullets: [
+      "One shared view of projects and milestones",
+      "Fast approvals with a complete context trail",
+      "Direct, transparent communication with GrowthPrint",
+    ],
+  },
 };
 
 export function WorkspaceLoginScreen({ role, onSignIn, onBackToPublic }: WorkspaceLoginScreenProps) {

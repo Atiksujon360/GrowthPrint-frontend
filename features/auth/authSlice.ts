@@ -4,29 +4,31 @@ import { apiClient } from '../../lib/api/client.ts';
 
 export const DEMO_USERS: Record<UserRole, User> = {
   ADMIN: {
-    id: 'user-founder',
-    name: 'Alex Vance',
-    email: 'alex@growthprint.agency',
-    role: 'ADMIN',
-    title: 'Founder & Principal Engineer',
-    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80'
+    id: "user-founder",
+    name: "Alex Vance",
+    email: "admin@growthprint.dev",
+    role: "ADMIN",
+    title: "Founder & Principal Engineer",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80",
   },
   CLIENT: {
-    id: 'user-client-meridian',
-    name: 'Sarah Chen',
-    email: 'sarah.chen@meridianretail.com',
-    role: 'CLIENT',
-    clientId: 'client-meridian',
-    clientName: 'Meridian Retail Group',
-    title: 'VP of Digital Operations',
-    avatarUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=120&auto=format&fit=crop&q=80'
+    id: "user-client-meridian",
+    name: "Sarah Chen",
+    email: "sarah.chen@meridianretail.com",
+    role: "CLIENT",
+    clientId: "client-meridian",
+    clientName: "Meridian Retail Group",
+    title: "VP of Digital Operations",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=120&auto=format&fit=crop&q=80",
   },
   GUEST: {
-    id: 'user-guest',
-    name: 'Public Visitor',
-    email: 'visitor@company.com',
-    role: 'GUEST'
-  }
+    id: "user-guest",
+    name: "Public Visitor",
+    email: "visitor@company.com",
+    role: "GUEST",
+  },
 };
 
 // Check if mock mode is enabled

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks.ts';
-import { addNotification, addToast, markInvoicePaid, fetchInvoices } from '../../../store/index.ts';
+import { addNotification, addToast, markInvoicePaid, fetchMyInvoices } from '../../../store/index.ts';
 import { StatusBadge } from '../../../components/ui/Badges.tsx';
 import { EmptyState } from '../../../components/ui/AsyncState.tsx';
 import { CreditCard, Download, CheckCircle2, ArrowRight, FileText, RefreshCw } from 'lucide-react';
@@ -8,8 +8,7 @@ import { CreditCard, Download, CheckCircle2, ArrowRight, FileText, RefreshCw } f
 export function PortalInvoicesView() {
   const dispatch = useAppDispatch();
   const { currentUser } = useAppSelector(state => state.auth);
-  const clientId = currentUser.clientId || 'client-meridian';
-  const invoices = useAppSelector(state => state.agency.invoices.filter(i => i.clientId === clientId));
+  const invoices = useAppSelector(state => state.agency.invoices);
   const isLoadingInvoices = useAppSelector(state => state.agency.isLoadingInvoices);
   const invoicesError = useAppSelector(state => state.agency.invoicesError);
 
@@ -17,13 +16,13 @@ export function PortalInvoicesView() {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchInvoices());
+    dispatch(fetchMyInvoices());
   }, [dispatch]);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
-      await dispatch(fetchInvoices()).unwrap();
+      await dispatch(fetchMyInvoices()).unwrap();
       dispatch(addToast({
         type: 'success',
         title: 'Invoices Refreshed',

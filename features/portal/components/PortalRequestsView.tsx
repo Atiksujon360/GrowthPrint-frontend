@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks.ts';
-import { createSupportRequest, clientApproveEstimate, addToast, addNotification, fetchSupportRequests, approveEstimate } from '../../../store/index.ts';
+import { createSupportRequest, clientApproveEstimate, addToast, addNotification, fetchMySupportRequests, approveEstimate } from '../../../store/index.ts';
 import { StatusBadge } from '../../../components/ui/Badges.tsx';
 import { EmptyState } from '../../../components/ui/AsyncState.tsx';
 import { 
@@ -25,7 +25,7 @@ export function PortalRequestsView({ isModalOpen, onOpenModal, onCloseModal }: P
   const dispatch = useAppDispatch();
   const { currentUser } = useAppSelector(state => state.auth);
   const clientId = currentUser.clientId || 'client-meridian';
-  const requests = useAppSelector(state => state.agency.requests.filter(r => r.clientId === clientId));
+  const requests = useAppSelector(state => state.agency.requests);
   const projects = useAppSelector(state => state.agency.projects.filter(p => p.clientId === clientId));
   const isLoadingRequests = useAppSelector(state => state.agency.isLoadingRequests);
   const requestsError = useAppSelector(state => state.agency.requestsError);
@@ -44,11 +44,11 @@ export function PortalRequestsView({ isModalOpen, onOpenModal, onCloseModal }: P
 
   // Fetch support requests on mount
   useEffect(() => {
-    dispatch(fetchSupportRequests());
+    dispatch(fetchMySupportRequests());
   }, [dispatch]);
 
   const handleRefresh = () => {
-    dispatch(fetchSupportRequests());
+    dispatch(fetchMySupportRequests());
   };
 
   const handleCreateRequest = (e: React.FormEvent) => {

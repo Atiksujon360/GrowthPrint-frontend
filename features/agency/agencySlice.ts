@@ -584,6 +584,62 @@ export const fetchSupportRequests = createAsyncThunk(
   }
 );
 
+// Async thunk for client-specific support requests
+export const fetchMySupportRequests = createAsyncThunk(
+  'agency/fetchMySupportRequests',
+  async (_, { rejectWithValue }) => {
+    if (isMockMode) {
+      return INITIAL_SUPPORT_REQUESTS;
+    }
+
+    try {
+      const response = await agencyApi.support.getMyRequests();
+      const backendRequests = response.data as BackendSupportRequestResponse[];
+
+      // Map backend response to frontend SupportRequest type
+      const requests: SupportRequest[] = backendRequests.map(br => ({
+        id: br.id,
+        reference: br.reference,
+        clientId: br.clientId,
+        clientName: br.clientName,
+        projectId: br.projectId,
+        projectName: br.projectName,
+        title: br.title,
+        category: br.category as SupportCategory,
+        description: br.description,
+        businessImpact: br.businessImpact as 'LOW' | 'MEDIUM' | 'CRITICAL_BLOCKER',
+        urgency: br.urgency as 'NORMAL' | 'URGENT',
+        status: br.status as SupportRequestStatus,
+        createdAt: br.createdAt,
+        updatedAt: br.updatedAt,
+        adminNotes: br.adminNotes,
+        resolutionSummary: br.resolutionSummary,
+        estimate: br.estimate ? {
+          id: br.estimate.id,
+          requestId: br.estimate.requestId,
+          estimatedHours: parseFloat(br.estimate.estimatedHours),
+          hourlyRate: parseFloat(br.estimate.hourlyRate),
+          subtotal: parseFloat(br.estimate.subtotal),
+          discount: parseFloat(br.estimate.discount),
+          totalAmount: parseFloat(br.estimate.totalAmount),
+          currency: br.estimate.currency,
+          deliveryTimelineDays: br.estimate.deliveryTimelineDays,
+          explanation: br.estimate.explanation,
+          createdAt: br.estimate.createdAt,
+          status: br.estimate.status as 'PENDING_APPROVAL' | 'ACCEPTED' | 'DECLINED',
+          acceptedAt: br.estimate.acceptedAt,
+          acceptedBy: br.estimate.acceptedBy
+        } : undefined
+      }));
+
+      return requests;
+    } catch (error: any) {
+      console.error('Failed to fetch support requests:', error.message);
+      return rejectWithValue(error.message || 'Failed to fetch support requests');
+    }
+  }
+);
+
 export const classifyRequestThunk = createAsyncThunk(
   'agency/classifyRequest',
   async ({ requestId, category, adminNotes }: { requestId: string; category: SupportCategory; adminNotes: string }, { rejectWithValue }) => {
@@ -852,6 +908,52 @@ export const fetchInvoices = createAsyncThunk(
     } catch (error: any) {
       console.error('Failed to fetch invoices:', error.message);
       return rejectWithValue(error.message || 'Failed to fetch invoices');
+    }
+  }
+);
+
+// Async thunk for client-specific invoices
+export const fetchMyInvoices = createAsyncThunk(
+  'agency/fetchMyInvoices',
+  async (_, { rejectWithValue }) => {
+    if (isMockMode) {
+      return INITIAL_INVOICES;
+    }
+
+    try {
+      const response = await agencyApi.invoices.getMyInvoices();
+      const backendInvoices = response.data as BackendInvoiceResponse[];
+
+      // Map backend response to frontend Invoice type
+      const invoices: Invoice[] = backendInvoices.map(bi => ({
+        id: bi.id,
+        invoiceNumber: bi.invoiceNumber,
+        clientId: bi.clientId,
+        clientName: bi.clientName,
+        clientEmail: bi.clientEmail,
+        issueDate: bi.issueDate,
+        dueDate: bi.dueDate,
+        lineItems: bi.lineItems.map((bli: any) => ({
+          id: bli.id,
+          description: bli.description,
+          quantity: bli.quantity,
+          unitPrice: parseFloat(bli.unitPrice),
+          amount: parseFloat(bli.amount)
+        })),
+        subtotal: parseFloat(bi.subtotal),
+        taxPercent: parseFloat(bi.taxPercent),
+        taxAmount: parseFloat(bi.taxAmount),
+        totalAmount: parseFloat(bi.totalAmount),
+        currency: bi.currency,
+        status: bi.status as 'DRAFT' | 'ISSUED' | 'PAID' | 'OVERDUE' | 'VOID',
+        paidAt: bi.paidAt,
+        notes: bi.notes
+      }));
+
+      return invoices;
+    } catch (error: any) {
+      console.error('Failed to fetch my invoices:', error.message);
+      return rejectWithValue(error.message || 'Failed to fetch my invoices');
     }
   }
 );
@@ -1406,6 +1508,19 @@ const agencySlice = createSlice({
         state.isLoadingRequests = false;
         state.requestsError = action.payload as string || 'Failed to fetch support requests';
       })
+      .addCase(fetchMySupportRequests.pending, (state) => {
+        state.isLoadingRequests = true;
+        state.requestsError = null;
+      })
+      .addCase(fetchMySupportRequests.fulfilled, (state, action) => {
+        state.isLoadingRequests = false;
+        state.requests = action.payload;
+        state.requestsError = null;
+      })
+      .addCase(fetchMySupportRequests.rejected, (state, action) => {
+        state.isLoadingRequests = false;
+        state.requestsError = action.payload as string || 'Failed to fetch my support requests';
+      })
       .addCase(classifyRequestThunk.fulfilled, (state, action) => {
         const index = state.requests.findIndex(r => r.id === action.payload.id);
         if (index !== -1) {
@@ -1461,6 +1576,19 @@ const agencySlice = createSlice({
       .addCase(fetchInvoices.rejected, (state, action) => {
         state.isLoadingInvoices = false;
         state.invoicesError = action.payload as string || 'Failed to fetch invoices';
+      })
+      .addCase(fetchMyInvoices.pending, (state) => {
+        state.isLoadingInvoices = true;
+        state.invoicesError = null;
+      })
+      .addCase(fetchMyInvoices.fulfilled, (state, action) => {
+        state.isLoadingInvoices = false;
+        state.invoices = action.payload;
+        state.invoicesError = null;
+      })
+      .addCase(fetchMyInvoices.rejected, (state, action) => {
+        state.isLoadingInvoices = false;
+        state.invoicesError = action.payload as string || 'Failed to fetch my invoices';
       })
       .addCase(markInvoicePaidThunk.fulfilled, (state, action) => {
         const index = state.invoices.findIndex(i => i.id === action.payload.id);

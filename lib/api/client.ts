@@ -257,6 +257,7 @@ export const agencyApi = {
   // Support & Service Requests
   support: {
     getAll: () => apiClient.get('/support-requests'),
+    getMyRequests: () => apiClient.get('/support-requests/my'),
     create: (data: any) => apiClient.post('/support-requests', data),
     classify: (id: string, classification: any) => apiClient.post(`/support-requests/${id}/classify`, classification),
     attachEstimate: (id: string, estimate: any) => apiClient.post(`/support-requests/${id}/estimate`, estimate),
@@ -267,6 +268,7 @@ export const agencyApi = {
   // Invoices & Billing
   invoices: {
     getAll: () => apiClient.get('/invoices'),
+    getMyInvoices: () => apiClient.get('/invoices/my'),
     getById: (id: string) => apiClient.get(`/invoices/${id}`),
     markPaid: (id: string, details?: any) => apiClient.post(`/invoices/${id}/reconcile`, details)
   },

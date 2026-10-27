@@ -24,9 +24,11 @@ import agencyReducer, {
   createProject,
   updateProjectStatus,
   fetchSupportRequests,
+  fetchMySupportRequests,
   approveEstimate,
   updateRequestStatus,
   fetchInvoices,
+  fetchMyInvoices,
   markInvoicePaid
 } from '../features/agency/agencySlice.ts';
 import uiReducer, {
@@ -72,9 +74,11 @@ export {
   createProject,
   updateProjectStatus,
   fetchSupportRequests,
+  fetchMySupportRequests,
   approveEstimate,
   updateRequestStatus,
   fetchInvoices,
+  fetchMyInvoices,
   markInvoicePaid,
   addToast,
   removeToast,
