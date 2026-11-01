@@ -2,12 +2,19 @@ import React, { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks.ts';
 import { addNotification, addToast } from '../../../store/index.ts';
 import { Send, User, Bot, Clock, Paperclip } from 'lucide-react';
+import { isMockModeEnv } from '../../../lib/api/client.ts';
+
+/**
+ * There is no messaging API in MVP-1. Real mode shows no conversation and does not pretend to send;
+ * the demo conversation and local sending exist only in mock mode.
+ */
+const MESSAGING_AVAILABLE = isMockModeEnv();
 
 export function PortalMessagesView() {
   const dispatch = useAppDispatch();
   const { currentUser } = useAppSelector(state => state.auth);
 
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState(!MESSAGING_AVAILABLE ? [] : [
     {
       id: 'm1',
       sender: 'GrowthPrint Engineering Lead',
@@ -35,7 +42,7 @@ export function PortalMessagesView() {
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputVal.trim()) return;
+    if (!MESSAGING_AVAILABLE || !inputVal.trim()) return;
 
     setMessages(prev => [
       ...prev,
@@ -114,18 +121,28 @@ export function PortalMessagesView() {
         })}
       </div>
 
+      {!MESSAGING_AVAILABLE && (
+        <p role="note" className="mx-4 mb-2 text-xs text-slate-600 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
+          In-portal messaging is not available yet. Please contact your GrowthPrint account manager by email.
+        </p>
+      )}
+
       {/* Input */}
       <form onSubmit={handleSend} className="p-4 border-t border-slate-200 bg-white flex items-center gap-3">
+        <label htmlFor="portal-message-input" className="sr-only">Message to your technical lead</label>
         <input
+          id="portal-message-input"
           type="text"
+          disabled={!MESSAGING_AVAILABLE}
           value={inputVal}
           onChange={(e) => setInputVal(e.target.value)}
           placeholder="Type a message to your technical lead..."
-          className="flex-1 px-3.5 py-2 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+          className="flex-1 px-3.5 py-2 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:bg-slate-50 disabled:cursor-not-allowed"
         />
         <button
           type="submit"
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-xs flex items-center gap-1.5"
+          disabled={!MESSAGING_AVAILABLE}
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-xs flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <span>Send</span>
           <Send className="w-3.5 h-3.5" />

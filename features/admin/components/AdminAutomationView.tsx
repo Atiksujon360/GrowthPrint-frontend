@@ -1,9 +1,25 @@
 import React, { useState } from 'react';
+import { isMockModeEnv } from '../../../lib/api/client.ts';
+import { EmptyState } from '../../../components/ui/AsyncState.tsx';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks.ts';
 import { triggerWorkflowRun, addToast, addNotification } from '../../../store/index.ts';
 import { Workflow, Play, CheckCircle2, Clock, ShieldCheck, AlertCircle, ArrowUpRight } from 'lucide-react';
 
 export function AdminAutomationView() {
+  if (!isMockModeEnv()) {
+    return (
+      <div className="space-y-6">
+        <EmptyState
+          title="Workflow automation is not connected yet"
+          message="Automations have no backend in MVP-1, so nothing can be listed or run here. Workflows shown in demo (mock) mode are sample data."
+        />
+      </div>
+    );
+  }
+  return <AdminAutomationViewDemo />;
+}
+
+function AdminAutomationViewDemo() {
   const dispatch = useAppDispatch();
   const workflows = useAppSelector(state => state.agency.workflows);
   const [runningId, setRunningId] = useState<string | null>(null);

@@ -35,24 +35,28 @@ import {
   INITIAL_ACTIVITY_EVENTS
 } from './initialData.ts';
 import { calculateLeadScore, calculateEstimateCost, calculateInvoiceTotals } from '../../lib/domain-rules.ts';
-import { agencyApi } from '../../lib/api/client.ts';
+import { agencyApi, isMockModeEnv } from '../../lib/api/client.ts';
 
 import type { AgencyState } from '../../types/agency.ts';
 
-// Check if mock mode is enabled
-const isMockMode = process.env.NEXT_PUBLIC_USE_MOCK_API !== 'false';
+// Mock mode is opt-in (NEXT_PUBLIC_USE_MOCK_API === 'true'); see isMockModeEnv.
+const isMockMode = isMockModeEnv();
 
+/**
+ * Demo data is loaded only in mock mode. In real-API mode every collection starts empty and is filled
+ * exclusively from backend responses, so a failed request can never leave demo records on screen.
+ */
 const initialAgencyState: AgencyState = {
-  clients: INITIAL_CLIENTS,
-  projects: INITIAL_PROJECTS,
-  tasks: INITIAL_TASKS,
-  requests: INITIAL_SUPPORT_REQUESTS,
-  leads: INITIAL_LEADS,
-  outreachDrafts: INITIAL_OUTREACH_DRAFTS,
-  proposals: INITIAL_PROPOSALS,
-  invoices: INITIAL_INVOICES,
-  workflows: INITIAL_WORKFLOWS,
-  activities: INITIAL_ACTIVITY_EVENTS,
+  clients: isMockMode ? INITIAL_CLIENTS : [],
+  projects: isMockMode ? INITIAL_PROJECTS : [],
+  tasks: isMockMode ? INITIAL_TASKS : [],
+  requests: isMockMode ? INITIAL_SUPPORT_REQUESTS : [],
+  leads: isMockMode ? INITIAL_LEADS : [],
+  outreachDrafts: isMockMode ? INITIAL_OUTREACH_DRAFTS : [],
+  proposals: isMockMode ? INITIAL_PROPOSALS : [],
+  invoices: isMockMode ? INITIAL_INVOICES : [],
+  workflows: isMockMode ? INITIAL_WORKFLOWS : [],
+  activities: isMockMode ? INITIAL_ACTIVITY_EVENTS : [],
   isLoadingClients: false,
   isLoadingLeads: false,
   isLoadingProjects: false,
@@ -597,6 +601,13 @@ export const createSupportRequestThunk = createAsyncThunk(
   }
 );
 
+/** Backend acknowledgement for POST /public/inquiries (InquiryAcceptedResponse). */
+export interface InquiryAcknowledgement {
+  referenceNumber: string;
+  status: string;
+  receivedAt: string;
+}
+
 export const submitPublicInquiryThunk = createAsyncThunk(
   'agency/submitPublicInquiry',
   async (inquiryData: {
@@ -606,56 +617,33 @@ export const submitPublicInquiryThunk = createAsyncThunk(
     website?: string;
     serviceCategory: ServiceCategory;
     projectType: string;
-    budgetRange: string;
-    preferredTimeline: string;
+    /** Optional on the backend; send '' or omit when the visitor did not choose one. */
+    budgetRange?: string;
+    preferredTimeline?: string;
     projectDescription: string;
     preferredContactMethod: 'EMAIL' | 'PHONE' | 'VIDEO_CALL';
     consent: boolean;
-  }, { rejectWithValue }) => {
+  }, { rejectWithValue }): Promise<InquiryAcknowledgement | ReturnType<typeof rejectWithValue>> => {
     if (isMockMode) {
-      // In mock mode, use the local action logic
-      return rejectWithValue('Mock mode: use local submitPublicInquiry action');
+      // Explicit development mode only: simulate the backend acknowledgement.
+      return {
+        referenceNumber: `GP-INQ-DEMO-${Math.random().toString(16).slice(2, 10).toUpperCase()}`,
+        status: 'RECEIVED',
+        receivedAt: new Date().toISOString()
+      };
     }
 
     try {
-      const response = await agencyApi.publicInquiries.submit(inquiryData);
-      const backendResponse = response.data as any;
-
-      // Map backend response to Lead type
-      const lead: Lead = {
-        id: backendResponse.id,
-        companyName: inquiryData.company,
-        industry: 'Unknown', // Not provided in public inquiry
-        location: 'Unknown', // Not provided in public inquiry
-        contactName: inquiryData.name,
-        contactEmail: inquiryData.businessEmail,
-        contactTitle: undefined,
-        source: 'INBOUND_INQUIRY', // Public inquiries come from web submission
-        sourceUrl: undefined,
-        discoveredDate: backendResponse.receivedAt || new Date().toISOString(),
-        targetService: inquiryData.serviceCategory,
-        identifiedProblem: inquiryData.projectDescription.substring(0, 2000),
-        researchSummary: inquiryData.projectDescription,
-        qualificationScore: 70, // Default score for founder-sourced
-        qualificationBreakdown: {
-          businessFit: 18,
-          evidenceOfNeed: 17,
-          contactability: 18,
-          serviceRelevance: 17,
-          totalScore: 70
-        },
-        pipelineStage: 'DISCOVERED',
-        nextAction: 'Contact for discovery call',
-        doNotContact: false,
-        notes: `Budget: ${inquiryData.budgetRange}, Timeline: ${inquiryData.preferredTimeline}`,
-        website: inquiryData.website || '',
-        createdAt: backendResponse.receivedAt || new Date().toISOString(),
-        updatedAt: backendResponse.receivedAt || new Date().toISOString()
+      // Blank optional fields are omitted instead of being replaced with invented defaults.
+      const payload = {
+        ...inquiryData,
+        website: inquiryData.website?.trim() || undefined,
+        budgetRange: inquiryData.budgetRange?.trim() || undefined,
+        preferredTimeline: inquiryData.preferredTimeline?.trim() || undefined
       };
-
-      return lead;
+      const response = await agencyApi.publicInquiries.submit(payload);
+      return response.data as InquiryAcknowledgement;
     } catch (error: any) {
-      console.error('Failed to submit public inquiry:', error.message);
       return rejectWithValue(error.message || 'Failed to submit public inquiry');
     }
   }
@@ -2011,9 +1999,8 @@ const agencySlice = createSlice({
       .addCase(createSupportRequestThunk.rejected, (state, action) => {
         console.error('Failed to create support request:', action.payload);
       })
-      .addCase(submitPublicInquiryThunk.fulfilled, (state, action) => {
-        state.leads.unshift(action.payload);
-      })
+      // A public inquiry is stored server-side as a raw inquiry, not a CRM lead: nothing to add here.
+      // (Previously a fabricated lead with invented scores and no id was inserted.)
       .addCase(submitPublicInquiryThunk.rejected, (state, action) => {
         console.error('Failed to submit public inquiry:', action.payload);
       })
@@ -2169,6 +2156,18 @@ const agencySlice = createSlice({
       .addCase(recordProposalDecision.rejected, (state, action) => {
         console.error('Failed to record proposal decision:', action.payload);
       });
+
+    // Session boundaries: never keep another user's business data in memory.
+    builder
+      .addMatcher(
+        (action): action is PayloadAction<unknown> =>
+          action.type === 'auth/logout/fulfilled' ||
+          action.type === 'auth/login/fulfilled' ||
+          action.type === 'auth/clearAuth' ||
+          (action.type === 'auth/validateSession/rejected' &&
+            (action as { payload?: unknown }).payload !== 'Validation already in progress'),
+        () => initialAgencyState
+      );
   }
 });
 

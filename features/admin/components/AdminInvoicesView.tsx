@@ -14,7 +14,6 @@ export function AdminInvoicesView() {
   const isLoadingInvoices = useAppSelector(state => state.agency.isLoadingInvoices);
   const invoicesError = useAppSelector(state => state.agency.invoicesError);
   const [statusFilter, setStatusFilter] = useState('ALL');
-  const [downloadSuccess, setDownloadSuccess] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
@@ -68,15 +67,6 @@ export function AdminInvoicesView() {
     }
   };
 
-  const handleDownload = (invNum: string) => {
-    setDownloadSuccess(invNum);
-    dispatch(addToast({
-      type: 'info',
-      title: 'Invoice Downloaded',
-      message: `Downloaded PDF receipt for ${invNum}.`
-    }));
-    setTimeout(() => setDownloadSuccess(null), 2500);
-  };
 
   const handleExportCsv = () => {
     exportToCsv('growthprint-invoices.csv', invoices.map(i => ({
@@ -187,11 +177,13 @@ export function AdminInvoicesView() {
             </button>
           )}
 
+          {/* No invoice PDF endpoint exists yet: disabled instead of reporting a download that never happened. */}
           <button
-            onClick={() => handleDownload(row.invoiceNumber)}
-            className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
-            title="Download PDF"
-            aria-label={`Download PDF invoice ${row.invoiceNumber}`}
+            type="button"
+            disabled
+            className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            title="PDF download is not available yet"
+            aria-label={`Download PDF for invoice ${row.invoiceNumber} (not available yet)`}
           >
             <Download className="w-3.5 h-3.5" />
           </button>
@@ -260,12 +252,6 @@ export function AdminInvoicesView() {
         </div>
       </div>
 
-      {downloadSuccess && (
-        <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs flex items-center gap-2 animate-in fade-in">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-          <span>Downloaded official tax invoice PDF for {downloadSuccess}.</span>
-        </div>
-      )}
 
       {invoicesError && (
         <div className="p-3 bg-red-50 border border-red-200 text-red-800 rounded-xl text-xs flex items-center gap-2">

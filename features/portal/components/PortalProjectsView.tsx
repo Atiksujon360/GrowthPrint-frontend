@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAppSelector, useAppDispatch } from '../../../store/hooks.ts';
+import { scopeToClient } from '../../../lib/access.ts';
+import { isMockModeEnv } from '../../../lib/api/client.ts';
 import { fetchMyProjects, addToast } from '../../../store/index.ts';
 import { StatusBadge, PriorityBadge } from '../../../components/ui/Badges.tsx';
 import { LoadingSpinner } from '../../../components/ui/LoadingSpinner.tsx';
@@ -9,13 +11,15 @@ import { CheckCircle2, Clock, Calendar, FileText, Layers, RefreshCw, AlertCircle
 export function PortalProjectsView() {
   const dispatch = useAppDispatch();
   const { currentUser } = useAppSelector(state => state.auth);
-  const clientId = currentUser.clientId || 'client-meridian';
+  // Real-API mode: the store only holds this client's /my data, so nothing is re-filtered here
+  // (see lib/access.ts scopeToClient). Mock mode filters the demo data to the demo client.
+  const mockMode = isMockModeEnv();
   const projects = useAppSelector(state => state.agency.projects);
   const isLoadingProjects = useAppSelector(state => state.agency.isLoadingProjects);
   const projectsError = useAppSelector(state => state.agency.projectsError);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const tasks = useAppSelector(state => state.agency.tasks.filter(t => t.clientId === clientId && t.isClientVisible));
+  const tasks = useAppSelector(state => scopeToClient(state.agency.tasks, currentUser.clientId, mockMode).filter(t => t.isClientVisible));
 
   useEffect(() => {
     dispatch(fetchMyProjects());

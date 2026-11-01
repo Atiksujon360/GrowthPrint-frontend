@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'motion/react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks.ts';
-import { approveOutreachDraft, updateRequestStatus, payInvoice } from '../../../store/index.ts';
+import { fetchClients, fetchCrmLeads, fetchProjects, fetchSupportRequests, fetchInvoices, fetchOutreachDrafts } from '../../../store/index.ts';
+import { buildCashFlowSeries, countPipeline, countActiveClients, countRetainerClients } from '../../../lib/dashboardMetrics.ts';
 import { StatCard, StatusBadge } from '../../../components/ui/Badges.tsx';
 import { 
   Users, 
@@ -45,9 +46,16 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
   const leads = useAppSelector(state => state.agency.leads);
   const drafts = useAppSelector(state => state.agency.outreachDrafts);
   const invoices = useAppSelector(state => state.agency.invoices);
-  const activities = useAppSelector(state => state.agency.activities);
 
-  const [dateRange, setDateRange] = useState('OCT_2026');
+  // The dashboard loads its own data instead of showing whatever the store happened to hold.
+  useEffect(() => {
+    dispatch(fetchClients());
+    dispatch(fetchCrmLeads());
+    dispatch(fetchProjects());
+    dispatch(fetchSupportRequests());
+    dispatch(fetchInvoices());
+    dispatch(fetchOutreachDrafts());
+  }, [dispatch]);
 
   // Computed metrics
   const pendingDrafts = drafts.filter(d => d.status === 'AWAITING_HUMAN_APPROVAL');
@@ -65,22 +73,13 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
 
   const overdueInvoices = invoices.filter(i => i.status === 'OVERDUE');
 
-  // Qualified pipeline value (e.g. sum of estimated project sizes)
-  const qualifiedLeads = leads.filter(l => l.qualificationScore >= 80);
-  const qualifiedPipelineValue = qualifiedLeads.length * 18500; // Average project value $18.5k
-  const weightedPipelineForecast = Math.round(qualifiedPipelineValue * 0.45); // 45% closing probability
+  // Real counts only (previously: invented $18.5k-per-lead, 45% close rate and $1.8k-per-retainer figures).
+  const pipeline = countPipeline(leads);
+  const activeClients = countActiveClients(clients);
+  const retainerClients = countRetainerClients(clients);
 
-  // Active retainers
-  const activeRetainers = clients.filter(c => c.retainerTier && c.retainerTier !== 'NONE');
-  const mrrEstimate = activeRetainers.length * 1800; // Estimated monthly recurring retainer revenue
-
-  // Cash flow chart data (Honest historical and invoiced breakdown)
-  const cashFlowData = [
-    { month: 'Jul 2026', collected: 14200, invoiced: 14200 },
-    { month: 'Aug 2026', collected: 16800, invoiced: 18500 },
-    { month: 'Sep 2026', collected: 19475, invoiced: 21000 },
-    { month: 'Oct 2026', collected: cashCollected, invoiced: cashCollected + outstandingReceivables }
-  ];
+  // Cash flow from actual invoices (previously Jul–Sep 2026 were hard-coded amounts).
+  const cashFlowData = buildCashFlowSeries(invoices, new Date());
 
   // Sales Funnel Data
   const funnelData = [
@@ -97,7 +96,7 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
       id: 'act-outreach',
       priority: 'HIGH' as const,
       title: `Review outreach note for ${pendingDrafts[0].recipientName} (${pendingDrafts[0].companyName})`,
-      reason: 'Personalized email prepared referencing their terminal wait times. Ready for your review and sign-off before sending.',
+      reason: `${pendingDrafts.length} outreach draft${pendingDrafts.length === 1 ? '' : 's'} awaiting your review and sign-off before sending.`,
       cta: 'Review in Outreach Studio',
       onExecute: () => onNavigateTab('OUTREACH')
     }] : []),
@@ -113,18 +112,10 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
       id: 'act-invoices',
       priority: 'MEDIUM' as const,
       title: `Keep an eye on pending invoice ($${outstandingReceivables.toLocaleString()} USD)`,
-      reason: 'Issued to Meridian Retail Group for emergency checkout latency optimization. Reconcile once ACH arrives.',
+      reason: 'Issued invoices awaiting payment. Reconcile once payment arrives.',
       cta: 'View Invoices',
       onExecute: () => onNavigateTab('INVOICES')
-    }] : []),
-    {
-      id: 'act-lead-followup',
-      priority: 'LOW' as const,
-      title: 'Review new logistics opportunity: Vanguard Freight',
-      reason: 'High-fit prospect (92/100 match). Cross-dock operations bottleneck very similar to what we solved for Nexus.',
-      cta: 'View Prospect',
-      onExecute: () => onNavigateTab('LEADS')
-    }
+    }] : [])
   ];
 
   return (
@@ -195,21 +186,21 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
           icon={CreditCard}
         />
         <StatCard
-          label="Pipeline Value"
-          value={`$${(qualifiedPipelineValue / 1000).toFixed(1)}k`}
-          subtext="Qualified discussions"
+          label="Qualified Leads"
+          value={pipeline.qualified}
+          subtext="Qualification score 80+"
           icon={Sparkles}
         />
         <StatCard
-          label="Weighted Forecast"
-          value={`$${(weightedPipelineForecast / 1000).toFixed(1)}k`}
-          subtext="Conservative 45% close rate"
+          label="Open Pipeline"
+          value={pipeline.open}
+          subtext="Leads not yet won or lost"
           icon={TrendingUp}
         />
         <StatCard
-          label="Paying Clients"
-          value={clients.length}
-          subtext="Active partnerships"
+          label="Active Clients"
+          value={activeClients}
+          subtext={`${clients.length} total`}
           icon={Users}
         />
         <StatCard
@@ -219,9 +210,9 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
           icon={FolderKanban}
         />
         <StatCard
-          label="Retainer MRR"
-          value={`$${mrrEstimate.toLocaleString()}`}
-          subtext="Predictable recurring revenue"
+          label="Retainer Clients"
+          value={retainerClients}
+          subtext="On a support retainer"
           icon={Clock}
         />
         <StatCard

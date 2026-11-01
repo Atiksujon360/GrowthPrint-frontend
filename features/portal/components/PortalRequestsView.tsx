@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks.ts';
-import { createMySupportRequest, clientApproveEstimate, addToast, addNotification, fetchMySupportRequests } from '../../../store/index.ts';
+import { scopeToClient } from '../../../lib/access.ts';
+import { isMockModeEnv } from '../../../lib/api/client.ts';
+import { createMySupportRequest, clientApproveEstimate, addToast, addNotification, fetchMySupportRequests, fetchMyProjects } from '../../../store/index.ts';
 import { StatusBadge } from '../../../components/ui/Badges.tsx';
 import { EmptyState } from '../../../components/ui/AsyncState.tsx';
 import {
@@ -25,9 +27,11 @@ interface PortalRequestsViewProps {
 export function PortalRequestsView({ isModalOpen, onOpenModal, onCloseModal }: PortalRequestsViewProps) {
   const dispatch = useAppDispatch();
   const { currentUser } = useAppSelector(state => state.auth);
-  const clientId = currentUser.clientId || 'client-meridian';
+  // Real-API mode: the store only holds this client's /my data, so nothing is re-filtered here
+  // (see lib/access.ts scopeToClient). Mock mode filters the demo data to the demo client.
+  const mockMode = isMockModeEnv();
   const requests = useAppSelector(state => state.agency.requests);
-  const projects = useAppSelector(state => state.agency.projects.filter(p => p.clientId === clientId));
+  const projects = useAppSelector(state => scopeToClient(state.agency.projects, currentUser.clientId, mockMode));
   const isLoadingRequests = useAppSelector(state => state.agency.isLoadingRequests);
   const requestsError = useAppSelector(state => state.agency.requestsError);
 
@@ -47,6 +51,8 @@ export function PortalRequestsView({ isModalOpen, onOpenModal, onCloseModal }: P
   // Fetch support requests on mount
   useEffect(() => {
     dispatch(fetchMySupportRequests());
+    // The "related project" picker needs this client's own projects.
+    dispatch(fetchMyProjects());
   }, [dispatch]);
 
   const handleRefresh = () => {

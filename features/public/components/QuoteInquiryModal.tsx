@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X, CheckCircle2, ArrowRight, ShieldCheck, Sparkles, Building, Mail, User, Globe } from 'lucide-react';
 import { useAppDispatch } from '../../../store/hooks.ts';
-import { submitPublicInquiry, addToast, addNotification } from '../../../store/index.ts';
+import { submitPublicInquiry, addToast } from '../../../store/index.ts';
 import type { ServiceCategory, PublicInquiryFormData } from '../../../types/agency.ts';
 
 interface QuoteInquiryModalProps {
@@ -30,6 +30,7 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [referenceNumber, setReferenceNumber] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
@@ -42,6 +43,10 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
       newErrors.businessEmail = 'Please provide a valid email address.';
     }
     if (!formData.company.trim()) newErrors.company = 'Company name is required.';
+    // Mirrors the backend rule: website is optional but must be an http(s) URL when given.
+    if (formData.website && formData.website.trim() && !/^https?:\/\/.+/i.test(formData.website.trim())) {
+      newErrors.website = 'Website must start with http:// or https://';
+    }
     if (!formData.projectDescription.trim() || formData.projectDescription.length < 15) {
       newErrors.projectDescription = 'Please provide at least 15 characters describing what you wish to build or automate.';
     }
@@ -53,37 +58,32 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) return;
+    if (isSubmitting || !validate()) return;
 
     setIsSubmitting(true);
-    setTimeout(() => {
-      const generatedRef = `GP-INQ-2026-${Math.floor(1000 + Math.random() * 9000)}`;
-      // Ensure budgetRange is provided for API contract
-      const inquiryData = {
+    setSubmitError(null);
+    try {
+      // Only what the visitor actually entered is sent; blank optional fields stay blank.
+      const acknowledgement = await dispatch(submitPublicInquiry({
         ...formData,
-        budgetRange: formData.budgetRange || '$10,000 – $25,000',
-        preferredTimeline: formData.preferredTimeline || '1–2 Months',
-        // Map DISCOVERY_CALL to VIDEO_CALL for API contract compatibility
+        // The backend contact methods are EMAIL | PHONE | VIDEO_CALL; a discovery call is a video call.
         preferredContactMethod: formData.preferredContactMethod === 'DISCOVERY_CALL' ? 'VIDEO_CALL' as const : formData.preferredContactMethod
-      };
-      dispatch(submitPublicInquiry(inquiryData));
+      })).unwrap();
+
+      // Success is shown only after the backend accepted the inquiry, with its own reference number.
+      setReferenceNumber(acknowledgement.referenceNumber);
       dispatch(addToast({
         type: 'success',
         title: 'Message received',
         message: `Thanks, ${formData.name}. We will review your note and get back to you within 1 business day.`
       }));
-      dispatch(addNotification({
-        category: 'ACTION_REQUIRED',
-        title: 'New Inbound Prospect Brief',
-        message: `${formData.company} (${formData.name}) submitted an inquiry for ${formData.serviceCategory.replace(/_/g, ' ')}.`,
-        priority: 'HIGH',
-        targetTab: 'LEADS'
-      }));
-      setReferenceNumber(generatedRef);
+    } catch (err) {
+      setSubmitError(typeof err === 'string' && err ? err : 'We could not send your inquiry. Please try again.');
+    } finally {
       setIsSubmitting(false);
-    }, 450);
+    }
   };
 
   const handleReset = () => {
@@ -242,19 +242,25 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                    <label htmlFor="inquiry-website" className="block text-sm font-medium text-slate-700 mb-1">
                     Website (Optional)
                   </label>
                   <div className="relative">
-                    <Globe className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                    <Globe className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" aria-hidden="true" />
                     <input
+                      id="inquiry-website"
                       type="url"
+                      aria-invalid={Boolean(errors.website)}
+                      aria-describedby={errors.website ? 'inquiry-website-error' : undefined}
                       value={formData.website}
                       onChange={(e) => setFormData({ ...formData, website: e.target.value })}
                       placeholder="https://company.com"
                       className="w-full pl-9 pr-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                     />
                   </div>
+                  {errors.website && (
+                    <p id="inquiry-website-error" className="text-[11px] text-rose-600 mt-1">{errors.website}</p>
+                  )}
                 </div>
               </div>
 
@@ -388,6 +394,12 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
                 </label>
                 {errors.consent && <p className="text-[11px] text-rose-600 mt-1">{errors.consent}</p>}
               </div>
+
+              {submitError && (
+                <p role="alert" className="text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-lg px-3 py-2">
+                  {submitError}
+                </p>
+              )}
 
               {/* Submit CTA */}
               <div className="pt-2 flex items-center justify-end gap-3 border-t border-slate-200">

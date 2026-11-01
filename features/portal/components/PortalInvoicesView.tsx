@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks.ts';
-import { addNotification, addToast, markInvoicePaid, fetchMyInvoices } from '../../../store/index.ts';
+import { addNotification, addToast, fetchMyInvoices } from '../../../store/index.ts';
 import { StatusBadge } from '../../../components/ui/Badges.tsx';
 import { EmptyState } from '../../../components/ui/AsyncState.tsx';
 import { CreditCard, Download, CheckCircle2, ArrowRight, FileText, RefreshCw } from 'lucide-react';
@@ -12,7 +12,6 @@ export function PortalInvoicesView() {
   const isLoadingInvoices = useAppSelector(state => state.agency.isLoadingInvoices);
   const invoicesError = useAppSelector(state => state.agency.invoicesError);
 
-  const [downloadSuccess, setDownloadSuccess] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
@@ -39,15 +38,6 @@ export function PortalInvoicesView() {
     }
   };
 
-  const handleDownload = (invoiceNumber: string) => {
-    setDownloadSuccess(invoiceNumber);
-    dispatch(addToast({
-      type: 'success',
-      title: 'Invoice Ready',
-      message: `Invoice ${invoiceNumber} is ready for download.`
-    }));
-    setTimeout(() => setDownloadSuccess(null), 2500);
-  };
 
   const handlePayment = async (invoiceId: string, invoiceNumber: string, amount: number) => {
     // Client invoice reconciliation endpoint not yet implemented in backend
@@ -96,12 +86,6 @@ export function PortalInvoicesView() {
         </div>
       </div>
 
-      {downloadSuccess && (
-        <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-          <span>Downloaded official PDF receipt for {downloadSuccess}.</span>
-        </div>
-      )}
 
       {invoicesError && (
         <div className="p-3 bg-red-50 border border-red-200 text-red-800 rounded-xl text-xs flex items-center gap-2">
@@ -160,11 +144,13 @@ export function PortalInvoicesView() {
                     </button>
                   )}
 
+                  {/* No invoice PDF endpoint exists yet: disabled instead of reporting a download that never happened. */}
                   <button
-                    onClick={() => handleDownload(inv.invoiceNumber)}
-                    className="p-1.5 text-slate-500 hover:text-slate-800 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
-                    title="Download PDF"
-                    aria-label={`Download PDF invoice ${inv.invoiceNumber}`}
+                    type="button"
+                    disabled
+                    className="p-1.5 text-slate-500 hover:text-slate-800 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    title="PDF download is not available yet"
+                    aria-label={`Download PDF for invoice ${inv.invoiceNumber} (not available yet)`}
                   >
                     <Download className="w-4 h-4" />
                   </button>

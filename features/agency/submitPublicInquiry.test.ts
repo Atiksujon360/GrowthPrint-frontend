@@ -8,7 +8,10 @@ test('submitPublicInquiryThunk is exported as a function', () => {
   assert.equal(typeof submitPublicInquiry, 'function');
 });
 
-test('submitPublicInquiryThunk fulfills with correct payload structure', () => {
+// Updated 2026-11-01 (integration audit): the backend answers POST /public/inquiries with
+// { referenceNumber, status, receivedAt } and stores a raw inquiry, not a CRM lead. The reducer previously
+// inserted a fabricated lead (invented scores, no id); a fulfilled inquiry must leave the CRM list unchanged.
+test('submitPublicInquiryThunk fulfilled does not insert a fabricated CRM lead', () => {
   const initialState: Partial<AgencyState> = {
     leads: []
   };
@@ -18,47 +21,12 @@ test('submitPublicInquiryThunk fulfills with correct payload structure', () => {
     preloadedState: { agency: initialState as AgencyState }
   });
 
-  // Mock fulfilled action with backend response
-  const mockBackendResponse = {
-    id: 'lead-123',
-    companyName: 'Test Company',
-    industry: 'Unknown',
-    location: 'Unknown',
-    contactName: 'John Doe',
-    contactEmail: 'john@test.com',
-    contactTitle: undefined,
-    source: 'INBOUND_INQUIRY',
-    sourceUrl: undefined,
-    discoveredDate: '2024-01-01T00:00:00Z',
-    targetService: 'SOFTWARE_DEV',
-    identifiedProblem: 'Test problem description that is long enough',
-    researchSummary: 'Test problem description that is long enough',
-    qualificationScore: 70,
-    qualificationBreakdown: {
-      businessFit: 18,
-      evidenceOfNeed: 17,
-      contactability: 18,
-      serviceRelevance: 17,
-      totalScore: 70
-    },
-    pipelineStage: 'DISCOVERED',
-    nextAction: 'Contact for discovery call',
-    doNotContact: false,
-    notes: 'Budget: $10,000 – $25,000, Timeline: Flexible',
-    website: '',
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-02T00:00:00Z'
-  };
+  store.dispatch({
+    type: 'agency/submitPublicInquiry/fulfilled',
+    payload: { referenceNumber: 'GP-INQ-2026-ABCD1234', status: 'RECEIVED', receivedAt: '2026-11-01T10:00:00Z' }
+  });
 
-  store.dispatch({ type: 'agency/submitPublicInquiry/fulfilled', payload: mockBackendResponse });
-
-  const state = store.getState().agency;
-  const newLead = state.leads.find(l => l.id === 'lead-123');
-
-  assert.ok(newLead);
-  assert.equal(newLead.companyName, 'Test Company');
-  assert.equal(newLead.pipelineStage, 'DISCOVERED');
-  assert.equal(newLead.source, 'FOUNDER_SOURCED');
+  assert.equal(store.getState().agency.leads.length, 0);
 });
 
 test('submitPublicInquiryThunk rejected handles error', () => {

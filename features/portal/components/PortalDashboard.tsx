@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks.ts';
-import { clientApproveEstimate, toggleTaskStatus, addToast } from '../../../store/index.ts';
+import { scopeToClient } from '../../../lib/access.ts';
+import { isMockModeEnv } from '../../../lib/api/client.ts';
+import { clientApproveEstimate, toggleTaskStatus, addToast, fetchMyProjects, fetchMySupportRequests, fetchMyInvoices } from '../../../store/index.ts';
 import { StatusBadge, PriorityBadge, StatCard } from '../../../components/ui/Badges.tsx';
 import { 
   CircularProgress, 
@@ -33,14 +35,24 @@ interface PortalDashboardProps {
 export function PortalDashboard({ onNavigateTab, onOpenNewRequest }: PortalDashboardProps) {
   const dispatch = useAppDispatch();
   const { currentUser } = useAppSelector(state => state.auth);
-  const clientId = currentUser.clientId || 'client-meridian';
+  // Real-API mode: the store only holds this client's /my data, so nothing is re-filtered here
+  // (see lib/access.ts scopeToClient). Mock mode filters the demo data to the demo client.
+  const mockMode = isMockModeEnv();
   const [showCelebration, setShowCelebration] = useState(false);
   const [isApproving, setIsApproving] = useState<string | null>(null);
 
-  const projects = useAppSelector(state => state.agency.projects.filter(p => p.clientId === clientId));
-  const requests = useAppSelector(state => state.agency.requests.filter(r => r.clientId === clientId));
-  const tasks = useAppSelector(state => state.agency.tasks.filter(t => t.clientId === clientId && t.isClientVisible));
-  const invoices = useAppSelector(state => state.agency.invoices.filter(i => i.clientId === clientId));
+  const projects = useAppSelector(state => scopeToClient(state.agency.projects, currentUser.clientId, mockMode));
+  const requests = useAppSelector(state => scopeToClient(state.agency.requests, currentUser.clientId, mockMode));
+  const tasks = useAppSelector(state => scopeToClient(state.agency.tasks, currentUser.clientId, mockMode).filter(t => t.isClientVisible));
+  const invoices = useAppSelector(state => scopeToClient(state.agency.invoices, currentUser.clientId, mockMode));
+
+  // Load this client's own data from the server-scoped /my endpoints (previously the dashboard only
+  // showed whatever happened to be in the store, i.e. demo data).
+  useEffect(() => {
+    dispatch(fetchMyProjects());
+    dispatch(fetchMySupportRequests());
+    dispatch(fetchMyInvoices());
+  }, [dispatch]);
 
   // Pending estimates requiring client approval
   const estimateApprovals = requests.filter(r => r.status === 'AWAITING_CLIENT_APPROVAL' && r.estimate);

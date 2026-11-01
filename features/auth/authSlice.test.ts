@@ -268,9 +268,15 @@ test('validateSession rejected with validation in progress message does not clea
 
   assert.equal(store.getState().auth.isAuthenticated, true);
 
-  // Simulate duplicate validation request (should not clear state)
-  // Need to set error.message property on the action
-  const action = { type: 'auth/validateSession/rejected', error: { message: 'Validation already in progress' } };
+  // Simulate duplicate validation request (should not clear state).
+  // Updated 2026-11-01: this is the shape Redux Toolkit really produces for rejectWithValue(...) — the reason
+  // is in `payload` and error.message is "Rejected". The old test put the reason in error.message, which
+  // masked the bug where a duplicate validation logged the user out.
+  const action = {
+    type: 'auth/validateSession/rejected',
+    payload: 'Validation already in progress',
+    error: { message: 'Rejected' }
+  };
   store.dispatch(action);
 
   // Auth state should remain intact

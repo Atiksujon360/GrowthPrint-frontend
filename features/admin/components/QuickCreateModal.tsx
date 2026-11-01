@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks.ts';
-import { submitPublicInquiry, createSupportRequest, addToast, addNotification, fetchCrmLeads } from '../../../store/index.ts';
+import { submitPublicInquiry, createSupportRequest, addToast, addNotification } from '../../../store/index.ts';
 import { X, Sparkles, TicketCheck, CreditCard, Building, CheckCircle2, Loader2 } from 'lucide-react';
 import type { ServiceCategory, SupportCategory } from '../../../types/agency.ts';
 
@@ -55,31 +55,29 @@ export function QuickCreateModal({ isOpen, onClose }: QuickCreateModalProps) {
         website: '', // Optional, can be empty
         serviceCategory: service,
         projectType: 'Direct Founder Sourced',
-        budgetRange: '$10,000 – $25,000',
+        // No invented budget: the founder did not enter one.
+        budgetRange: '',
         preferredTimeline,
         projectDescription: problem,
         preferredContactMethod: 'EMAIL',
         consent: true
       })).unwrap();
 
-      // Refresh leads list to show the new lead
-      dispatch(fetchCrmLeads());
-
       dispatch(addToast({
         type: 'success',
-        title: 'Lead Created',
-        message: `Lead for ${company} (${contactName}) has been added to your CRM pipeline.`
+        title: 'Inquiry logged',
+        message: `${company} (${contactName}) was saved as an inquiry. It is not in the CRM pipeline until it is converted.`
       }));
 
       dispatch(addNotification({
         category: 'OUTREACH',
-        title: 'New Lead Added',
-        message: `Prospect ${company} added by founder. Ready for discovery qualification.`,
+        title: 'New inquiry logged',
+        message: `Inquiry from ${company} saved. Convert it to a CRM lead once qualified.`,
         priority: 'MEDIUM',
         targetTab: 'LEADS'
       }));
 
-      setSuccessMsg(`Lead "${company}" created and added to pipeline.`);
+      setSuccessMsg(`Inquiry for "${company}" saved.`);
       setTimeout(() => {
         setSuccessMsg(null);
         onClose();

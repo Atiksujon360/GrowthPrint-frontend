@@ -50,20 +50,47 @@ export class ApiError extends Error {
   }
 }
 
+/** Receives notice that an authenticated request was rejected with 401 (expired or revoked session). */
+export type UnauthorizedHandler = () => void;
+
+let globalUnauthorizedHandler: UnauthorizedHandler | null = null;
+
+/** Registered once by the app (see app/providers.tsx) to end the session and return to the login page. */
+export function setUnauthorizedHandler(handler: UnauthorizedHandler | null): void {
+  globalUnauthorizedHandler = handler;
+}
+
+/**
+ * Mock mode is opt-in: only the explicit value "true" enables it. A deployment that forgets the variable
+ * talks to the real backend instead of silently serving demo data.
+ */
+export function isMockModeEnv(value: string | undefined = process.env.NEXT_PUBLIC_USE_MOCK_API): boolean {
+  return value === "true";
+}
+
+/** Only idempotent requests are retried; retrying POST/PUT/PATCH/DELETE could create duplicate records. */
+const RETRYABLE_METHODS = new Set(["GET", "HEAD"]);
+
 export class ApiClient {
   private baseUrl: string;
   private defaultTimeoutMs: number;
   private isMockMode: boolean;
+  private onUnauthorized: UnauthorizedHandler | null;
 
   constructor(
-    config: { baseUrl?: string; timeoutMs?: number; isMockMode?: boolean } = {},
+    config: {
+      baseUrl?: string;
+      timeoutMs?: number;
+      isMockMode?: boolean;
+      onUnauthorized?: UnauthorizedHandler;
+    } = {},
   ) {
     // Read public runtime configuration without depending on Vite globals.
     this.baseUrl =
       config.baseUrl || process.env.NEXT_PUBLIC_API_BASE_URL || "/api/v1";
     this.defaultTimeoutMs = config.timeoutMs || 10000;
-    this.isMockMode =
-      config.isMockMode ?? process.env.NEXT_PUBLIC_USE_MOCK_API !== "false";
+    this.isMockMode = config.isMockMode ?? isMockModeEnv();
+    this.onUnauthorized = config.onUnauthorized ?? null;
   }
 
   public setMockMode(enabled: boolean): void {
@@ -84,12 +111,15 @@ export class ApiClient {
     const {
       params,
       timeoutMs = this.defaultTimeoutMs,
-      retries = 2,
+      retries: requestedRetries = 2,
       retryDelayMs = 400,
       skipAuth = false,
       headers: customHeaders,
       ...fetchOptions
     } = options;
+
+    const method = (fetchOptions.method || "GET").toUpperCase();
+    const retries = RETRYABLE_METHODS.has(method) ? requestedRetries : 0;
 
     // Build URL with query parameters
     let url = endpoint.startsWith("http")
@@ -153,6 +183,12 @@ export class ApiClient {
         }
 
         if (!response.ok) {
+          // An authenticated request rejected with 401 means the session expired or was revoked.
+          // (Login itself uses skipAuth, so wrong credentials never trigger this.)
+          if (response.status === 401 && !skipAuth) {
+            const handler = this.onUnauthorized ?? globalUnauthorizedHandler;
+            handler?.();
+          }
           throw new ApiError(
             data?.message || `HTTP ${response.status}: ${response.statusText}`,
             {

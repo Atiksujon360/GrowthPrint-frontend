@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
 import type { AuthState, User, UserRole } from '../../types/auth.ts';
-import { apiClient } from '../../lib/api/client.ts';
+import { apiClient, isMockModeEnv } from '../../lib/api/client.ts';
 
 export const DEMO_USERS: Record<UserRole, User> = {
   ADMIN: {
@@ -31,8 +31,30 @@ export const DEMO_USERS: Record<UserRole, User> = {
   },
 };
 
-// Check if mock mode is enabled
-const isMockMode = process.env.NEXT_PUBLIC_USE_MOCK_API !== "false";
+// Mock mode is opt-in (NEXT_PUBLIC_USE_MOCK_API === 'true'); see isMockModeEnv.
+const isMockMode = isMockModeEnv();
+
+const TOKEN_KEY = "gp_auth_token";
+
+/**
+ * Maps a backend role to a frontend role. Unknown roles get no workspace access (GUEST) instead of
+ * silently being treated as CLIENT.
+ */
+export function toFrontendRole(role: string | undefined): UserRole {
+  if (role === "ADMIN") return "ADMIN";
+  if (role === "CLIENT") return "CLIENT";
+  return "GUEST";
+}
+
+/** True when a stored token exists that should be validated on startup (real-API mode only). */
+export function hasStoredSession(): boolean {
+  if (isMockMode || typeof window === "undefined") return false;
+  try {
+    return Boolean(window.sessionStorage?.getItem(TOKEN_KEY));
+  } catch {
+    return false;
+  }
+}
 
 // Async thunks for real authentication
 const login = createAsyncThunk(
@@ -69,10 +91,12 @@ const login = createAsyncThunk(
     }
 
     try {
-      const response = await apiClient.post("/auth/login", {
-        email: credentials.email,
-        password: credentials.password,
-      });
+      // skipAuth: no stale token is sent, and a 401 here means wrong credentials, not an expired session.
+      const response = await apiClient.post(
+        "/auth/login",
+        { email: credentials.email, password: credentials.password },
+        { skipAuth: true },
+      );
 
       const data = response.data as {
         accessToken: string;
@@ -91,8 +115,10 @@ const login = createAsyncThunk(
       }
 
       // Map backend role to frontend role
-      const frontendRole: UserRole =
-        data.user.role === "ADMIN" ? "ADMIN" : "CLIENT";
+      const frontendRole: UserRole = toFrontendRole(data.user.role);
+      if (frontendRole === "GUEST") {
+        return rejectWithValue("This account has no access to a GrowthPrint workspace.");
+      }
 
       const user: User = {
         id: data.user.id,
@@ -172,7 +198,10 @@ const validateSession = createAsyncThunk('auth/validateSession', async (_, { rej
     };
 
     // Map backend role to frontend role
-    const frontendRole: UserRole = data.role === 'ADMIN' ? 'ADMIN' : 'CLIENT';
+    const frontendRole: UserRole = toFrontendRole(data.role);
+    if (frontendRole === 'GUEST') {
+      throw new Error('Unsupported role');
+    }
 
     const user: User = {
       id: data.id,
@@ -205,7 +234,9 @@ const initialAuthState: AuthState = {
   },
   isAuthenticated: isMockMode,
   activeView: 'PUBLIC',
-  isSessionValidating: false,
+  // A stored token is validated on startup (SessionBootstrap); until then protected layouts wait
+  // instead of redirecting to the login page (previously every page refresh logged the user out).
+  isSessionValidating: hasStoredSession(),
   isLoggingIn: false
 };
 
@@ -303,8 +334,8 @@ const authSlice = createSlice({
       .addCase(validateSession.rejected, (state, action) => {
         // Only clear auth state if the rejection is due to actual validation failure
         // not due to duplicate request prevention
-        const errorMessage = action.error?.message;
-        if (errorMessage !== 'Validation already in progress') {
+        // rejectWithValue puts the reason in action.payload (action.error.message is always "Rejected").
+        if (action.payload !== 'Validation already in progress') {
           state.currentUser = {
             id: '',
             name: '',

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks.ts';
+import { scopeToClient } from '../../../lib/access.ts';
+import { isMockModeEnv } from '../../../lib/api/client.ts';
 import { fetchMyProposals, recordProposalDecision, addToast } from '../../../store/index.ts';
 import { StatusBadge } from '../../../components/ui/Badges.tsx';
 import { EmptyState } from '../../../components/ui/AsyncState.tsx';
@@ -8,8 +10,10 @@ import { FileCheck, CheckCircle2, Clock, Calendar, ShieldCheck, Loader2, X } fro
 export function PortalProposalsView() {
   const dispatch = useAppDispatch();
   const { currentUser } = useAppSelector(state => state.auth);
-  const clientId = currentUser.clientId || 'client-meridian';
-  const proposals = useAppSelector(state => state.agency.proposals.filter(p => p.clientId === clientId));
+  // Real-API mode: the store only holds this client's /my data, so nothing is re-filtered here
+  // (see lib/access.ts scopeToClient). Mock mode filters the demo data to the demo client.
+  const mockMode = isMockModeEnv();
+  const proposals = useAppSelector(state => scopeToClient(state.agency.proposals, currentUser.clientId, mockMode));
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 

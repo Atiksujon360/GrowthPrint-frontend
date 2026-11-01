@@ -4,8 +4,22 @@ import { useAppSelector } from '../../store/hooks.ts';
 import { usePathname, useRouter } from 'next/navigation';
 import { Globe, UserCheck, ShieldAlert, Sparkles, CheckCircle2, ArrowRight } from 'lucide-react';
 import { ROUTES, isProtectedRoute } from '../../lib/routes';
+import { isMockModeEnv } from '../../lib/api/client.ts';
+
+/**
+ * Demo navigation bar for mock mode only. In real mode it is not rendered: it advertised the admin entry
+ * point to public visitors and showed pending-item counts from whatever data was in the store.
+ */
+const SHOW_ROLE_SWITCHER = isMockModeEnv();
 
 export function RoleSwitcherBar() {
+  if (!SHOW_ROLE_SWITCHER) {
+    return null;
+  }
+  return <RoleSwitcherBarContent />;
+}
+
+function RoleSwitcherBarContent() {
   const pathname = usePathname();
   const router = useRouter();
   const { currentUser, isAuthenticated } = useAppSelector(state => state.auth);

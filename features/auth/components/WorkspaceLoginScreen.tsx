@@ -91,9 +91,10 @@ export function WorkspaceLoginScreen({ role, onSignIn, onBackToPublic }: Workspa
     setError(null);
 
     try {
-      await dispatch(login({ email, password })).unwrap();
-      // Redirect based on role using central route module
-      const targetRoute = getDefaultRouteForRole(isAdmin ? 'ADMIN' : 'CLIENT');
+      const result = await dispatch(login({ email, password })).unwrap();
+      // Redirect by the role the backend returned, not by which login page was used
+      // (a client signing in on the admin page belongs in the portal).
+      const targetRoute = getDefaultRouteForRole(result.user.role);
       router.push(targetRoute);
       onSignIn();
     } catch (err) {

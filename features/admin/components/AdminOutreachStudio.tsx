@@ -9,6 +9,10 @@ import {
   addNotification 
 } from '../../../store/index.ts';
 import { StatusBadge } from '../../../components/ui/Badges.tsx';
+import { isMockModeEnv } from '../../../lib/api/client.ts';
+
+/** There is no API to update draft copy yet; editing only changed local state, so it is mock-mode only. */
+const DRAFT_EDITING_AVAILABLE = isMockModeEnv();
 import { ConfirmDialog } from '../../../components/ui/ConfirmDialog.tsx';
 import { CopyButton } from '../../../components/ui/CopyButton.tsx';
 import { 
@@ -259,13 +263,16 @@ export function AdminOutreachStudio({ preselectedLeadId }: { preselectedLeadId?:
                 <Mail className="w-3.5 h-3.5 text-slate-400" />
                 <span>Message Preview</span>
               </span>
-              <button
-                onClick={handleToggleEdit}
-                className="text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-1 py-2 px-2 min-h-[44px]"
-              >
-                <Edit3 className="w-3 h-3" />
-                <span>{isEditing ? 'Save Changes' : 'Edit Copy'}</span>
-              </button>
+              {DRAFT_EDITING_AVAILABLE && (
+                <button
+                  type="button"
+                  onClick={handleToggleEdit}
+                  className="text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-1 py-2 px-2 min-h-[44px]"
+                >
+                  <Edit3 className="w-3 h-3" aria-hidden="true" />
+                  <span>{isEditing ? 'Save Changes' : 'Edit Copy'}</span>
+                </button>
+              )}
             </div>
 
             {/* Subject */}

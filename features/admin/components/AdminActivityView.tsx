@@ -1,8 +1,24 @@
 import React from 'react';
+import { isMockModeEnv } from '../../../lib/api/client.ts';
+import { EmptyState } from '../../../components/ui/AsyncState.tsx';
 import { useAppSelector } from '../../../store/hooks.ts';
 import { History, Shield, Clock } from 'lucide-react';
 
 export function AdminActivityView() {
+  if (!isMockModeEnv()) {
+    return (
+      <div className="space-y-6">
+        <EmptyState
+          title="Activity log is not connected yet"
+          message="There is no activity/audit API in MVP-1, so no events can be shown. Entries shown in demo (mock) mode are sample data."
+        />
+      </div>
+    );
+  }
+  return <AdminActivityViewDemo />;
+}
+
+function AdminActivityViewDemo() {
   const activities = useAppSelector(state => state.agency.activities);
 
   return (
