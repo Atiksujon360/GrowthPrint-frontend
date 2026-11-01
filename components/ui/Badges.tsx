@@ -76,16 +76,16 @@ export function PriorityBadge({ priority }: { priority: 'LOW' | 'MEDIUM' | 'HIGH
   );
 }
 
-export function StatCard({ 
-  label, 
-  value, 
-  subtext, 
+export function StatCard({
+  label,
+  value,
+  subtext,
   trend,
   icon: Icon
-}: { 
-  label: string; 
-  value: string | number; 
-  subtext?: string; 
+}: {
+  label: string;
+  value: string | number;
+  subtext?: string;
   trend?: string;
   icon?: React.ComponentType<{ className?: string }>;
 }) {

@@ -25,6 +25,56 @@ Shared rules for Devin Desktop, Codex, and other AI coding agents working on thi
 
 **Exception:** If you are only reading or inspecting files (not making changes), you may skip this rule. But before ANY edit, creation, deletion, or code change, you MUST read these files first.
 
+## 🌐 MANDATORY: Use Context7 for All Library Documentation
+
+**CRITICAL:** Before using ANY library, framework, SDK, API, or tool (including Next.js, React, Redux Toolkit, Tailwind CSS, React Hook Form, Recharts, Motion, Zod, etc.), you MUST use the context7 MCP server to fetch current documentation.
+
+### How to Use Context7
+
+1. **List available tools:**
+   ```
+   mcp_list_tools --server_name=context7
+   ```
+
+2. **Resolve library ID:**
+   ```
+   mcp_call_tool --server_name=context7 --tool_name=resolve-library-id --arguments='{"query":"your question","libraryName":"Library Name"}'
+   ```
+
+3. **Query documentation:**
+   ```
+   mcp_call_tool --server_name=context7 --tool_name=query-docs --arguments='{"libraryId":"/org/project","query":"specific question","language":"TypeScript"}'
+   ```
+
+### When to Use Context7 (Always)
+
+- **Before** writing any code that uses a library
+- **Before** suggesting API changes or new features
+- **Before** debugging library-specific issues
+- **Before** upgrading library versions
+- **Before** applying configuration patterns
+- **Even for well-known libraries** - your training data may be outdated
+
+### Context7 Helps With
+
+- Up-to-date API syntax and methods
+- Current best practices and patterns
+- Latest version information and breaking changes
+- Code examples for current versions
+- Configuration options and parameters
+- Library-specific debugging guidance
+
+### Project-Specific Libraries to Check
+
+- **Next.js 16.4.2** - App Router, Server Components, data fetching
+- **React 19.0.1** - Latest React features and hooks
+- **Redux Toolkit 2.13.0** - State management patterns
+- **Tailwind CSS 4.3.3** - Utility-first styling, v4 features
+- **React Hook Form 7.90.0** - Form validation patterns
+- **Zod 4.6.7** - Schema validation
+- **Recharts 3.10.1** - Chart components
+- **Motion 12.23.24** - Animation patterns
+
 ## 🧪 Frontend Testing - Automatic Activation
 
 **CRITICAL:** The `frontend-testing` skill (`.devin/skills/frontend-testing/SKILL.md`) activates automatically for these tasks:

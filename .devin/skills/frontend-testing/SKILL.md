@@ -22,6 +22,39 @@ Activate this skill when:
 - Planning test scenarios
 - Verifying test quality
 
+## IMPORTANT: Use Context7 for Current Testing Framework Documentation
+
+**CRITICAL:** Before applying testing patterns, use the context7 MCP server to fetch current documentation for testing frameworks (Vitest, Playwright, Jest, React Testing Library, etc.). Testing frameworks evolve regularly.
+
+### How to Use Context7 for Testing Frameworks
+
+1. **Resolve testing framework library ID:**
+   ```
+   mcp_call_tool --server_name=context7 --tool_name=resolve-library-id --arguments='{"query":"your specific question","libraryName":"Vitest"}'
+   ```
+
+2. **Query testing framework documentation:**
+   ```
+   mcp_call_tool --server_name=context7 --tool_name=query-docs --arguments='{"libraryId":"/vitest-dev/vitest","query":"your specific question","language":"TypeScript"}'
+   ```
+
+### When to Use Context7 with This Skill
+
+- **Always** before using testing framework features (check current API)
+- **Always** when working with new testing libraries
+- **Always** before suggesting test patterns
+- **Always** for current assertion matchers and test utilities
+- **Always** for mocking and stubbing patterns
+
+### Context7 Helps With
+
+- Current testing framework API methods
+- Latest testing patterns and best practices
+- Version-specific breaking changes
+- Up-to-date assertion matchers
+- Current mocking and spying patterns
+- Latest configuration options
+
 ## Core Workflow: The Double Gate 🌉 Principle
 
 **Testing is integrated, not separate.** Every coding session follows this workflow:

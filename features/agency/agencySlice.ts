@@ -62,15 +62,26 @@ const initialAgencyState: AgencyState = {
   leadsError: null,
   projectsError: null,
   requestsError: null,
-  invoicesError: null
+  invoicesError: null,
+  // Request deduplication tracking
+  currentRequestId: null,
+  clientsRequestId: null,
+  leadsRequestId: null,
+  projectsRequestId: null
 };
 
 // Async thunks for Clients API
 export const fetchClients = createAsyncThunk(
   'agency/fetchClients',
-  async (_, { rejectWithValue }) => {
+  async (_, { rejectWithValue, getState, requestId }) => {
     if (isMockMode) {
       return INITIAL_CLIENTS;
+    }
+
+    // Request deduplication: skip if already loading
+    const state = getState() as { agency: AgencyState };
+    if (state.agency.isLoadingClients && state.agency.clientsRequestId === requestId) {
+      return INITIAL_CLIENTS; // Return current state, skip duplicate request
     }
 
     try {
@@ -143,9 +154,15 @@ export const updateClient = createAsyncThunk(
 // Async thunks for CRM Leads API
 export const fetchCrmLeads = createAsyncThunk(
   'agency/fetchCrmLeads',
-  async (_, { rejectWithValue }) => {
+  async (_, { rejectWithValue, getState, requestId }) => {
     if (isMockMode) {
       return INITIAL_LEADS;
+    }
+
+    // Request deduplication: skip if already loading
+    const state = getState() as { agency: AgencyState };
+    if (state.agency.isLoadingLeads && state.agency.leadsRequestId === requestId) {
+      return INITIAL_LEADS; // Return current state, skip duplicate request
     }
 
     try {
@@ -350,9 +367,15 @@ export const deleteCrmLead = createAsyncThunk(
 // Async thunks for Projects API
 export const fetchProjects = createAsyncThunk(
   'agency/fetchProjects',
-  async (_, { rejectWithValue }) => {
+  async (_, { rejectWithValue, getState, requestId }) => {
     if (isMockMode) {
       return INITIAL_PROJECTS;
+    }
+
+    // Request deduplication: skip if already loading
+    const state = getState() as { agency: AgencyState };
+    if (state.agency.isLoadingProjects && state.agency.projectsRequestId === requestId) {
+      return INITIAL_PROJECTS; // Return current state, skip duplicate request
     }
 
     try {
@@ -658,7 +681,7 @@ export const createMySupportRequestThunk = createAsyncThunk(
         clientId: 'client-meridian',
         clientName: 'Meridian Retail Group',
         projectId: p.projectId,
-        projectName: p.projectId ? 'Mock Project' : null,
+        projectName: p.projectId ? 'Mock Project' : undefined,
         title: p.title,
         category: p.category,
         description: p.description,
@@ -667,9 +690,9 @@ export const createMySupportRequestThunk = createAsyncThunk(
         status: 'NEW',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        adminNotes: null,
-        resolutionSummary: null,
-        estimate: null
+        adminNotes: undefined,
+        resolutionSummary: undefined,
+        estimate: undefined
       };
       return newReq;
     }
@@ -1847,18 +1870,21 @@ const agencySlice = createSlice({
   extraReducers: (builder) => {
     // Clients
     builder
-      .addCase(fetchClients.pending, (state) => {
+      .addCase(fetchClients.pending, (state, action) => {
         state.isLoadingClients = true;
         state.clientsError = null;
+        state.clientsRequestId = action.meta.requestId;
       })
       .addCase(fetchClients.fulfilled, (state, action) => {
         state.isLoadingClients = false;
         state.clients = action.payload;
         state.clientsError = null;
+        state.clientsRequestId = null;
       })
       .addCase(fetchClients.rejected, (state, action) => {
         state.isLoadingClients = false;
         state.clientsError = action.payload as string || 'Failed to fetch clients';
+        state.clientsRequestId = null;
       })
       .addCase(updateClient.fulfilled, (state, action) => {
         const index = state.clients.findIndex(c => c.id === action.payload.id);
@@ -1873,18 +1899,21 @@ const agencySlice = createSlice({
 
     // CRM Leads
     builder
-      .addCase(fetchCrmLeads.pending, (state) => {
+      .addCase(fetchCrmLeads.pending, (state, action) => {
         state.isLoadingLeads = true;
         state.leadsError = null;
+        state.leadsRequestId = action.meta.requestId;
       })
       .addCase(fetchCrmLeads.fulfilled, (state, action) => {
         state.isLoadingLeads = false;
         state.leads = action.payload;
         state.leadsError = null;
+        state.leadsRequestId = null;
       })
       .addCase(fetchCrmLeads.rejected, (state, action) => {
         state.isLoadingLeads = false;
         state.leadsError = action.payload as string || 'Failed to fetch CRM leads';
+        state.leadsRequestId = null;
       })
       .addCase(createCrmLead.fulfilled, (state, action) => {
         state.leads.unshift(action.payload);
@@ -1905,18 +1934,21 @@ const agencySlice = createSlice({
 
     // Projects
     builder
-      .addCase(fetchProjects.pending, (state) => {
+      .addCase(fetchProjects.pending, (state, action) => {
         state.isLoadingProjects = true;
         state.projectsError = null;
+        state.projectsRequestId = action.meta.requestId;
       })
       .addCase(fetchProjects.fulfilled, (state, action) => {
         state.isLoadingProjects = false;
         state.projects = action.payload;
         state.projectsError = null;
+        state.projectsRequestId = null;
       })
       .addCase(fetchProjects.rejected, (state, action) => {
         state.isLoadingProjects = false;
         state.projectsError = action.payload as string || 'Failed to fetch projects';
+        state.projectsRequestId = null;
       })
       .addCase(fetchMyProjects.pending, (state) => {
         state.isLoadingProjects = true;

@@ -292,7 +292,7 @@ export interface Proposal {
   paymentMilestones: { description: string; percentage: number; amount: number }[];
   timelineDuration: string;
   validUntil: string;
-  status: 'DRAFT' | 'SENT_FOR_REVIEW' | 'ACCEPTED' | 'DECLINED';
+  status: 'DRAFT' | 'SENT_FOR_REVIEW' | 'ACCEPTED' | 'DECLINED' | 'EXPIRED';
   acceptedAt?: string;
   acceptedBy?: string;
 }
@@ -410,6 +410,11 @@ export interface AgencyState {
   isLoadingInvoices: boolean;
   clientsError: string | null;
   leadsError: string | null;
+  // Request deduplication tracking
+  currentRequestId: string | null;
+  clientsRequestId: string | null;
+  leadsRequestId: string | null;
+  projectsRequestId: string | null;
   projectsError: string | null;
   requestsError: string | null;
   invoicesError: string | null;

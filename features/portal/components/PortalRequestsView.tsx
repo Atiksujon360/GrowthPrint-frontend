@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks.ts';
-import { createMySupportRequest, clientApproveEstimate, addToast, addNotification, fetchMySupportRequests, approveEstimate } from '../../../store/index.ts';
+import { createMySupportRequest, clientApproveEstimate, addToast, addNotification, fetchMySupportRequests } from '../../../store/index.ts';
 import { StatusBadge } from '../../../components/ui/Badges.tsx';
 import { EmptyState } from '../../../components/ui/AsyncState.tsx';
 import {
@@ -259,7 +259,7 @@ export function PortalRequestsView({ isModalOpen, onOpenModal, onCloseModal }: P
                     <button
                       onClick={async () => {
                         try {
-                          await dispatch(approveEstimate({ requestId: r.id, approvedBy: currentUser.name })).unwrap();
+                          await dispatch(clientApproveEstimate({ requestId: r.id, approvedBy: currentUser.name })).unwrap();
                           dispatch(addToast({
                             type: 'success',
                             title: 'Work Authorized',

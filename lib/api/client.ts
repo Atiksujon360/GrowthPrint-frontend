@@ -337,6 +337,9 @@ export const agencyApi = {
     getById: (id: string) => apiClient.get(`/invoices/${id}`),
     markPaid: (id: string, details?: any) =>
       apiClient.post(`/invoices/${id}/reconcile`, details),
+    // TODO: Backend endpoint POST /api/v1/invoices/my/{id}/reconcile does not exist yet
+    // markMyPaid: (id: string, details?: any) =>
+    //   apiClient.post(`/invoices/my/${id}/reconcile`, details),
   },
 
   // Proposals

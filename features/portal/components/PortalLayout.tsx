@@ -126,9 +126,8 @@ export function PortalLayout({ currentTab, onTabChange, onOpenNewRequest, childr
                   }`}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: idx * 0.05 }}
+                  transition={{ delay: idx * 0.05, type: 'spring', stiffness: 300 }}
                   whileHover={{ x: 3 }}
-                  transition={{ type: 'spring', stiffness: 300 }}
                 >
                   <div className="flex items-center gap-2.5">
                     <motion.div

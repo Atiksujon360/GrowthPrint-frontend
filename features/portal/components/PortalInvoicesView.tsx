@@ -50,28 +50,14 @@ export function PortalInvoicesView() {
   };
 
   const handlePayment = async (invoiceId: string, invoiceNumber: string, amount: number) => {
-    try {
-      await dispatch(markInvoicePaid({ invoiceId })).unwrap();
-      dispatch(addToast({
-        type: 'success',
-        title: 'Payment Recorded',
-        message: `Payment of $${amount.toLocaleString()} for ${invoiceNumber} was recorded.`
-      }));
-      dispatch(addNotification({
-        category: 'FINANCIAL',
-        title: 'Invoice Paid',
-        message: `${invoiceNumber} was marked as paid by ${currentUser.name}.`,
-        priority: 'MEDIUM',
-        targetTab: 'INVOICES',
-        entityId: invoiceId
-      }));
-    } catch (error: any) {
-      dispatch(addToast({
-        type: 'error',
-        title: 'Payment Failed',
-        message: error.message || 'Failed to record payment'
-      }));
-    }
+    // Client invoice reconciliation endpoint not yet implemented in backend
+    // Backend only has POST /api/v1/invoices/{id}/reconcile (ADMIN only)
+    // TODO: Remove this once backend implements POST /api/v1/invoices/my/{id}/reconcile
+    dispatch(addToast({
+      type: 'info',
+      title: 'Payment Recording Unavailable',
+      message: 'Please contact GrowthPrint to record payments. This feature will be available soon.'
+    }));
   };
 
   const totalOutstanding = invoices

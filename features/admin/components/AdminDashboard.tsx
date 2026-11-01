@@ -282,7 +282,7 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 + idx * 0.1 }}
-              whileHover={{ y: -2, shadow: 'sm' }}
+              whileHover={{ y: -2 }}
             >
               <div className="space-y-1">
                 <div className="flex items-center gap-2">

@@ -60,7 +60,15 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
     setIsSubmitting(true);
     setTimeout(() => {
       const generatedRef = `GP-INQ-2026-${Math.floor(1000 + Math.random() * 9000)}`;
-      dispatch(submitPublicInquiry(formData));
+      // Ensure budgetRange is provided for API contract
+      const inquiryData = {
+        ...formData,
+        budgetRange: formData.budgetRange || '$10,000 – $25,000',
+        preferredTimeline: formData.preferredTimeline || '1–2 Months',
+        // Map DISCOVERY_CALL to VIDEO_CALL for API contract compatibility
+        preferredContactMethod: formData.preferredContactMethod === 'DISCOVERY_CALL' ? 'VIDEO_CALL' as const : formData.preferredContactMethod
+      };
+      dispatch(submitPublicInquiry(inquiryData));
       dispatch(addToast({
         type: 'success',
         title: 'Message received',

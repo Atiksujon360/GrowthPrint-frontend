@@ -232,9 +232,8 @@ export function AdminLayout({ currentTab, onTabChange, children }: AdminLayoutPr
                       }`}
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: groupIdx * 0.05 + idx * 0.03 }}
+                      transition={{ delay: groupIdx * 0.05 + idx * 0.03, type: 'spring', stiffness: 300 }}
                       whileHover={{ x: 3 }}
-                      transition={{ type: 'spring', stiffness: 300 }}
                     >
                       <div className="flex items-center gap-2.5 truncate">
                         <motion.div
