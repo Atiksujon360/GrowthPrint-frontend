@@ -9,3 +9,4 @@ export { AdminClientsView } from './components/AdminClientsView.tsx';
 export { AdminInvoicesView } from './components/AdminInvoicesView.tsx';
 export { AdminAutomationView } from './components/AdminAutomationView.tsx';
 export { AdminActivityView } from './components/AdminActivityView.tsx';
+export { AdminAiSettingsView } from './components/AdminAiSettingsView.tsx';

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { SupportTriagePanel } from './SupportTriagePanel.tsx';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks.ts';
 import { classifyRequest, attachEstimate, updateRequestStatus, addToast, fetchSupportRequests } from '../../../store/index.ts';
 import { StatusBadge, PriorityBadge } from '../../../components/ui/Badges.tsx';
@@ -413,6 +414,9 @@ export function AdminRequestsQueue() {
                 {activeReq.description}
               </div>
 
+              {/* Optional AI help (nothing is applied until the admin saves the form below) */}
+              <SupportTriagePanel requestId={activeReq.id} onUseCategory={setCategory} />
+
               {/* Classification Form */}
               <form onSubmit={handleClassify} className="space-y-3 pt-2 border-t border-slate-100">
                 <div className="flex items-center justify-between">
@@ -429,6 +433,7 @@ export function AdminRequestsQueue() {
 
                 <div>
                   <select
+                    aria-label="Request category"
                     value={category}
                     onChange={(e) => setCategory(e.target.value as SupportCategory)}
                     className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded-lg bg-white"
@@ -443,6 +448,7 @@ export function AdminRequestsQueue() {
                 <div>
                   <input
                     type="text"
+                    aria-label="Internal assessment notes"
                     value={adminNotes}
                     onChange={(e) => setAdminNotes(e.target.value)}
                     placeholder="Technical assessment notes..."

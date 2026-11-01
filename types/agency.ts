@@ -390,7 +390,45 @@ export interface PublicInquiryFormData {
   consent: boolean;
 }
 
+/** Payment methods accepted by POST /invoices/my/{id}/reconcile. */
+export type PaymentMethod = 'BANK_TRANSFER' | 'CARD' | 'CHECK' | 'OTHER';
+
+/** A client's report of a payment. Only an admin's verification marks the invoice PAID. */
+export type PaymentReportStatus = 'PENDING' | 'VERIFIED' | 'REJECTED';
+
+export interface PaymentReport {
+  id: string;
+  invoiceId: string;
+  invoiceNumber: string;
+  /** Invoice status after this report was processed (PAID only once an admin verifies). */
+  invoiceStatus: Invoice['status'];
+  clientId: string;
+  amount: number;
+  currency: string;
+  paymentMethod: PaymentMethod;
+  reference?: string | null;
+  paidOn: string;
+  note?: string | null;
+  status: PaymentReportStatus;
+  reportedByUserId: string;
+  reportedAt: string;
+  reviewedAt?: string | null;
+  reviewNote?: string | null;
+}
+
+export interface ReportPaymentInput {
+  invoiceId: string;
+  amount: number;
+  paymentMethod: PaymentMethod;
+  reference?: string;
+  /** ISO date (yyyy-mm-dd), not in the future. */
+  paidOn: string;
+  note?: string;
+}
+
 export interface AgencyState {
+  /** Payment reports keyed by invoice id, newest first. Filled only from the backend. */
+  paymentReports: Record<string, PaymentReport[]>;
   clients: Client[];
   projects: Project[];
   tasks: Task[];

@@ -32,6 +32,11 @@ import agencyReducer, {
   fetchMyInvoices,
   markInvoicePaid,
   fetchMyProposals,
+  reportInvoicePayment,
+  fetchMyPaymentReports,
+  fetchInvoicePaymentReports,
+  verifyPaymentReport,
+  rejectPaymentReport,
   recordProposalDecision
 } from '../features/agency/agencySlice.ts';
 
@@ -88,6 +93,11 @@ export {
   fetchMyInvoices,
   markInvoicePaid,
   fetchMyProposals,
+  reportInvoicePayment,
+  fetchMyPaymentReports,
+  fetchInvoicePaymentReports,
+  verifyPaymentReport,
+  rejectPaymentReport,
   recordProposalDecision,
   addToast,
   removeToast,

@@ -7,6 +7,9 @@ import { CopyButton } from '../../../components/ui/CopyButton.tsx';
 import { DollarSign, Download, CheckCircle2, FileText, CreditCard, FileSpreadsheet, RefreshCw } from 'lucide-react';
 import { exportToCsv, exportToJson } from '../../../lib/utils.ts';
 import type { Invoice } from '../../../types/agency.ts';
+import { AdminPaymentReportsPanel } from './AdminPaymentReportsPanel.tsx';
+import { formatMoney } from '../../../lib/money.ts';
+import { agencyApi } from '../../../lib/api/client.ts';
 
 export function AdminInvoicesView() {
   const dispatch = useAppDispatch();
@@ -15,6 +18,7 @@ export function AdminInvoicesView() {
   const invoicesError = useAppSelector(state => state.agency.invoicesError);
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
   useEffect(() => {
     dispatch(fetchInvoices());
@@ -40,6 +44,26 @@ export function AdminInvoicesView() {
     }
   };
 
+  const handleDownloadPdf = async (invoiceId: string, invoiceNumber: string) => {
+    setDownloadingId(invoiceId);
+    try {
+      const { filename } = await agencyApi.invoices.downloadPdf(invoiceId, invoiceNumber);
+      dispatch(addToast({
+        type: 'success',
+        title: 'PDF downloaded',
+        message: `${filename} has been saved.`
+      }));
+    } catch (error: any) {
+      dispatch(addToast({
+        type: 'error',
+        title: 'Download failed',
+        message: error?.message || `Could not download the PDF for ${invoiceNumber}.`
+      }));
+    } finally {
+      setDownloadingId(null);
+    }
+  };
+
   const totalPaid = invoices.filter(i => i.status === 'PAID').reduce((sum, i) => sum + i.totalAmount, 0);
   const totalIssued = invoices.filter(i => i.status === 'ISSUED').reduce((sum, i) => sum + i.totalAmount, 0);
 
@@ -48,13 +72,13 @@ export function AdminInvoicesView() {
       await dispatch(markInvoicePaid({ invoiceId })).unwrap();
       dispatch(addToast({
         type: 'success',
-        title: 'Payment Reconciled',
-        message: `Payment of $${amount.toLocaleString()} USD confirmed for invoice ${invoiceNumber}.`
+        title: 'Invoice marked as paid',
+        message: `${invoiceNumber} is now marked as paid.`
       }));
       dispatch(addNotification({
         category: 'FINANCIAL',
         title: 'Invoice Settled',
-        message: `Reconciled payment of $${amount.toLocaleString()} for ${clientName}.`,
+        message: `${invoiceNumber} for ${clientName} was marked as paid.`,
         priority: 'MEDIUM',
         targetTab: 'INVOICES'
       }));
@@ -177,15 +201,18 @@ export function AdminInvoicesView() {
             </button>
           )}
 
-          {/* No invoice PDF endpoint exists yet: disabled instead of reporting a download that never happened. */}
           <button
             type="button"
-            disabled
-            className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-            title="PDF download is not available yet"
-            aria-label={`Download PDF for invoice ${row.invoiceNumber} (not available yet)`}
+            onClick={() => handleDownloadPdf(row.id, row.invoiceNumber)}
+            disabled={downloadingId === row.id}
+            aria-busy={downloadingId === row.id}
+            className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-wait"
+            title={downloadingId === row.id ? 'Preparing PDF…' : 'Download PDF'}
+            aria-label={`Download PDF for invoice ${row.invoiceNumber}`}
           >
-            <Download className="w-3.5 h-3.5" />
+            {downloadingId === row.id
+              ? <RefreshCw className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
+              : <Download className="w-3.5 h-3.5" aria-hidden="true" />}
           </button>
         </div>
       )
@@ -252,6 +279,8 @@ export function AdminInvoicesView() {
         </div>
       </div>
 
+
+      <AdminPaymentReportsPanel />
 
       {invoicesError && (
         <div className="p-3 bg-red-50 border border-red-200 text-red-800 rounded-xl text-xs flex items-center gap-2">

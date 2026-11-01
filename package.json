@@ -12,7 +12,6 @@
     "test": "node --experimental-strip-types --test lib/*.test.ts lib/api/*.test.ts store/*.test.ts features/auth/*.test.ts features/agency/*.test.ts components/shell/*.test.ts"
   },
   "dependencies": {
-    "@google/genai": "^2.4.0",
     "@reduxjs/toolkit": "^2.13.0",
     "@tailwindcss/postcss": "^4.3.3",
     "date-fns": "^4.4.0",

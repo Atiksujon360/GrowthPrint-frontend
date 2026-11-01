@@ -12,6 +12,7 @@ import {
   AdminInvoicesView,
   AdminAutomationView,
   AdminActivityView,
+  AdminAiSettingsView,
   type AdminTab
 } from '../../../features/admin/index.ts';
 
@@ -24,7 +25,8 @@ const ADMIN_TABS: readonly AdminTab[] = [
   'CLIENTS',
   'INVOICES',
   'AUTOMATION',
-  'ACTIVITY'
+  'ACTIVITY',
+  'AI_SETTINGS'
 ];
 
 function isAdminTab(tab: string): tab is AdminTab {
@@ -68,6 +70,8 @@ export default function AdminPage() {
       {adminTab === 'AUTOMATION' && <AdminAutomationView />}
 
       {adminTab === 'ACTIVITY' && <AdminActivityView />}
+
+      {adminTab === 'AI_SETTINGS' && <AdminAiSettingsView />}
     </AdminLayout>
   );
 }

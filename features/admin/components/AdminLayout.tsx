@@ -22,7 +22,8 @@ import {
   CheckCircle2,
   Menu,
   X,
-  Keyboard
+  Keyboard,
+  Bot
 } from 'lucide-react';
 import { CommandPalette } from '../../../components/ui/CommandPalette.tsx';
 import { QuickCreateModal } from './QuickCreateModal.tsx';
@@ -41,7 +42,8 @@ export type AdminTab =
   | 'CLIENTS' 
   | 'INVOICES' 
   | 'AUTOMATION' 
-  | 'ACTIVITY';
+  | 'ACTIVITY'
+  | 'AI_SETTINGS';
 
 interface AdminLayoutProps {
   currentTab: AdminTab;
@@ -169,7 +171,8 @@ export function AdminLayout({ currentTab, onTabChange, children }: AdminLayoutPr
       group: 'Automation & System',
       items: [
         { id: 'AUTOMATION' as AdminTab, label: 'Workflow Engine (n8n)', icon: Workflow },
-        { id: 'ACTIVITY' as AdminTab, label: 'System Audit Trail', icon: History }
+        { id: 'ACTIVITY' as AdminTab, label: 'System Audit Trail', icon: History },
+        { id: 'AI_SETTINGS' as AdminTab, label: 'AI providers', icon: Bot }
       ]
     }
   ];

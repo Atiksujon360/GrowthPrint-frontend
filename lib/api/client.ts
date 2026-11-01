@@ -71,6 +71,67 @@ export function isMockModeEnv(value: string | undefined = process.env.NEXT_PUBLI
 /** Only idempotent requests are retried; retrying POST/PUT/PATCH/DELETE could create duplicate records. */
 const RETRYABLE_METHODS = new Set(["GET", "HEAD"]);
 
+export interface DownloadOptions {
+  /** Used when the response has no Content-Disposition file name. */
+  filename?: string;
+  params?: Record<string, string | number | boolean | undefined>;
+  timeoutMs?: number;
+  /** Saves the blob; defaults to {@link saveBlobAsFile}. Injectable for tests. */
+  save?: (blob: Blob, filename: string) => void;
+}
+
+export interface DownloadResult {
+  filename: string;
+  size: number;
+  contentType: string;
+}
+
+/** Extracts the file name from a Content-Disposition header (RFC 6266 filename* or filename). */
+export function filenameFromContentDisposition(header: string | null): string | null {
+  if (!header) return null;
+  const extended = /filename\*\s*=\s*(?:UTF-8'')?([^;]+)/i.exec(header);
+  if (extended) {
+    try {
+      return decodeURIComponent(extended[1].trim().replace(/^"|"$/g, ""));
+    } catch {
+      // fall through to the plain filename parameter
+    }
+  }
+  const plain = /filename\s*=\s*("([^"]*)"|[^;]+)/i.exec(header);
+  if (!plain) return null;
+  return (plain[2] ?? plain[1]).trim() || null;
+}
+
+/**
+ * Triggers a browser download of a blob: object URL -> temporary <a download> -> click -> revoke.
+ * The URL is always revoked, even if the click throws.
+ */
+export function saveBlobAsFile(
+  blob: Blob,
+  filename: string,
+  env: { document: Document; URL: Pick<typeof URL, "createObjectURL" | "revokeObjectURL"> } = {
+    document: globalThis.document,
+    URL: globalThis.URL,
+  },
+): void {
+  const url = env.URL.createObjectURL(blob);
+  try {
+    const anchor = env.document.createElement("a");
+    anchor.href = url;
+    anchor.download = filename;
+    anchor.rel = "noopener";
+    anchor.style.display = "none";
+    env.document.body.appendChild(anchor);
+    try {
+      anchor.click();
+    } finally {
+      anchor.remove();
+    }
+  } finally {
+    env.URL.revokeObjectURL(url);
+  }
+}
+
 export class ApiClient {
   private baseUrl: string;
   private defaultTimeoutMs: number;
@@ -246,6 +307,82 @@ export class ApiClient {
     throw lastError;
   }
 
+  /**
+   * Downloads a binary file (e.g. an invoice PDF) with the bearer token and saves it in the browser.
+   * Deliberately separate from {@link request}: the body is read with response.blob(), never parsed as JSON.
+   * Error responses (JSON from the backend's GlobalExceptionHandler) are surfaced as {@link ApiError}.
+   */
+  public async download(endpoint: string, options: DownloadOptions = {}): Promise<DownloadResult> {
+    const { filename: fallbackName = "download", params, timeoutMs = 30000, save = saveBlobAsFile } = options;
+
+    if (this.isMockMode) {
+      throw new ApiError("File downloads need the live backend and are not available in demo mode.", {
+        status: 0,
+        statusText: "Mock mode",
+      });
+    }
+
+    let url = endpoint.startsWith("http")
+      ? endpoint
+      : `${this.baseUrl}${endpoint.startsWith("/") ? "" : "/"}${endpoint}`;
+    if (params) {
+      const searchParams = new URLSearchParams();
+      Object.entries(params).forEach(([key, val]) => {
+        if (val !== undefined) searchParams.append(key, String(val));
+      });
+      const queryString = searchParams.toString();
+      if (queryString) url += (url.includes("?") ? "&" : "?") + queryString;
+    }
+
+    const headers = new Headers({ Accept: "application/pdf, application/octet-stream, application/json" });
+    const token =
+      typeof window !== "undefined" ? window.sessionStorage?.getItem("gp_auth_token") : null;
+    if (token) headers.set("Authorization", `Bearer ${token}`);
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    let response: Response;
+    try {
+      response = await fetch(url, { method: "GET", headers, signal: controller.signal });
+    } catch (err: any) {
+      clearTimeout(timeoutId);
+      if (err?.name === "AbortError") {
+        throw new ApiError(`Download timed out after ${timeoutMs}ms`, { isTimeout: true, status: 408 });
+      }
+      throw new ApiError(err?.message || "Network connection failed", { isNetworkError: true, status: 0 });
+    }
+
+    try {
+      if (!response.ok) {
+        if (response.status === 401) {
+          (this.onUnauthorized ?? globalUnauthorizedHandler)?.();
+        }
+        const contentType = response.headers.get("content-type") || "";
+        const data = contentType.includes("application/json")
+          ? await response.json().catch(() => null)
+          : null;
+        throw new ApiError(data?.message || `HTTP ${response.status}: ${response.statusText}`, {
+          status: response.status,
+          statusText: response.statusText,
+          data,
+          correlationId: response.headers.get("x-correlation-id") || undefined,
+        });
+      }
+
+      const blob = await response.blob();
+      const filename =
+        filenameFromContentDisposition(response.headers.get("content-disposition")) || fallbackName;
+      save(blob, filename);
+      return {
+        filename,
+        size: blob.size,
+        contentType: response.headers.get("content-type") || blob.type,
+      };
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  }
+
   // Convenience verbs
   public get<T>(
     endpoint: string,
@@ -371,11 +508,31 @@ export const agencyApi = {
     getAll: () => apiClient.get("/invoices"),
     getMyInvoices: () => apiClient.get("/invoices/my"),
     getById: (id: string) => apiClient.get(`/invoices/${id}`),
+    // PDFs are generated on demand by the backend and saved as GrowthPrint-Invoice-<number>.pdf.
+    downloadPdf: (id: string, invoiceNumber: string) =>
+      apiClient.download(`/invoices/${encodeURIComponent(id)}/pdf`, {
+        filename: `GrowthPrint-Invoice-${invoiceNumber}.pdf`,
+      }),
+    downloadMyPdf: (id: string, invoiceNumber: string) =>
+      apiClient.download(`/invoices/my/${encodeURIComponent(id)}/pdf`, {
+        filename: `GrowthPrint-Invoice-${invoiceNumber}.pdf`,
+      }),
+    // ADMIN only: marks an invoice paid directly.
     markPaid: (id: string, details?: any) =>
       apiClient.post(`/invoices/${id}/reconcile`, details),
-    // TODO: Backend endpoint POST /api/v1/invoices/my/{id}/reconcile does not exist yet
-    // markMyPaid: (id: string, details?: any) =>
-    //   apiClient.post(`/invoices/my/${id}/reconcile`, details),
+    // CLIENT: report a payment for one of the client's own invoices. Creates a PENDING report;
+    // the invoice stays unpaid until an admin verifies it.
+    reportMyPayment: (id: string, body: { amount: number; paymentMethod: string; reference?: string; paidOn: string; note?: string }) =>
+      apiClient.post(`/invoices/my/${id}/reconcile`, body),
+    getMyPaymentReports: (id: string) =>
+      apiClient.get(`/invoices/my/${id}/payment-reports`),
+    // ADMIN: review reported payments.
+    getPaymentReports: (id: string) =>
+      apiClient.get(`/invoices/${id}/payment-reports`),
+    verifyPaymentReport: (reportId: string, note?: string) =>
+      apiClient.post(`/invoices/payment-reports/${reportId}/verify`, note ? { note } : {}),
+    rejectPaymentReport: (reportId: string, note: string) =>
+      apiClient.post(`/invoices/payment-reports/${reportId}/reject`, { note }),
   },
 
   // Proposals

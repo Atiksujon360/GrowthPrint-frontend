@@ -37,7 +37,7 @@ import {
 import { calculateLeadScore, calculateEstimateCost, calculateInvoiceTotals } from '../../lib/domain-rules.ts';
 import { agencyApi, isMockModeEnv } from '../../lib/api/client.ts';
 
-import type { AgencyState } from '../../types/agency.ts';
+import type { AgencyState, PaymentReport, ReportPaymentInput } from '../../types/agency.ts';
 
 // Mock mode is opt-in (NEXT_PUBLIC_USE_MOCK_API === 'true'); see isMockModeEnv.
 const isMockMode = isMockModeEnv();
@@ -57,6 +57,7 @@ const initialAgencyState: AgencyState = {
   invoices: isMockMode ? INITIAL_INVOICES : [],
   workflows: isMockMode ? INITIAL_WORKFLOWS : [],
   activities: isMockMode ? INITIAL_ACTIVITY_EVENTS : [],
+  paymentReports: {},
   isLoadingClients: false,
   isLoadingLeads: false,
   isLoadingProjects: false,
@@ -1466,6 +1467,110 @@ export const sendOutreachDraftThunk = createAsyncThunk(
   }
 );
 
+// ---------------------------------------------------------------------------------------------
+// Payment reporting (client) and verification (admin)
+// A client can only REPORT a payment. Only an admin's verification marks the invoice PAID, and the
+// invoice status shown afterwards always comes from the server response.
+// ---------------------------------------------------------------------------------------------
+
+const PAYMENT_REPORTS_NEED_API = 'Payment reporting needs the real backend (mock mode is on).';
+
+function apiErrorMessage(error: unknown, fallback: string): string {
+  return error instanceof Error && error.message ? error.message : fallback;
+}
+
+export const reportInvoicePayment = createAsyncThunk(
+  'agency/reportInvoicePayment',
+  async (input: ReportPaymentInput, { rejectWithValue }) => {
+    if (isMockMode) return rejectWithValue(PAYMENT_REPORTS_NEED_API);
+    const { invoiceId, ...body } = input;
+    // Optional fields are only sent when filled in.
+    const payload = {
+      amount: body.amount,
+      paymentMethod: body.paymentMethod,
+      ...(body.reference?.trim() ? { reference: body.reference.trim() } : {}),
+      paidOn: body.paidOn,
+      ...(body.note?.trim() ? { note: body.note.trim() } : {})
+    };
+    try {
+      const response = await agencyApi.invoices.reportMyPayment(invoiceId, payload);
+      return response.data as PaymentReport;
+    } catch (error) {
+      return rejectWithValue(apiErrorMessage(error, 'We could not record your payment. Please try again.'));
+    }
+  }
+);
+
+export const fetchMyPaymentReports = createAsyncThunk(
+  'agency/fetchMyPaymentReports',
+  async (invoiceId: string, { rejectWithValue }) => {
+    if (isMockMode) return rejectWithValue(PAYMENT_REPORTS_NEED_API);
+    try {
+      const response = await agencyApi.invoices.getMyPaymentReports(invoiceId);
+      return { invoiceId, reports: response.data as PaymentReport[] };
+    } catch (error) {
+      return rejectWithValue(apiErrorMessage(error, 'We could not load the payment history.'));
+    }
+  }
+);
+
+export const fetchInvoicePaymentReports = createAsyncThunk(
+  'agency/fetchInvoicePaymentReports',
+  async (invoiceId: string, { rejectWithValue }) => {
+    if (isMockMode) return rejectWithValue(PAYMENT_REPORTS_NEED_API);
+    try {
+      const response = await agencyApi.invoices.getPaymentReports(invoiceId);
+      return { invoiceId, reports: response.data as PaymentReport[] };
+    } catch (error) {
+      return rejectWithValue(apiErrorMessage(error, 'We could not load the reported payments.'));
+    }
+  }
+);
+
+export const verifyPaymentReport = createAsyncThunk(
+  'agency/verifyPaymentReport',
+  async ({ reportId, note }: { reportId: string; note?: string }, { rejectWithValue }) => {
+    if (isMockMode) return rejectWithValue(PAYMENT_REPORTS_NEED_API);
+    try {
+      const response = await agencyApi.invoices.verifyPaymentReport(reportId, note?.trim() || undefined);
+      return response.data as PaymentReport;
+    } catch (error) {
+      return rejectWithValue(apiErrorMessage(error, 'We could not verify this payment.'));
+    }
+  }
+);
+
+export const rejectPaymentReport = createAsyncThunk(
+  'agency/rejectPaymentReport',
+  async ({ reportId, note }: { reportId: string; note: string }, { rejectWithValue }) => {
+    if (!note.trim()) return rejectWithValue('Please explain why the payment is being rejected.');
+    if (isMockMode) return rejectWithValue(PAYMENT_REPORTS_NEED_API);
+    try {
+      const response = await agencyApi.invoices.rejectPaymentReport(reportId, note.trim());
+      return response.data as PaymentReport;
+    } catch (error) {
+      return rejectWithValue(apiErrorMessage(error, 'We could not reject this payment report.'));
+    }
+  }
+);
+
+/** Inserts or replaces a report in its invoice's list (newest first) and syncs the invoice status. */
+function upsertPaymentReport(state: AgencyState, report: PaymentReport) {
+  const list = state.paymentReports[report.invoiceId] ?? [];
+  const index = list.findIndex(existing => existing.id === report.id);
+  if (index === -1) {
+    list.unshift(report);
+  } else {
+    list[index] = report;
+  }
+  state.paymentReports[report.invoiceId] = list;
+
+  const invoice = state.invoices.find(candidate => candidate.id === report.invoiceId);
+  if (invoice && report.invoiceStatus) {
+    invoice.status = report.invoiceStatus;
+  }
+}
+
 const agencySlice = createSlice({
   name: 'agency',
   initialState: initialAgencyState,
@@ -2155,6 +2260,24 @@ const agencySlice = createSlice({
       })
       .addCase(recordProposalDecision.rejected, (state, action) => {
         console.error('Failed to record proposal decision:', action.payload);
+      });
+
+    // Payment reports
+    builder
+      .addCase(reportInvoicePayment.fulfilled, (state, action) => {
+        upsertPaymentReport(state, action.payload);
+      })
+      .addCase(verifyPaymentReport.fulfilled, (state, action) => {
+        upsertPaymentReport(state, action.payload);
+      })
+      .addCase(rejectPaymentReport.fulfilled, (state, action) => {
+        upsertPaymentReport(state, action.payload);
+      })
+      .addCase(fetchMyPaymentReports.fulfilled, (state, action) => {
+        state.paymentReports[action.payload.invoiceId] = action.payload.reports;
+      })
+      .addCase(fetchInvoicePaymentReports.fulfilled, (state, action) => {
+        state.paymentReports[action.payload.invoiceId] = action.payload.reports;
       });
 
     // Session boundaries: never keep another user's business data in memory.
