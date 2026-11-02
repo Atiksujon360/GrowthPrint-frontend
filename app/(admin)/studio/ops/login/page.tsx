@@ -1,6 +1,6 @@
 'use client';
 
-import { WorkspaceLoginScreen } from '../../../../features/auth/components/WorkspaceLoginScreen.tsx';
+import { WorkspaceLoginScreen } from '../../../../../features/auth/components/WorkspaceLoginScreen.tsx';
 
 export const dynamic = 'force-dynamic';
 

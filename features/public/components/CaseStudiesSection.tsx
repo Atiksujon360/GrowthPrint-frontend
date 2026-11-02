@@ -9,15 +9,15 @@ export function CaseStudiesSection() {
 
   const cases = [
     {
-      client: 'Meridian Retail Group',
-      industry: 'Omni-Channel Retail & Logistics',
-      title: 'Real-Time Order Dispatch & B2B Inventory Portal',
-      problem: 'Manual spreadsheet reconciliations between 4 regional warehouses led to shipping delays, inventory stockouts, and high customer support overhead during sales spikes.',
-      solution: 'Custom Next.js web application integrating ERP inventory databases with automated carrier dispatch webhooks and a client-facing order tracking portal.',
+      client: 'Example engagement',
+      industry: 'Operations & internal tools',
+      title: 'Replacing spreadsheet hand-offs with one internal web app',
+      problem: 'Orders, stock and status updates live in several spreadsheets and inboxes, so information is re-typed, delayed and occasionally wrong.',
+      solution: 'A focused web application with one shared database, role-based access, integrations with the tools already in use, and a simple status view for customers.',
       results: [
-        '+42% faster order fulfillment from warehouse to carrier',
-        'Eliminated 18 weekly hours of manual spreadsheet data entry',
-        'Near-zero inventory desynchronization across 12,000 SKUs'
+        'One source of truth instead of copies that drift apart',
+        'Less manual re-typing and fewer copy-paste mistakes',
+        'Clear status for your team and your customers'
       ],
       techStack: ['Next.js', 'React', 'TypeScript', 'Node.js', 'PostgreSQL', 'Redis'],
       image: platformImage.src,
@@ -25,17 +25,17 @@ export function CaseStudiesSection() {
       setError: setPlatformImgError
     },
     {
-      client: 'Nexus Logistics Systems',
-      industry: 'Freight & Fleet Management',
-      title: 'Automated Carrier EDI & Webhook Ingestion Engine',
-      problem: 'Carrier status updates arrived via disjointed legacy EDI flat files and email attachments, resulting in 45-minute dock delays for arriving drivers.',
-      solution: 'Event-driven automation pipeline that parses bill-of-lading documents, dynamically assigns dock queue slots, and sends instant driver dispatch notifications.',
+      client: 'Example engagement',
+      industry: 'Process automation',
+      title: 'Automating a repetitive workflow, with a human approval step',
+      problem: 'Status updates arrive by email and file attachments, and someone has to read, re-enter and forward each one by hand.',
+      solution: 'An automation that reads incoming updates, validates them, retries safely when a system is down, and asks a person to approve anything consequential.',
       results: [
-        '35% reduction in truck dock turnaround latency',
-        'Automatic retry queues with zero dropped carrier webhooks',
-        'Full operational visibility across Midwest distribution hubs'
+        'Routine updates handled automatically and logged',
+        'Failures are visible and retried instead of silently lost',
+        'People stay in control of important decisions'
       ],
-      techStack: ['TypeScript', 'Express', 'Event Queue', 'EDI 214/204', 'PostgreSQL'],
+      techStack: ['TypeScript', 'Java / Spring Boot', 'PostgreSQL', 'Webhooks'],
       image: automationImage.src,
       error: automationImgError,
       setError: setAutomationImgError
@@ -51,17 +51,18 @@ export function CaseStudiesSection() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="max-w-2xl">
             <div className="text-sm font-semibold uppercase tracking-wider text-blue-600">
-              A few problems we have helped solve
+              The kind of work GrowthPrint takes on
             </div>
             <h2 className="mt-2 text-[clamp(1.875rem,4vw,2.25rem)] font-bold text-slate-900 tracking-tight">
-              Work that made a real difference.
+              Typical problems, and how they get solved.
             </h2>
             <p className="mt-4 text-[clamp(1rem,1.5vw,1.125rem)] text-slate-600 leading-relaxed">
-              These are examples of the kinds of messy, important problems we like to make simpler.
+              Illustrative examples of common engagements. They describe the approach and the intended outcome,
+              not a specific client. Ask for references relevant to your project.
             </p>
           </div>
           <div className="text-sm text-slate-500 font-medium pb-2">
-            Selected client work
+            Illustrative examples
           </div>
         </div>
 
@@ -108,11 +109,11 @@ export function CaseStudiesSection() {
 
                   <div className="mt-4 space-y-3 text-base text-slate-600">
                     <div>
-                      <strong className="text-slate-900 font-medium">What was getting in the way: </strong>
+                      <strong className="text-slate-900 font-medium">The problem: </strong>
                       {c.problem}
                     </div>
                     <div>
-                      <strong className="text-slate-900 font-medium">What we changed: </strong>
+                      <strong className="text-slate-900 font-medium">The approach: </strong>
                       {c.solution}
                     </div>
                   </div>
@@ -120,7 +121,7 @@ export function CaseStudiesSection() {
                   {/* Quantified outcomes */}
                   <div className="mt-6 pt-5 border-t border-slate-100">
                     <div className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2">
-                      What improved
+                      What it is designed to improve
                     </div>
                     <ul className="space-y-1.5 text-sm text-slate-800">
                       {c.results.map((r, rIdx) => (

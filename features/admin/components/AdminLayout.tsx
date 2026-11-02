@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks.ts';
-import { setActiveView, switchRole } from '../../../store/index.ts';
+import { useRouter } from 'next/navigation';
+import { logout } from '../../auth/authSlice.ts';
+import { canUseStudioTab, initialsOf } from '../../../lib/access.ts';
+import { ROUTES } from '../../../lib/routes.ts';
 import {
   LayoutDashboard,
   Users,
@@ -23,7 +26,9 @@ import {
   Menu,
   X,
   Keyboard,
-  Bot
+  Bot,
+  Settings,
+  UserCog
 } from 'lucide-react';
 import { CommandPalette } from '../../../components/ui/CommandPalette.tsx';
 import { QuickCreateModal } from './QuickCreateModal.tsx';
@@ -43,7 +48,9 @@ export type AdminTab =
   | 'INVOICES' 
   | 'AUTOMATION' 
   | 'ACTIVITY'
-  | 'AI_SETTINGS';
+  | 'AI_SETTINGS'
+  | 'SETTINGS'
+  | 'TEAM';
 
 interface AdminLayoutProps {
   currentTab: AdminTab;
@@ -53,7 +60,14 @@ interface AdminLayoutProps {
 
 export function AdminLayout({ currentTab, onTabChange, children }: AdminLayoutProps) {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const { currentUser } = useAppSelector(state => state.auth);
+  const isAdmin = currentUser.role === 'ADMIN';
+
+  const handleSignOut = async () => {
+    await dispatch(logout());
+    router.replace(ROUTES.admin.login);
+  };
   const requests = useAppSelector(state => state.agency.requests);
   const outreach = useAppSelector(state => state.agency.outreachDrafts);
   const leads = useAppSelector(state => state.agency.leads);
@@ -119,7 +133,7 @@ export function AdminLayout({ currentTab, onTabChange, children }: AdminLayoutPr
   }, [mobileMenuOpen]);
 
   // Grouped Navigation structure according to Master Prompt Section 5
-  const navGroups = [
+  const allNavGroups = [
     {
       group: 'Overview',
       items: [
@@ -170,12 +184,25 @@ export function AdminLayout({ currentTab, onTabChange, children }: AdminLayoutPr
     {
       group: 'Automation & System',
       items: [
-        { id: 'AUTOMATION' as AdminTab, label: 'Workflow Engine (n8n)', icon: Workflow },
-        { id: 'ACTIVITY' as AdminTab, label: 'System Audit Trail', icon: History },
+        { id: 'AUTOMATION' as AdminTab, label: 'Automation', icon: Workflow },
+        { id: 'ACTIVITY' as AdminTab, label: 'Activity log', icon: History },
         { id: 'AI_SETTINGS' as AdminTab, label: 'AI providers', icon: Bot }
+      ]
+    },
+    {
+      group: 'Account',
+      items: [
+        { id: 'TEAM' as AdminTab, label: 'Users & team', icon: UserCog },
+        { id: 'SETTINGS' as AdminTab, label: 'Account settings', icon: Settings }
       ]
     }
   ];
+
+  // Team members only see the modules an admin granted them. Convenience only: the backend answers 403
+  // for anything else.
+  const navGroups = allNavGroups
+    .map(group => ({ ...group, items: group.items.filter(item => canUseStudioTab(currentUser, item.id)) }))
+    .filter(group => group.items.length > 0);
 
   return (
     <div className="min-h-screen bg-[#F8FAFD] flex flex-col md:flex-row">
@@ -190,20 +217,20 @@ export function AdminLayout({ currentTab, onTabChange, children }: AdminLayoutPr
               transition={{ type: 'spring', stiffness: 300 }}
             >
               <motion.span
-                className="w-6 h-6 rounded-md bg-blue-500 flex items-center justify-center text-white font-bold text-xs"
-                whileHover={{ rotate: 10 }}
+                className="w-7 h-7 rounded-lg bg-brand-500 flex items-center justify-center text-white font-bold text-xs"
+                
                 transition={{ type: 'spring', stiffness: 300 }}
               >
                 GP
               </motion.span>
               <span className="font-bold text-white tracking-tight text-base">
-                GrowthPrint Admin
+                GrowthPrint Studio
               </span>
             </motion.div>
             <div className="mt-3 px-2 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700/80 flex items-center justify-between text-[11px]">
-              <span className="text-slate-400 font-medium">Founder Operating System</span>
+              <span className="text-slate-400 font-medium">{isAdmin ? 'Administrator' : 'Team member'}</span>
               <span className="text-emerald-400 font-semibold flex items-center gap-1">
-                <Shield className="w-3 h-3" /> Privileged
+                <Shield className="w-3 h-3" aria-hidden="true" /> {isAdmin ? 'Full access' : `${currentUser.permissions?.length ?? 0} modules`}
               </span>
             </div>
           </div>
@@ -228,9 +255,10 @@ export function AdminLayout({ currentTab, onTabChange, children }: AdminLayoutPr
                     <motion.button
                       key={item.id}
                       onClick={() => onTabChange(item.id)}
+                      aria-current={isActive ? 'page' : undefined}
                       className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium transition-colors min-h-[44px] ${
                         isActive
-                          ? 'bg-blue-600 text-white font-semibold shadow-xs'
+                          ? 'bg-white/10 text-white font-semibold shadow-[inset_2px_0_0_var(--color-brand-400)]'
                           : 'text-slate-400 hover:text-white hover:bg-slate-800'
                       }`}
                       initial={{ opacity: 0, x: -10 }}
@@ -240,10 +268,10 @@ export function AdminLayout({ currentTab, onTabChange, children }: AdminLayoutPr
                     >
                       <div className="flex items-center gap-2.5 truncate">
                         <motion.div
-                          whileHover={{ scale: 1.1, rotate: 5 }}
+                          whileHover={{ scale: 1.03 }}
                           transition={{ type: 'spring', stiffness: 300 }}
                         >
-                          <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                          <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-brand-300' : 'text-slate-400'}`} aria-hidden="true" />
                         </motion.div>
                         <span className="truncate">{item.label}</span>
                       </div>
@@ -272,16 +300,13 @@ export function AdminLayout({ currentTab, onTabChange, children }: AdminLayoutPr
             <span className="font-mono text-slate-300">Asia/Kuala_Lumpur</span>
           </div>
           <motion.button
-            onClick={() => {
-              dispatch(switchRole('GUEST'));
-              dispatch(setActiveView('PUBLIC'));
-            }}
+            onClick={() => void handleSignOut()}
             className="w-full py-2.5 px-3 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors flex items-center gap-2 min-h-[44px]"
             whileHover={{ x: 3 }}
             transition={{ type: 'spring', stiffness: 300 }}
           >
-            <LogOut className="w-3.5 h-3.5" />
-            <span>Switch to Agency Public View</span>
+            <LogOut className="w-3.5 h-3.5" aria-hidden="true" />
+            <span>Sign out</span>
           </motion.button>
         </div>
       </aside>
@@ -366,7 +391,7 @@ export function AdminLayout({ currentTab, onTabChange, children }: AdminLayoutPr
               title="Keyboard Shortcuts (?)"
               aria-label="Keyboard Shortcuts"
               className="p-3 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl border border-slate-200 transition-colors hidden sm:flex items-center justify-center min-w-[44px] min-h-[44px]"
-              whileHover={{ scale: 1.1, rotate: 5 }}
+              whileHover={{ scale: 1.03 }}
               transition={{ type: 'spring', stiffness: 300 }}
             >
               <Keyboard className="w-4 h-4" />
@@ -379,13 +404,20 @@ export function AdminLayout({ currentTab, onTabChange, children }: AdminLayoutPr
               whileHover={{ scale: 1.02 }}
               transition={{ type: 'spring', stiffness: 300 }}
             >
-              <div className="w-7 h-7 rounded-full bg-slate-900 text-white font-bold text-xs flex items-center justify-center">
-                AV
-              </div>
-              <div className="hidden lg:block text-left">
-                <div className="text-xs font-bold text-slate-800 leading-tight">Alex Vance</div>
-                <div className="text-[10px] text-slate-400 leading-tight">Founder & Engineer</div>
-              </div>
+              <button
+                type="button"
+                onClick={() => onTabChange('SETTINGS')}
+                className="flex items-center gap-2 rounded-lg p-1 hover:bg-slate-100"
+                aria-label="Open account settings"
+              >
+                <span className="w-7 h-7 rounded-full bg-slate-900 text-white font-bold text-xs flex items-center justify-center" aria-hidden="true">
+                  {initialsOf(currentUser.name, currentUser.email)}
+                </span>
+                <span className="hidden lg:block text-left">
+                  <span className="block text-xs font-bold text-slate-800 leading-tight">{currentUser.name || currentUser.email}</span>
+                  <span className="block text-[10px] text-slate-400 leading-tight">{currentUser.title}</span>
+                </span>
+              </button>
             </motion.div>
           </div>
         </header>

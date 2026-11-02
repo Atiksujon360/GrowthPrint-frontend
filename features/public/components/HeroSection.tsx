@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { isMockModeEnv } from '../../../lib/api/client.ts';
 import { ArrowRight, CheckCircle2, Terminal, ArrowUpRight } from 'lucide-react';
 import { useAppDispatch } from '../../../store/hooks.ts';
 import { useRouter } from 'next/navigation';
@@ -10,7 +11,8 @@ export function HeroSection({ onOpenQuote }: { onOpenQuote: () => void }) {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [imageError, setImageError] = useState(false);
-  const isMockMode = process.env.NEXT_PUBLIC_USE_MOCK_API !== 'false';
+  // Same opt-in rule as the API client: demo shortcuts only when NEXT_PUBLIC_USE_MOCK_API === 'true'.
+  const isMockMode = isMockModeEnv();
 
   return (
     <section className="relative pt-12 pb-16 lg:pt-16 lg:pb-24 overflow-hidden overflow-x-hidden">
@@ -43,7 +45,7 @@ export function HeroSection({ onOpenQuote }: { onOpenQuote: () => void }) {
                 className="px-5 sm:px-6 py-3.5 text-sm sm:text-base font-semibold text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 rounded-xl shadow-sm hover:shadow-lg transition-all flex items-center gap-2.5 min-h-[44px]"
               >
                 <span>Tell us what&apos;s getting in the way</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4" aria-hidden="true" />
               </button>
 
               <a
@@ -63,7 +65,7 @@ export function HeroSection({ onOpenQuote }: { onOpenQuote: () => void }) {
                     dispatch(switchRole('CLIENT'));
                     dispatch(setActiveView('PORTAL'));
                   } else {
-                    router.push('/portal/login');
+                    router.push('/client-hub/login');
                   }
                 }}
                 className="text-sm font-medium text-slate-500 hover:text-blue-600 transition-colors flex items-center gap-1.5 ml-0 sm:ml-2 py-2 min-h-[44px]"
@@ -130,14 +132,14 @@ export function HeroSection({ onOpenQuote }: { onOpenQuote: () => void }) {
         {/* 4-Column Metric Strip below the split */}
         <div className="mt-12 sm:mt-16 pt-6 sm:pt-8 border-t border-slate-200 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
           {[
-            { value: '14+', label: 'Systems shipped' },
-            { value: '35%', label: 'Less process friction' },
-            { value: '100%', label: 'Work reviewed personally' },
-            { value: '99.9%', label: 'Reliable automated workflows' }
-          ].map((metric, index) => (
-            <div key={index} className="space-y-1">
-              <div className="text-2xl sm:text-3xl font-bold text-slate-900 tabular-nums">{metric.value}</div>
-              <div className="text-xs sm:text-sm font-medium text-slate-500">{metric.label}</div>
+            { value: 'One', label: 'Point of contact, who also writes the code' },
+            { value: 'Written', label: 'Scope and estimate before work starts' },
+            { value: 'Shared', label: 'Client hub for progress, approvals and invoices' },
+            { value: 'Ongoing', label: 'Support and maintenance after launch' }
+          ].map((fact) => (
+            <div key={fact.label} className="space-y-1">
+              <div className="text-xl sm:text-2xl font-bold text-slate-900">{fact.value}</div>
+              <div className="text-xs sm:text-sm font-medium text-slate-500">{fact.label}</div>
             </div>
           ))}
         </div>

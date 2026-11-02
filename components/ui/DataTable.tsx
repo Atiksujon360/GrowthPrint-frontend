@@ -245,7 +245,7 @@ export function DataTable<T extends Record<string, any>>({
               value={internalSearch}
               onChange={(e) => handleSearchChange(e.target.value)}
               placeholder={searchConfig?.placeholder || 'Search by keyword, client, or tag...'}
-              className="w-full pl-9 pr-8 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50/50 hover:bg-white focus:bg-white transition-colors"
+              className="w-full min-h-10 pl-9 pr-8 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-100 bg-slate-50/50 hover:bg-white focus:bg-white transition-colors"
             />
             {internalSearch && (
               <button
@@ -294,7 +294,7 @@ export function DataTable<T extends Record<string, any>>({
 
       {/* Table Body Area */}
       <div className="overflow-x-auto min-h-[220px] relative">
-        <table className="w-full text-left text-xs border-collapse">
+        <table className="w-full text-left text-sm border-collapse">
           <thead>
             <tr className="border-b border-slate-200/90 bg-slate-50/70 text-slate-500 font-semibold uppercase tracking-wider text-[11px]">
               {columns.map((col) => {

@@ -19,7 +19,7 @@ export function CircularProgress({
   progress, 
   size = 80, 
   strokeWidth = 8,
-  color = '#2563EB',
+  color = '#0c826c',
   showLabel = true,
   label
 }: { 
@@ -114,7 +114,7 @@ export function FloatingActionButton({
       <motion.button
         onClick={onClick}
         className={`${colorClasses[color]} w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-white relative`}
-        whileHover={{ scale: 1.1 }}
+        whileHover={{ scale: 1.03 }}
         whileTap={{ scale: 0.9 }}
       >
         <motion.div
@@ -230,8 +230,8 @@ export function SuccessCelebration({
           transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
         >
           <motion.div
-            initial={{ scale: 0, rotate: -180 }}
-            animate={{ scale: 1, rotate: 0 }}
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
             transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
           >
             <CheckCircle2 className="w-10 h-10 text-emerald-600" />
@@ -361,7 +361,7 @@ export function AchievementBadge({
   return (
     <motion.div
       className={`relative ${unlocked ? '' : 'opacity-50 grayscale'} bg-linear-to-br ${colorClasses[color]} p-4 rounded-2xl text-white shadow-lg`}
-      whileHover={{ scale: 1.05, rotate: 2 }}
+      whileHover={{ scale: 1.05 }}
       transition={{ type: 'spring', stiffness: 300 }}
     >
       {unlocked && (

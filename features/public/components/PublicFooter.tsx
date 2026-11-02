@@ -1,4 +1,5 @@
 import React from 'react';
+import { isMockModeEnv } from '../../../lib/api/client.ts';
 import { useAppDispatch } from '../../../store/hooks.ts';
 import { useRouter } from 'next/navigation';
 import { setActiveView, switchRole } from '../../../store/index.ts';
@@ -13,7 +14,8 @@ function handleFooterSectionClick(event: React.MouseEvent<HTMLAnchorElement>, se
 export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const isMockMode = process.env.NEXT_PUBLIC_USE_MOCK_API !== 'false';
+  // Same opt-in rule as the API client: demo shortcuts only when NEXT_PUBLIC_USE_MOCK_API === 'true'.
+  const isMockMode = isMockModeEnv();
 
   return (
     <footer className="bg-slate-900 text-slate-300 pt-16 pb-12 border-t border-slate-800">
@@ -91,7 +93,7 @@ export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
                       dispatch(switchRole('CLIENT'));
                       dispatch(setActiveView('PORTAL'));
                     } else {
-                      router.push('/portal/login');
+                      router.push('/client-hub/login');
                     }
                   }}
                   className="hover:text-white transition-colors flex items-center gap-1 text-blue-400 py-2 min-h-[44px]"
@@ -100,22 +102,22 @@ export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
                   <ArrowUpRight className="w-3 h-3" />
                 </button>
               </li>
-              <li>
-                <button
-                  onClick={() => {
-                    if (isMockMode) {
+              {/* The internal studio is never linked from the public site (its path is not advertised);
+                  only the demo build keeps a shortcut to the mock workspace. */}
+              {isMockMode && (
+                <li>
+                  <button
+                    onClick={() => {
                       dispatch(switchRole('ADMIN'));
                       dispatch(setActiveView('ADMIN'));
-                    } else {
-                      router.push('/admin/login');
-                    }
-                  }}
-                  className="hover:text-white transition-colors flex items-center gap-1 text-slate-400 py-2 min-h-[44px]"
-                >
-                  <span>Open the team workspace</span>
-                  <ArrowUpRight className="w-3 h-3" />
-                </button>
-              </li>
+                    }}
+                    className="hover:text-white transition-colors flex items-center gap-1 text-slate-400 py-2 min-h-[44px]"
+                  >
+                    <span>Open the demo team workspace</span>
+                    <ArrowUpRight className="w-3 h-3" aria-hidden="true" />
+                  </button>
+                </li>
+              )}
               <li>
                 <a href="#process" onClick={(event) => handleFooterSectionClick(event, 'process')} className="hover:text-white transition-colors block py-2">
                   How we work

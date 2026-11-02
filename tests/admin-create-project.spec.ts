@@ -3,18 +3,18 @@ import { test, expect } from '@playwright/test';
 test.describe('Admin Create Project', () => {
   test('should create a new project via Quick Create Modal', async ({ page }) => {
     // Login as admin first
-    await page.goto('/admin/login');
+    await page.goto('/studio/ops/login');
     await page.getByLabel(/email/i).fill('admin@growthprint.dev');
-    await page.getByLabel(/password/i).fill('Admin123!');
+    await page.getByLabel(/^Password/).fill('Admin123!');
 
     const loginResponsePromise = page.waitForResponse(
       response => response.url().includes('/auth/login') && response.status() === 200
     );
-    await page.getByRole('button', { name: /continue to workspace/i }).click();
+    await page.getByRole('button', { name: /^sign in$/i }).click();
     await loginResponsePromise;
 
     // Wait for dashboard to load
-    await expect(page).toHaveURL('/admin');
+    await expect(page).toHaveURL('/studio/ops');
 
     // Open Quick Create Modal (keyboard shortcut Ctrl+K or click button)
     await page.keyboard.press('Control+K');

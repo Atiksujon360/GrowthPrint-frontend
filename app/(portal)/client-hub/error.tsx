@@ -36,7 +36,7 @@ export default function Error({
               Try again
             </button>
             <button
-              onClick={() => router.push('/portal/login')}
+              onClick={() => router.push('/client-hub/login')}
               className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors"
             >
               Back to login

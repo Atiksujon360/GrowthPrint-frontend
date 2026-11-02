@@ -1,14 +1,131 @@
 @import "tailwindcss";
 
+/*
+ * GrowthPrint design tokens (Tailwind v4 @theme).
+ *
+ * Brand: emerald-teal primary, mint highlights, navy text and dark surfaces, white and cool grey neutrals.
+ *   brand-*  primary actions, links, active navigation, focus rings (600+ meets AA on white)
+ *   mint-*   soft highlights and illustration tints
+ *   ink-*    navy text, borders and neutral surfaces
+ *
+ * Most existing screens were written with Tailwind's default `blue-*`, `purple-*`/`violet-*` and `slate-*`
+ * utilities. Instead of editing ~300 class names (and risking regressions), those palettes are re-pointed
+ * here at the GrowthPrint scales, so every screen picks up the brand consistently:
+ *   blue -> brand, purple/violet -> mint, slate 800-950 -> navy.
+ * `emerald-*` keeps Tailwind's values and stays the semantic "success" colour, distinct from the
+ * teal-leaning brand primary. New code should use brand-/mint-/ink- names directly.
+ */
+@theme {
+  --font-sans: "Inter", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --color-brand-50: #ecfbf6;
+  --color-brand-100: #d1f4e7;
+  --color-brand-200: #a6e9d3;
+  --color-brand-300: #6fd6b9;
+  --color-brand-400: #37bb9a;
+  --color-brand-500: #16a083;
+  --color-brand-600: #0c826c;
+  --color-brand-700: #0b6858;
+  --color-brand-800: #0c5348;
+  --color-brand-900: #0c453d;
+  --color-brand-950: #032824;
+
+  --color-mint-50: #f0fbf8;
+  --color-mint-100: #d9f5ee;
+  --color-mint-200: #b4eadc;
+  --color-mint-300: #84d8c5;
+  --color-mint-400: #52bfaa;
+  --color-mint-500: #2fa391;
+  --color-mint-600: #228477;
+  --color-mint-700: #1f6a61;
+  --color-mint-800: #1d5550;
+  --color-mint-900: #1b4743;
+  --color-mint-950: #0a2927;
+
+  --color-ink-50: #f6f8fa;
+  --color-ink-100: #eef1f5;
+  --color-ink-200: #dde3ea;
+  --color-ink-300: #c3ccd7;
+  --color-ink-400: #8f9bab;
+  --color-ink-500: #647184;
+  --color-ink-600: #4a5668;
+  --color-ink-700: #364254;
+  --color-ink-800: #22304a;
+  --color-ink-900: #132239;
+  --color-ink-950: #0a1628;
+
+  /* Legacy palettes re-pointed at the brand (see note above). */
+  --color-blue-50: #ecfbf6;
+  --color-blue-100: #d1f4e7;
+  --color-blue-200: #a6e9d3;
+  --color-blue-300: #6fd6b9;
+  --color-blue-400: #37bb9a;
+  --color-blue-500: #16a083;
+  --color-blue-600: #0c826c;
+  --color-blue-700: #0b6858;
+  --color-blue-800: #0c5348;
+  --color-blue-900: #0c453d;
+  --color-blue-950: #032824;
+  --color-indigo-50: #ecfbf6;
+  --color-indigo-100: #d1f4e7;
+  --color-indigo-200: #a6e9d3;
+  --color-indigo-300: #6fd6b9;
+  --color-indigo-400: #37bb9a;
+  --color-indigo-500: #16a083;
+  --color-indigo-600: #0c826c;
+  --color-indigo-700: #0b6858;
+  --color-indigo-800: #0c5348;
+  --color-indigo-900: #0c453d;
+  --color-indigo-950: #032824;
+  --color-sky-50: #f0fbf8;
+  --color-sky-100: #d9f5ee;
+  --color-sky-200: #b4eadc;
+  --color-sky-300: #84d8c5;
+  --color-sky-400: #52bfaa;
+  --color-sky-500: #2fa391;
+  --color-sky-600: #228477;
+  --color-sky-700: #1f6a61;
+  --color-sky-800: #1d5550;
+  --color-sky-900: #1b4743;
+  --color-sky-950: #0a2927;
+  --color-purple-50: #f0fbf8;
+  --color-purple-100: #d9f5ee;
+  --color-purple-200: #b4eadc;
+  --color-purple-300: #84d8c5;
+  --color-purple-400: #52bfaa;
+  --color-purple-500: #2fa391;
+  --color-purple-600: #228477;
+  --color-purple-700: #1f6a61;
+  --color-purple-800: #1d5550;
+  --color-purple-900: #1b4743;
+  --color-purple-950: #0a2927;
+  --color-violet-50: #f0fbf8;
+  --color-violet-100: #d9f5ee;
+  --color-violet-200: #b4eadc;
+  --color-violet-300: #84d8c5;
+  --color-violet-400: #52bfaa;
+  --color-violet-500: #2fa391;
+  --color-violet-600: #228477;
+  --color-violet-700: #1f6a61;
+  --color-violet-800: #1d5550;
+  --color-violet-900: #1b4743;
+  --color-violet-950: #0a2927;
+  --color-slate-800: #22304a;
+  --color-slate-900: #132239;
+  --color-slate-950: #0a1628;
+
+  --radius-card: 1rem;
+  --shadow-xs: 0 1px 2px 0 rgb(10 22 40 / 0.05);
+  --shadow-card: 0 1px 2px rgb(10 22 40 / 0.04), 0 8px 24px -12px rgb(10 22 40 / 0.12);
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 @layer base {
-  :root {
-    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
-  }
   body {
     font-family: var(--font-sans);
-    color: #182230;
-    background-color: #F8FAFD;
+    color: var(--color-ink-900);
+    background-color: var(--color-ink-50);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
@@ -17,6 +134,15 @@
   html {
     scroll-behavior: smooth;
     scroll-padding-top: 5rem;
+  }
+  /* Visible keyboard focus everywhere (WCAG 2.4.7 / 2.4.11); mouse clicks do not show the ring. */
+  :focus-visible {
+    outline: 2px solid var(--color-brand-600);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: var(--color-brand-100);
+    color: var(--color-ink-900);
   }
 }
 
@@ -29,11 +155,11 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--color-ink-300);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--color-ink-400);
 }
 
 /* Glassmorphism utilities */
@@ -53,19 +179,17 @@
   }
 
   .glass-card {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    background: #ffffff;
+    border: 1px solid var(--color-ink-200);
+    box-shadow: var(--shadow-card);
   }
 
   .gradient-bg {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--color-brand-700) 0%, var(--color-ink-900) 100%);
   }
 
   .gradient-text {
-    background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%);
+    background: linear-gradient(135deg, var(--color-brand-600) 0%, var(--color-mint-500) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;

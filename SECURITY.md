@@ -60,6 +60,27 @@ This document outlines security policies, authentication, secrets management, an
 
 ## Authorization
 
+### 2026-11-02 changes (account security and staff access)
+
+- Roles: `ADMIN`, `TEAM_MEMBER` (new), `CLIENT`. Team members use the studio with module permissions
+  (`CRM`, `CLIENTS`, `PROJECTS`, `SUPPORT`, `PROPOSALS`, `OUTREACH`); finance, AI settings and user management are
+  admin-only. The frontend reads `role` and `permissions` from `/auth/login` and `/auth/me` and hides what the user
+  cannot use; the backend enforces it (403).
+- Password change, password reset, "sign out everywhere", suspension and role/permission changes revoke existing tokens
+  on the backend immediately; the app's 401 handler then returns the user to the login page.
+- After a successful password change the backend returns a fresh token for the current device, which the settings page
+  stores (`sessionFromLoginResponse`).
+- One-time reset/invitation tokens arrive in the URL **fragment**, are posted in JSON bodies, and are removed from the
+  address bar on load; those pages are `noindex` and `Referrer-Policy: no-referrer`.
+- Login errors are generic ("Invalid email or password."); the forgot-password page shows the same confirmation for
+  every address.
+- Remaining risk: the access token is kept in `sessionStorage`, which scripts on the page can read. Moving to httpOnly
+  cookies with refresh tokens needs a backend change and approval.
+- Demo shortcuts (role switcher, footer workspace link, hero "sign in" demo switch) only exist when
+  `NEXT_PUBLIC_USE_MOCK_API === 'true'`. Previously three public components treated an unset variable as demo mode.
+
+### Earlier notes
+
 ### Role-Based Access Control
 
 **Roles:**

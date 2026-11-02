@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import {
   PortalLayout,
   PortalDashboard,
@@ -11,10 +12,18 @@ import {
   PortalMessagesView,
   type PortalTab
 } from '../../../features/portal/index.ts';
+import { AccountSettings } from '../../../features/settings/components/AccountSettings.tsx';
+import { ROUTES } from '../../../lib/routes.ts';
 
-export default function PortalPage() {
-  const [portalTab, setPortalTab] = useState<PortalTab>('DASHBOARD');
+/** The client hub is one client-side workspace; /client-hub/settings opens it on the settings tab. */
+export default function ClientHubPage() {
+  const pathname = usePathname();
+  const [portalTab, setPortalTab] = useState<PortalTab>(pathname === ROUTES.portal.settings ? 'SETTINGS' : 'DASHBOARD');
   const [isNewRequestModalOpen, setIsNewRequestModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (pathname === ROUTES.portal.settings) setPortalTab('SETTINGS');
+  }, [pathname]);
 
   const handleOpenNewRequest = () => {
     setPortalTab('REQUESTS');
@@ -22,20 +31,11 @@ export default function PortalPage() {
   };
 
   return (
-    <PortalLayout
-      currentTab={portalTab}
-      onTabChange={setPortalTab}
-      onOpenNewRequest={handleOpenNewRequest}
-    >
+    <PortalLayout currentTab={portalTab} onTabChange={setPortalTab} onOpenNewRequest={handleOpenNewRequest}>
       {portalTab === 'DASHBOARD' && (
-        <PortalDashboard
-          onNavigateTab={setPortalTab}
-          onOpenNewRequest={handleOpenNewRequest}
-        />
+        <PortalDashboard onNavigateTab={setPortalTab} onOpenNewRequest={handleOpenNewRequest} />
       )}
-
       {portalTab === 'PROJECTS' && <PortalProjectsView />}
-
       {portalTab === 'REQUESTS' && (
         <PortalRequestsView
           isModalOpen={isNewRequestModalOpen}
@@ -43,12 +43,10 @@ export default function PortalPage() {
           onCloseModal={() => setIsNewRequestModalOpen(false)}
         />
       )}
-
       {portalTab === 'PROPOSALS' && <PortalProposalsView />}
-
       {portalTab === 'INVOICES' && <PortalInvoicesView />}
-
       {portalTab === 'MESSAGES' && <PortalMessagesView />}
+      {portalTab === 'SETTINGS' && <AccountSettings />}
     </PortalLayout>
   );
 }

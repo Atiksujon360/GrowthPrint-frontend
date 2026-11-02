@@ -178,67 +178,82 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
               </div>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form noValidate onSubmit={handleSubmit} className="space-y-5">
               {/* Row 1: Contact Details */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Your Name *
+                  <label htmlFor="inquiry-name" className="block text-sm font-medium text-slate-700 mb-1">
+                    Your Name <span className="text-rose-600" aria-hidden="true">*</span>
                   </label>
                   <div className="relative">
-                    <User className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                    <User className="w-4 h-4 text-slate-400 absolute left-3 top-3" aria-hidden="true" />
                     <input
                       type="text"
+                      id="inquiry-name"
+                      required
+                      autoComplete="name"
+                      aria-invalid={Boolean(errors.name)}
+                      aria-describedby={errors.name ? 'inquiry-name-error' : undefined}
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="e.g. Alex Morgan"
-                      className={`w-full pl-9 pr-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 ${
+                      className={`w-full pl-9 pr-3 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 ${
                         errors.name ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300'
                       }`}
                     />
                   </div>
-                  {errors.name && <p className="text-[11px] text-rose-600 mt-1">{errors.name}</p>}
+                  {errors.name && <p id="inquiry-name-error" role="alert" className="text-xs text-rose-700 mt-1">{errors.name}</p>}
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Business Email *
+                    <label htmlFor="inquiry-email" className="block text-sm font-medium text-slate-700 mb-1">
+                    Business Email <span className="text-rose-600" aria-hidden="true">*</span>
                   </label>
                   <div className="relative">
-                    <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                    <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3" aria-hidden="true" />
                     <input
                       type="email"
+                      id="inquiry-email"
+                      required
+                      autoComplete="email"
+                      aria-invalid={Boolean(errors.businessEmail)}
+                      aria-describedby={errors.businessEmail ? 'inquiry-email-error' : undefined}
                       value={formData.businessEmail}
                       onChange={(e) => setFormData({ ...formData, businessEmail: e.target.value })}
                       placeholder="alex@company.com"
-                      className={`w-full pl-9 pr-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 ${
+                      className={`w-full pl-9 pr-3 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 ${
                         errors.businessEmail ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300'
                       }`}
                     />
                   </div>
-                  {errors.businessEmail && <p className="text-[11px] text-rose-600 mt-1">{errors.businessEmail}</p>}
+                  {errors.businessEmail && <p id="inquiry-email-error" role="alert" className="text-xs text-rose-700 mt-1">{errors.businessEmail}</p>}
                 </div>
               </div>
 
               {/* Row 2: Company & Website */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Company Name *
+                  <label htmlFor="inquiry-company" className="block text-sm font-medium text-slate-700 mb-1">
+                    Company Name <span className="text-rose-600" aria-hidden="true">*</span>
                   </label>
                   <div className="relative">
-                    <Building className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                    <Building className="w-4 h-4 text-slate-400 absolute left-3 top-3" aria-hidden="true" />
                     <input
                       type="text"
+                      id="inquiry-company"
+                      required
+                      autoComplete="organization"
+                      aria-invalid={Boolean(errors.company)}
+                      aria-describedby={errors.company ? 'inquiry-company-error' : undefined}
                       value={formData.company}
                       onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                       placeholder="e.g. Acme Logistics Ltd"
-                      className={`w-full pl-9 pr-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 ${
+                      className={`w-full pl-9 pr-3 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 ${
                         errors.company ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300'
                       }`}
                     />
                   </div>
-                  {errors.company && <p className="text-[11px] text-rose-600 mt-1">{errors.company}</p>}
+                  {errors.company && <p id="inquiry-company-error" role="alert" className="text-xs text-rose-700 mt-1">{errors.company}</p>}
                 </div>
 
                 <div>
@@ -333,20 +348,24 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
 
               {/* Project Description */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
-                  What would you like to improve? *
+                <label htmlFor="inquiry-description" className="block text-sm font-medium text-slate-700 mb-1">
+                  What would you like to improve? <span className="text-rose-600" aria-hidden="true">*</span>
                 </label>
                 <textarea
                   rows={3}
+                  id="inquiry-description"
+                  required
+                  aria-invalid={Boolean(errors.projectDescription)}
+                  aria-describedby={errors.projectDescription ? 'inquiry-description-error' : undefined}
                   value={formData.projectDescription}
                   onChange={(e) => setFormData({ ...formData, projectDescription: e.target.value })}
                   placeholder="Tell us what is happening today and what you would like to be different..."
-                  className={`w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 ${
+                  className={`w-full px-3 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 ${
                     errors.projectDescription ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300'
                   }`}
                 />
                 {errors.projectDescription && (
-                  <p className="text-[11px] text-rose-600 mt-1">{errors.projectDescription}</p>
+                  <p id="inquiry-description-error" role="alert" className="text-xs text-rose-700 mt-1">{errors.projectDescription}</p>
                 )}
               </div>
 

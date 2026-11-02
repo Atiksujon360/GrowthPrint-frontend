@@ -78,7 +78,7 @@ function RoleSwitcherBarContent() {
             <button
               onClick={handleNavToPortal}
               className={`px-2 py-1 rounded-md font-medium transition-all flex items-center gap-1 shrink-0 relative ${
-                isActiveRoute('/portal')
+                isActiveRoute(ROUTES.portal.home)
                   ? 'bg-blue-600 text-white shadow-xs'
                   : 'text-slate-300 hover:text-white'
               }`}
@@ -95,7 +95,7 @@ function RoleSwitcherBarContent() {
             <button
               onClick={handleNavToAdmin}
               className={`px-2 py-1 rounded-md font-medium transition-all flex items-center gap-1 shrink-0 relative ${
-                isActiveRoute('/admin')
+                isActiveRoute(ROUTES.admin.home)
                   ? 'bg-blue-600 text-white shadow-xs'
                   : 'text-slate-300 hover:text-white'
               }`}

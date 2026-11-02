@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { isMockModeEnv } from '../../../lib/api/client.ts';
 import { useAppDispatch } from '../../../store/hooks.ts';
 import { useRouter } from 'next/navigation';
 import { setActiveView, switchRole } from '../../../store/index.ts';
@@ -12,7 +13,8 @@ export function PublicHeader({ onOpenQuote }: { onOpenQuote: () => void }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
-  const isMockMode = process.env.NEXT_PUBLIC_USE_MOCK_API !== 'false';
+  // Same opt-in rule as the API client: demo shortcuts only when NEXT_PUBLIC_USE_MOCK_API === 'true'.
+  const isMockMode = isMockModeEnv();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -116,7 +118,7 @@ export function PublicHeader({ onOpenQuote }: { onOpenQuote: () => void }) {
                 dispatch(switchRole('CLIENT'));
                 dispatch(setActiveView('PORTAL'));
               } else {
-                router.push('/portal/login');
+                router.push('/client-hub/login');
               }
             }}
             className="hover:text-blue-600 hover:translate-x-0.5 transition-all whitespace-nowrap shrink-0 flex items-center gap-1 font-medium"
@@ -185,7 +187,7 @@ export function PublicHeader({ onOpenQuote }: { onOpenQuote: () => void }) {
                   dispatch(switchRole('CLIENT'));
                   dispatch(setActiveView('PORTAL'));
                 } else {
-                  router.push('/portal/login');
+                  router.push('/client-hub/login');
                 }
               }}
               className="w-full text-left py-3 px-2 text-base font-medium text-blue-600 min-h-[44px] flex items-center hover:translate-x-1 transition-transform"

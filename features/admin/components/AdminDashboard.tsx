@@ -40,6 +40,13 @@ interface AdminDashboardProps {
 
 export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTab) => void }) {
   const dispatch = useAppDispatch();
+  const currentUser = useAppSelector(state => state.auth.currentUser);
+  const now = new Date();
+  const hour = now.getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+  const firstName = (currentUser.name || '').split(' ')[0];
+  const periodLabel = new Intl.DateTimeFormat(undefined, { month: 'long', year: 'numeric' }).format(now);
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const clients = useAppSelector(state => state.agency.clients);
   const projects = useAppSelector(state => state.agency.projects);
   const requests = useAppSelector(state => state.agency.requests);
@@ -122,39 +129,38 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
     <div className="space-y-8">
       {/* Welcome & Timezone Status Bar */}
       <motion.div
-        className="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6 glass-card"
-        initial={{ opacity: 0, y: 20 }}
+        className="relative overflow-hidden rounded-2xl p-6 sm:p-7 bg-slate-950 text-white flex flex-col md:flex-row md:items-center justify-between gap-6"
+        initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: 0.35 }}
       >
         <div>
           <motion.div
-            className="flex items-center gap-2 text-xs font-semibold text-blue-600 uppercase tracking-wider"
+            className="flex flex-wrap items-center gap-2 text-xs font-semibold text-brand-300 uppercase tracking-wider"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            <span>Agency Command Center</span>
-            <span>·</span>
-            <span className="text-slate-400">Asia/Kuala_Lumpur (UTC+8)</span>
+            <span>Command Centre</span>
+            <span aria-hidden="true">·</span>
+            <span className="text-slate-400 normal-case tracking-normal">{timeZone}</span>
           </motion.div>
-          <h1 className="mt-1 text-2xl font-bold text-slate-900 tracking-tight">
-            Good morning, Alex. Here&apos;s where things stand today.
+          <h1 className="mt-2 text-2xl sm:text-3xl font-semibold tracking-tight text-balance">
+            {greeting}{firstName ? `, ${firstName}` : ''}. Here&apos;s where things stand today.
           </h1>
-          <p className="mt-1 text-xs sm:text-sm text-slate-500">
+          <p className="mt-2 text-sm text-slate-300 max-w-2xl">
             A clear view of active client work, cash in the bank, pending approvals, and your next best steps.
           </p>
         </div>
 
         <div className="flex items-center gap-3 self-start md:self-auto">
-          <div className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-600 font-medium">
-            Period: <strong>October 2026</strong>
+          <div className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-slate-300 font-medium">
+            Period: <strong className="text-white">{periodLabel}</strong>
           </div>
           <motion.button
             onClick={() => onNavigateTab('OUTREACH')}
-            className="px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-xs transition-colors flex items-center gap-2"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            className="min-h-10 px-4 py-2 text-sm font-semibold text-slate-950 bg-brand-300 hover:bg-brand-200 rounded-xl transition-colors flex items-center gap-2"
+            whileTap={{ scale: 0.98 }}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
@@ -176,7 +182,6 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
           label="Cash Collected"
           value={`$${cashCollected.toLocaleString()}`}
           subtext="Cleared payments this month"
-          trend="+18% MoM"
           icon={DollarSign}
         />
         <StatCard
@@ -246,7 +251,7 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
           <div className="flex items-center gap-2.5">
             <motion.div
               className="w-8 h-8 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center shrink-0"
-              whileHover={{ scale: 1.1, rotate: 5 }}
+              whileHover={{ scale: 1.03 }}
               transition={{ type: 'spring', stiffness: 300 }}
             >
               <AlertCircle className="w-4 h-4" />
@@ -338,8 +343,8 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
                   formatter={(val: any) => [`$${Number(val).toLocaleString()} USD`, '']}
                   contentStyle={{ backgroundColor: '#ffffff', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '12px' }}
                 />
-                <Bar dataKey="collected" name="Cash Collected" fill="#16835D" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="invoiced" name="Invoiced Total" fill="#3867E8" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="collected" name="Cash Collected" fill="#0c826c" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="invoiced" name="Invoiced Total" fill="#22304a" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

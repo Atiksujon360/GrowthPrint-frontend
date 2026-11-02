@@ -17,7 +17,7 @@ export default function NotFound() {
           The admin workspace page you're looking for doesn't exist or has been moved.
         </p>
         <button
-          onClick={() => router.push('/admin')}
+          onClick={() => router.push('/studio/ops')}
           className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
         >
           Go to dashboard

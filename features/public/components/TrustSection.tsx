@@ -6,7 +6,7 @@ export function TrustSection({ onOpenQuote }: { onOpenQuote: () => void }) {
     {
       icon: UserCheck,
       title: 'You work with the person doing the work',
-      description: 'Your project is planned, reviewed, and engineered under the direct supervision of a senior technology leader—no handoffs to junior offshore account reps.'
+      description: 'GrowthPrint is a one-person studio on purpose. The person you talk to is the person who plans, builds and supports your software, so nothing is lost in handoffs.'
     },
     {
       icon: FileCheck,
@@ -21,7 +21,7 @@ export function TrustSection({ onOpenQuote }: { onOpenQuote: () => void }) {
     {
       icon: ShieldCheck,
       title: 'Careful with your data and your code',
-      description: 'We use sensible security practices, strong typing, validation, and careful API design because reliable software is built on good habits.'
+      description: 'Access is role-based, inputs are validated, passwords are hashed and every change is reviewed before release. Your data is used only for your project.'
     },
     {
       icon: Clock,
@@ -46,10 +46,10 @@ export function TrustSection({ onOpenQuote }: { onOpenQuote: () => void }) {
             What working with us feels like
           </div>
           <h2 className="mt-2 text-[clamp(1.875rem,4vw,2.25rem)] font-bold text-slate-900 tracking-tight">
-            Thoughtful work, clear communication, and no unnecessary drama.
+            A small studio, by design: clear communication and careful work.
           </h2>
           <p className="mt-4 text-[clamp(1rem,1.5vw,1.125rem)] text-slate-600 leading-relaxed">
-            We work best with teams that want a dependable technical partner who listens, explains the trade-offs, and follows through.
+            GrowthPrint suits founders and small teams who want a dependable technical partner: someone who listens, explains the trade-offs in plain language, and follows through.
           </p>
         </div>
 
@@ -82,7 +82,7 @@ export function TrustSection({ onOpenQuote }: { onOpenQuote: () => void }) {
               Have something that needs fixing or building?
             </h3>
             <p className="text-sm sm:text-base text-slate-300">
-              Tell us what is happening today and where you want to get to. We will reply within 1 business day with a useful next step.
+              Tell us what is happening today and where you want to get to. We aim to reply within one business day with a useful next step.
             </p>
           </div>
           <button

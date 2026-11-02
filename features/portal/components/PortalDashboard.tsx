@@ -149,7 +149,7 @@ export function PortalDashboard({ onNavigateTab, onOpenNewRequest }: PortalDashb
             <div className="flex items-start gap-3">
               <motion.div
                 className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0"
-                whileHover={{ scale: 1.1, rotate: 5 }}
+                whileHover={{ scale: 1.03 }}
                 transition={{ type: 'spring', stiffness: 300 }}
               >
                 <AlertCircle className="w-5 h-5" />
