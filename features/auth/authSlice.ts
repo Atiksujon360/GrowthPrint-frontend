@@ -292,11 +292,12 @@ const authSlice = createSlice({
       })
       .addCase(validateSession.rejected, (state, action) => {
         // rejectWithValue puts the reason in action.payload (action.error.message is always "Rejected").
-        if (action.payload !== 'Validation already in progress') {
-          state.currentUser = GUEST_USER;
-          state.isAuthenticated = false;
-          state.activeView = 'PUBLIC';
-        }
+        // A duplicate call (React Strict Mode runs the startup effect twice) must not end the first call's
+        // validation: clearing the flag here made protected layouts redirect to login before /auth/me answered.
+        if (action.payload === 'Validation already in progress') return;
+        state.currentUser = GUEST_USER;
+        state.isAuthenticated = false;
+        state.activeView = 'PUBLIC';
         state.isSessionValidating = false;
       });
   },

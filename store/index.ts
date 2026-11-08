@@ -1,4 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
+import { workspaceApi } from '../features/workspace/api/workspaceApi.ts';
 import authReducer, { setActiveView, switchRole, validateSession } from '../features/auth/authSlice.ts';
 import agencyReducer, {
   attachEstimate,
@@ -123,8 +124,11 @@ export const store = configureStore({
   reducer: {
     auth: authReducer,
     agency: agencyReducer,
-    ui: uiReducer
-  }
+    ui: uiReducer,
+    // MVP2 workspace data (RTK Query cache; mock service in Phase 1, HTTP in Phase 3)
+    [workspaceApi.reducerPath]: workspaceApi.reducer
+  },
+  middleware: getDefaultMiddleware => getDefaultMiddleware().concat(workspaceApi.middleware)
 });
 
 export type RootState = ReturnType<typeof store.getState>;

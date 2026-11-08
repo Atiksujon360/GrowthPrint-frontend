@@ -7,6 +7,7 @@ import { canUseStudioTab, initialsOf } from '../../../lib/access.ts';
 import { ROUTES } from '../../../lib/routes.ts';
 import {
   LayoutDashboard,
+  Building2,
   Users,
   FolderKanban,
   TicketCheck,
@@ -290,6 +291,17 @@ export function AdminLayout({ currentTab, onTabChange, children }: AdminLayoutPr
                 })}
               </motion.div>
             ))}
+            {/* MVP2: multi-business workspace (Phase 1 runs on sample data, see features/workspace/services). */}
+            <div className="space-y-1">
+              <div className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">MVP2 preview</div>
+              <a
+                href={ROUTES.workspace.home}
+                className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800 min-h-[44px]"
+              >
+                <Building2 className="w-4 h-4 shrink-0" aria-hidden="true" />
+                <span className="truncate">Business workspaces</span>
+              </a>
+            </div>
           </nav>
         </div>
 

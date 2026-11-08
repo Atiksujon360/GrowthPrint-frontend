@@ -15,6 +15,23 @@ import type { UserRole } from '../types/auth.ts';
 
 export const STUDIO_BASE = '/studio/ops';
 export const CLIENT_HUB_BASE = '/client-hub';
+/** MVP2 business workspace (staff). Business-scoped pages live under /workspace/{businessId}. */
+export const WORKSPACE_BASE = '/workspace';
+
+/** Routes inside one business. The id in the URL is only a pointer: the backend verifies membership. */
+export const workspaceRoutes = (businessId: string) => {
+  const base = `${WORKSPACE_BASE}/${encodeURIComponent(businessId)}`;
+  return {
+    home: base,
+    clients: `${base}/clients`,
+    client: (clientId: string) => `${base}/clients/${encodeURIComponent(clientId)}`,
+    leads: `${base}/leads`,
+    lead: (leadId: string) => `${base}/leads/${encodeURIComponent(leadId)}`,
+    team: `${base}/team`,
+    activity: `${base}/activity`,
+    settings: `${base}/settings`,
+  };
+};
 
 export const ROUTES = {
   public: {
@@ -22,6 +39,12 @@ export const ROUTES = {
     forgotPassword: '/forgot-password',
     resetPassword: '/reset-password',
     acceptInvite: '/accept-invite',
+    joinBusiness: '/join-business',
+  } as const,
+
+  workspace: {
+    home: WORKSPACE_BASE,
+    newBusiness: `${WORKSPACE_BASE}/new`,
   } as const,
 
   portal: {
@@ -51,7 +74,10 @@ export const isPortalRoute = (path: string): boolean => startsWithSegment(path, 
 
 export const isAdminRoute = (path: string): boolean => startsWithSegment(path, STUDIO_BASE);
 
-export const isProtectedRoute = (path: string): boolean => isPortalRoute(path) || isAdminRoute(path);
+export const isWorkspaceRoute = (path: string): boolean => startsWithSegment(path, WORKSPACE_BASE);
+
+export const isProtectedRoute = (path: string): boolean =>
+  isPortalRoute(path) || isAdminRoute(path) || isWorkspaceRoute(path);
 
 /** Where a signed-in user lands. Team members share the internal studio with the admin. */
 export const getDefaultRouteForRole = (role: UserRole): string => {
@@ -96,4 +122,4 @@ export function resolveLegacyRoute(pathname: string): LegacyRouteDecision {
 /** Private workspace pages and one-time-link pages must never be indexed or cached. */
 export const isNoIndexPath = (pathname: string): boolean =>
   isProtectedRoute(pathname) || pathname === ROUTES.public.resetPassword
-  || pathname === ROUTES.public.acceptInvite;
+  || pathname === ROUTES.public.acceptInvite || pathname === ROUTES.public.joinBusiness;

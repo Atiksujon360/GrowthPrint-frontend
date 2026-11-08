@@ -40,6 +40,8 @@ export const config = {
     '/admin/:path*',
     '/studio/:path*',
     '/client-hub/:path*',
+    '/workspace/:path*',
+    '/join-business',
     '/reset-password',
     '/accept-invite',
   ],

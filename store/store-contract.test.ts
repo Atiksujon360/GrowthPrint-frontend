@@ -30,7 +30,8 @@ import {
 } from './index.ts';
 
 test('Redux state keys and action type strings remain stable', () => {
-  assert.deepEqual(Object.keys(store.getState()), ['auth', 'agency', 'ui']);
+  // 'workspaceApi' added in MVP2 (RTK Query cache for the business workspace); existing keys unchanged.
+  assert.deepEqual(Object.keys(store.getState()), ['auth', 'agency', 'ui', 'workspaceApi']);
   assert.deepEqual(
     [
       switchRole,
