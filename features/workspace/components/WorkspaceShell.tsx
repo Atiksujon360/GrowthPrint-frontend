@@ -16,6 +16,7 @@ import type { Business } from '../model/types.ts';
 import { useBusinessQuery, useMyBusinessesQuery } from '../api/workspaceApi.ts';
 import { USING_MOCK_WORKSPACE_DATA, resetWorkspaceDemoData } from '../services/index.ts';
 import { workspaceApi } from '../api/workspaceApi.ts';
+import { GrowthPrintMark } from '../../public/components/GrowthPrintMark.tsx';
 
 const cx = (...c: Array<string | false | null | undefined>) => c.filter(Boolean).join(' ');
 
@@ -53,26 +54,26 @@ export function BusinessSwitcher({ current }: { current?: Business }) {
     <div ref={ref} className="relative">
       <button type="button" onClick={() => setOpen(o => !o)} aria-expanded={open} aria-controls={menuId}
         aria-label={current ? `Current business: ${current.name}. Switch business` : 'Choose a business'}
-        className="flex w-full items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-left hover:bg-white/10">
+        className="flex w-full items-center gap-3 rounded-xl border border-ink-200 bg-white px-3 py-2.5 text-left transition-colors hover:border-ink-300">
         <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-500 text-xs font-bold text-white" aria-hidden="true">
           {initialsOf(current?.name ?? '?')}
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm font-semibold text-white">{current?.name ?? 'Choose a business'}</span>
-          <span className="block truncate text-xs text-ink-300">{current ? ROLE_LABEL[current.myRole] : ''}</span>
+          <span className="block truncate text-sm font-semibold text-ink-950">{current?.name ?? 'Choose a business'}</span>
+          <span className="block truncate text-xs text-ink-500">{current ? ROLE_LABEL[current.myRole] : ''}</span>
         </span>
-        <ChevronDown className="h-4 w-4 text-ink-300" aria-hidden="true" />
+        <ChevronDown className="h-4 w-4 text-ink-400" aria-hidden="true" />
       </button>
       {open && (
         <div id={menuId} className="absolute left-0 right-0 z-40 mt-2 overflow-hidden rounded-xl border border-ink-200 bg-white shadow-xl">
-          <p className="px-3 pt-3 text-[11px] font-semibold uppercase tracking-wide text-ink-400">Your businesses</p>
+          <p className="px-3 pt-3 text-xs font-medium text-ink-500">Your businesses</p>
           <ul className="max-h-64 overflow-y-auto p-1.5">
             {businesses.map(b => (
               <li key={b.id}>
                 <button type="button" onClick={() => { setOpen(false); router.push(workspaceRoutes(b.id).home); }}
                   aria-current={b.id === current?.id ? 'true' : undefined}
                   className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm hover:bg-ink-50">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-md bg-ink-100 text-[10px] font-bold text-ink-700" aria-hidden="true">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-md bg-ink-100 text-xs font-semibold text-ink-700" aria-hidden="true">
                     {initialsOf(b.name)}
                   </span>
                   <span className="min-w-0 flex-1">
@@ -135,9 +136,9 @@ export function WorkspaceShell({ businessId, children }: { businessId: string; c
 
   const sidebar = (
     <div className="flex h-full flex-col gap-5 p-4">
-      <Link href={ROUTES.workspace.home} className="flex items-center gap-2 px-1 text-sm font-semibold text-white">
-        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-400 text-[11px] font-black text-ink-950" aria-hidden="true">GP</span>
-        GrowthPrint
+      <Link href={ROUTES.workspace.home} className="flex h-8 items-center gap-2.5 px-1">
+        <GrowthPrintMark className="h-7 w-7" />
+        <span className="gp-display text-[1.05rem] font-semibold text-ink-950">GrowthPrint</span>
       </Link>
       <BusinessSwitcher current={business} />
       <nav aria-label="Workspace" className="flex-1">
@@ -148,10 +149,9 @@ export function WorkspaceShell({ businessId, children }: { businessId: string; c
             return (
               <li key={item.href}>
                 <Link href={item.href} aria-current={active ? 'page' : undefined}
-                  className={cx('flex min-h-10 items-center gap-3 rounded-lg px-3 text-sm transition-colors',
-                    active ? 'bg-white/10 font-semibold text-white shadow-[inset_2px_0_0_var(--color-brand-400)]'
-                      : 'text-ink-300 hover:bg-white/5 hover:text-white')}>
-                  <Icon className={cx('h-4 w-4', active ? 'text-brand-300' : 'text-ink-400')} aria-hidden="true" />
+                  className={cx('group flex min-h-10 items-center gap-3 rounded-lg px-3 text-[0.92rem] font-medium transition-colors',
+                    active ? 'bg-brand-50 text-brand-800' : 'text-ink-600 hover:bg-ink-50 hover:text-ink-950')}>
+                  <Icon className={cx('h-[18px] w-[18px]', active ? 'text-brand-600' : 'text-ink-400 group-hover:text-ink-700')} aria-hidden="true" />
                   {item.label}
                 </Link>
               </li>
@@ -159,20 +159,20 @@ export function WorkspaceShell({ businessId, children }: { businessId: string; c
           })}
         </ul>
       </nav>
-      <div className="space-y-1 border-t border-white/10 pt-4">
-        <Link href={ROUTES.admin.home} className="flex min-h-10 items-center gap-3 rounded-lg px-3 text-sm text-ink-300 hover:bg-white/5 hover:text-white">
+      <div className="space-y-1 border-t border-ink-200 pt-3">
+        <Link href={ROUTES.admin.home} className="flex min-h-10 items-center gap-3 rounded-lg px-3 text-[0.92rem] font-medium text-ink-600 hover:bg-ink-50 hover:text-ink-950">
           <ArrowLeftRight className="h-4 w-4" aria-hidden="true" /> Back to studio
         </Link>
         <div className="flex items-center gap-3 px-3 py-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-xs font-semibold text-white" aria-hidden="true">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-navy-950 text-xs font-semibold text-white" aria-hidden="true">
             {initialsOf(user.name, user.email)}
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block truncate text-sm text-white">{user.name || user.email}</span>
-            <span className="block truncate text-xs text-ink-400">{user.email}</span>
+            <span className="block truncate text-sm font-semibold text-ink-900">{user.name || user.email}</span>
+            <span className="block truncate text-xs text-ink-500">{user.email}</span>
           </span>
           <button type="button" onClick={() => void signOut()} aria-label="Sign out"
-            className="rounded-lg p-2 text-ink-300 hover:bg-white/10 hover:text-white">
+            className="rounded-lg p-2 text-ink-500 hover:bg-ink-100 hover:text-ink-900">
             <LogOut className="h-4 w-4" aria-hidden="true" />
           </button>
         </div>
@@ -184,13 +184,13 @@ export function WorkspaceShell({ businessId, children }: { businessId: string; c
     <div className="min-h-screen bg-ink-50">
       <MockDataBanner />
       <div className="flex">
-        <aside className="sticky top-0 hidden h-screen w-64 shrink-0 bg-ink-950 lg:block">{sidebar}</aside>
+        <aside className="sticky top-0 hidden h-screen w-64 shrink-0 border-r border-ink-200 bg-white lg:block">{sidebar}</aside>
         {drawer && (
           <div className="fixed inset-0 z-40 lg:hidden" role="dialog" aria-modal="true" aria-label="Navigation">
-            <div className="absolute inset-0 bg-ink-950/50" onClick={() => setDrawer(false)} aria-hidden="true" />
-            <aside className="relative h-full w-72 max-w-[85vw] bg-ink-950">
+            <div className="absolute inset-0 bg-navy-950/40" onClick={() => setDrawer(false)} aria-hidden="true" />
+            <aside className="relative h-full w-72 max-w-[85vw] bg-white shadow-xl">
               <button type="button" onClick={() => setDrawer(false)} aria-label="Close navigation"
-                className="absolute right-3 top-3 rounded-lg p-2 text-ink-300 hover:bg-white/10">
+                className="absolute right-3 top-4 rounded-lg p-2 text-ink-500 hover:bg-ink-100">
                 <X className="h-4 w-4" aria-hidden="true" />
               </button>
               {sidebar}
@@ -205,7 +205,7 @@ export function WorkspaceShell({ businessId, children }: { businessId: string; c
             </button>
             <span className="truncate text-sm font-semibold text-ink-900">{business?.name ?? 'Workspace'}</span>
           </header>
-          <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">{children}</main>
+          <main className="mx-auto max-w-[90rem] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">{children}</main>
         </div>
       </div>
     </div>

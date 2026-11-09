@@ -32,7 +32,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8FAFD] text-[#182230] overflow-x-hidden">
+    <div className="min-h-screen flex flex-col bg-white text-ink-950 overflow-x-hidden">
       {/* Universal Top Switcher Bar allowing instant testing between Agency Public, Client Portal, and Admin Workspace */}
       <RoleSwitcherBar />
 
@@ -47,8 +47,9 @@ export default function HomePage() {
         <main className="flex-1">
           <HeroSection onOpenQuote={() => handleOpenQuote()} />
           <ServicesSection onSelectService={(s: ServiceCategory) => handleOpenQuote(s)} />
-          <HowWeWorkSection />
+          {/* Order follows the header navigation: Services, Work, Process, Why GrowthPrint, FAQ. */}
           <CaseStudiesSection />
+          <HowWeWorkSection />
           <TrustSection onOpenQuote={() => handleOpenQuote()} />
           <FAQSection />
         </main>

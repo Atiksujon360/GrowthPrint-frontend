@@ -17,6 +17,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import type { SupportRequest, SupportCategory, SupportRequestStatus } from '../../../types/agency.ts';
+import { humanizeCode } from '../../../lib/labels.ts';
 
 export function AdminRequestsQueue() {
   const dispatch = useAppDispatch();
@@ -122,7 +123,7 @@ export function AdminRequestsQueue() {
       sortable: true,
       cell: ({ row }) => (
         <div className="flex items-center gap-1.5">
-          <span className="font-mono font-bold text-slate-800 text-xs">
+          <span className="whitespace-nowrap font-semibold tabular-nums text-ink-800 text-xs">
             {row.reference}
           </span>
           <CopyButton value={row.reference} title="Copy ticket reference" />
@@ -137,7 +138,7 @@ export function AdminRequestsQueue() {
       cell: ({ row }) => (
         <div>
           <div className="font-bold text-slate-900 line-clamp-1">{row.title}</div>
-          <div className="text-[11px] text-slate-400">{row.clientName}</div>
+          <div className="text-xs text-slate-400">{row.clientName}</div>
         </div>
       )
     },
@@ -148,7 +149,7 @@ export function AdminRequestsQueue() {
       sortable: true,
       cell: ({ row }) => (
         <span className="font-medium text-slate-700 text-xs">
-          {row.category.replace(/_/g, ' ')}
+          {humanizeCode(row.category)}
         </span>
       )
     },
@@ -158,10 +159,10 @@ export function AdminRequestsQueue() {
       accessorKey: 'urgency',
       sortable: true,
       cell: ({ row }) => (
-        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+        <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${
           row.urgency === 'URGENT' ? 'bg-rose-100 text-rose-800' : 'bg-slate-100 text-slate-700'
         }`}>
-          {row.urgency}
+          {humanizeCode(row.urgency)}
         </span>
       )
     },
@@ -178,7 +179,7 @@ export function AdminRequestsQueue() {
       accessorKey: 'createdAt',
       sortable: true,
       cell: ({ row }) => (
-        <span className="font-mono text-slate-400 text-[11px]">
+        <span className="text-slate-400 text-xs">
           {new Date(row.createdAt).toLocaleDateString()}
         </span>
       )
@@ -202,7 +203,7 @@ export function AdminRequestsQueue() {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+            <h2 className="text-lg font-semibold text-ink-950">
               Client Support & Maintenance Tickets
             </h2>
             <p className="text-xs text-slate-500">
@@ -225,7 +226,7 @@ export function AdminRequestsQueue() {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+            <h2 className="text-lg font-semibold text-ink-950">
               Client Support & Maintenance Tickets
             </h2>
             <p className="text-xs text-slate-500">
@@ -262,7 +263,7 @@ export function AdminRequestsQueue() {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+            <h2 className="text-lg font-semibold text-ink-950">
               Client Support & Maintenance Tickets
             </h2>
             <p className="text-xs text-slate-500">
@@ -294,7 +295,7 @@ export function AdminRequestsQueue() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+          <h2 className="text-lg font-semibold text-ink-950">
             Client Support & Maintenance Tickets
           </h2>
           <p className="text-xs text-slate-500">
@@ -372,17 +373,17 @@ export function AdminRequestsQueue() {
         {/* Classification & Estimate Station */}
         {activeReq && (
           <div className={viewMode === 'SPLIT' ? 'lg:col-span-5' : 'w-full'}>
-            <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-6 space-y-5 sticky top-20">
+            <div className="bg-white rounded-2xl border border-slate-200/90 p-6 space-y-5 sticky top-20">
               {/* Header */}
               <div className="flex items-start justify-between gap-4 pb-4 border-b border-slate-100">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-bold text-slate-400">{activeReq.reference}</span>
+                    <span className="text-xs font-bold text-slate-400">{activeReq.reference}</span>
                     <StatusBadge status={activeReq.status} />
                   </div>
                   <h3 className="text-base font-bold text-slate-900">{activeReq.title}</h3>
                   <div className="text-xs text-slate-500">
-                    Client: <strong>{activeReq.clientName}</strong> · Urgency: <strong>{activeReq.urgency}</strong>
+                    Client: <strong>{activeReq.clientName}</strong> · Urgency: <strong>{humanizeCode(activeReq.urgency)}</strong>
                   </div>
                 </div>
 
@@ -390,7 +391,7 @@ export function AdminRequestsQueue() {
                   {activeReq.status === 'READY_TO_START' && (
                     <button
                       onClick={() => handleUpdateStatus(activeReq.id, 'IN_PROGRESS')}
-                      className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow-xs"
+                      className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold"
                     >
                       Start Work
                     </button>
@@ -399,7 +400,7 @@ export function AdminRequestsQueue() {
                   {activeReq.status === 'IN_PROGRESS' && (
                     <button
                       onClick={() => handleUpdateStatus(activeReq.id, 'COMPLETED')}
-                      className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-xs flex items-center gap-1"
+                      className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1"
                     >
                       <CheckCircle2 className="w-3.5 h-3.5" />
                       <span>Complete</span>
@@ -420,7 +421,7 @@ export function AdminRequestsQueue() {
               {/* Classification Form */}
               <form onSubmit={handleClassify} className="space-y-3 pt-2 border-t border-slate-100">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                  <span className="text-xs font-bold text-slate-900">
                     Retainer & Scope Check
                   </span>
                   <button
@@ -461,7 +462,7 @@ export function AdminRequestsQueue() {
               {category === 'PAID_AD_HOC_SUPPORT' && (
                 <form onSubmit={handleSendEstimate} className="space-y-3 pt-3 border-t border-slate-100">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                    <span className="text-xs font-bold text-slate-900">
                       Written Scope & Estimate
                     </span>
                     <span className="text-xs font-bold text-blue-700 tabular-nums">
@@ -471,7 +472,7 @@ export function AdminRequestsQueue() {
 
                   <div className="grid grid-cols-3 gap-2">
                     <div>
-                      <label className="block text-[10px] text-slate-500">Hours</label>
+                      <label className="block text-xs text-slate-500">Hours</label>
                       <input
                         type="number"
                         step="0.5"
@@ -481,7 +482,7 @@ export function AdminRequestsQueue() {
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] text-slate-500">Rate ($)</label>
+                      <label className="block text-xs text-slate-500">Rate ($)</label>
                       <input
                         type="number"
                         value={hourlyRate}
@@ -490,7 +491,7 @@ export function AdminRequestsQueue() {
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] text-slate-500">Days</label>
+                      <label className="block text-xs text-slate-500">Days</label>
                       <input
                         type="number"
                         value={deliveryDays}
@@ -512,7 +513,7 @@ export function AdminRequestsQueue() {
 
                   <button
                     type="submit"
-                    className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-xs flex items-center justify-center gap-1.5"
+                    className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5"
                   >
                     <DollarSign className="w-3.5 h-3.5" />
                     <span>Send Estimate for Authorization</span>

@@ -3,13 +3,16 @@ import { isMockModeEnv } from '../../../lib/api/client.ts';
 import { useAppDispatch } from '../../../store/hooks.ts';
 import { useRouter } from 'next/navigation';
 import { setActiveView, switchRole } from '../../../store/index.ts';
-import { Mail, Phone, MapPin, ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import { scrollToSection } from '../../../lib/scroll.ts';
+import { GrowthPrintMark } from './GrowthPrintMark.tsx';
 
 function handleFooterSectionClick(event: React.MouseEvent<HTMLAnchorElement>, sectionId: string) {
   event.preventDefault();
   scrollToSection(sectionId);
 }
+
+const linkClass = 'inline-flex min-h-10 items-center text-[0.95rem] text-white/70 transition-colors hover:text-white';
 
 export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
   const dispatch = useAppDispatch();
@@ -18,74 +21,56 @@ export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
   const isMockMode = isMockModeEnv();
 
   return (
-    <footer className="bg-slate-900 text-slate-300 pt-16 pb-12 border-t border-slate-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
-          {/* Col 1 & 2: Brand Info */}
-          <div className="lg:col-span-2 space-y-4">
-            <div className="flex items-center gap-2">
-              <span className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white font-black text-sm">
-                GP
-              </span>
-              <span className="text-xl font-bold tracking-tight text-white">
-                GrowthPrint
-              </span>
+    <footer className="gp-on-dark bg-navy-950 text-white">
+      <div className="gp-frame pt-20">
+        <div className="flex flex-col items-start justify-between gap-8 border-b border-white/10 pb-16 md:flex-row md:items-end">
+          <p className="gp-display max-w-2xl text-[clamp(2rem,4.5vw,3.4rem)] font-semibold leading-[1.05] text-balance">
+            Tell us what is getting in the way.{' '}
+            <span className="gp-headline-muted">We will reply with a useful next step.</span>
+          </p>
+          <button onClick={onOpenQuote}
+            className="inline-flex min-h-12 shrink-0 items-center rounded-full bg-brand-500 px-6 font-semibold text-navy-950 transition-colors hover:bg-brand-400">
+            Tell us what you need
+          </button>
+        </div>
+
+        <div className="grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-12">
+          <div className="lg:col-span-5">
+            <div className="flex items-center gap-2.5">
+              <GrowthPrintMark className="h-7 w-7" tone="light" />
+              <span className="gp-display text-lg font-semibold">GrowthPrint</span>
             </div>
-            <p className="text-sm text-slate-400 leading-relaxed max-w-sm">
-              GrowthPrint helps growing teams build useful software, improve the systems they already have, and remove repetitive work.
+            <p className="mt-4 max-w-sm text-[0.95rem] leading-relaxed text-white/60">
+              Digital engineering and IT services: we build, modernize, maintain and automate the systems growing businesses rely on.
             </p>
-            <div className="pt-2 text-sm text-slate-400 space-y-1.5">
-              <div className="flex items-center gap-2">
-                <Mail className="w-3.5 h-3.5 text-blue-400" />
-                <span>contact@growthprint.agency</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <MapPin className="w-3.5 h-3.5 text-blue-400" />
-                <span>San Francisco, CA · Working with teams anywhere</span>
-              </div>
-            </div>
+            <address className="mt-6 space-y-1 text-[0.95rem] not-italic text-white/70">
+              <a className="block hover:text-white" href="mailto:contact@growthprint.agency">contact@growthprint.agency</a>
+              <span className="block">San Francisco, CA. Working with teams anywhere.</span>
+            </address>
           </div>
 
-          {/* Col 3: Services */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-semibold text-white uppercase tracking-wider">
-              Services
-            </h4>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <a href="#services" onClick={(event) => handleFooterSectionClick(event, 'services')} className="hover:text-white transition-colors block py-2">
-                  Custom Software Development
-                </a>
-              </li>
-              <li>
-                <a href="#services" onClick={(event) => handleFooterSectionClick(event, 'services')} className="hover:text-white transition-colors block py-2">
-                  Website & Application Support
-                </a>
-              </li>
-              <li>
-                <a href="#services" onClick={(event) => handleFooterSectionClick(event, 'services')} className="hover:text-white transition-colors block py-2">
-                  Technical SEO & Optimization
-                </a>
-              </li>
-              <li>
-                <a href="#services" onClick={(event) => handleFooterSectionClick(event, 'services')} className="hover:text-white transition-colors block py-2">
-                  Business Process Automation
-                </a>
-              </li>
-              <li>
-                <a href="#services" onClick={(event) => handleFooterSectionClick(event, 'services')} className="hover:text-white transition-colors block py-2">
-              Useful AI and automation
-                </a>
-              </li>
+          <nav aria-label="Services" className="lg:col-span-3">
+            <h2 className="text-sm font-semibold text-white">Services</h2>
+            <ul className="mt-3">
+              {['Custom software', 'Modernization and support', 'Performance and SEO', 'Business automation', 'AI integration'].map(s => (
+                <li key={s}><a href="#services" onClick={(event) => handleFooterSectionClick(event, 'services')} className={linkClass}>{s}</a></li>
+              ))}
             </ul>
-          </div>
+          </nav>
 
-          {/* Col 4: Platform & Navigation */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-semibold text-white uppercase tracking-wider">
-              Client access
-            </h4>
-            <ul className="space-y-2 text-sm">
+          <nav aria-label="Company" className="lg:col-span-2">
+            <h2 className="text-sm font-semibold text-white">Company</h2>
+            <ul className="mt-3">
+              <li><a href="#work" onClick={(event) => handleFooterSectionClick(event, 'work')} className={linkClass}>Work</a></li>
+              <li><a href="#process" onClick={(event) => handleFooterSectionClick(event, 'process')} className={linkClass}>How we work</a></li>
+              <li><a href="#why-growthprint" onClick={(event) => handleFooterSectionClick(event, 'why-growthprint')} className={linkClass}>Why GrowthPrint</a></li>
+              <li><a href="#faq" onClick={(event) => handleFooterSectionClick(event, 'faq')} className={linkClass}>Common questions</a></li>
+            </ul>
+          </nav>
+
+          <div className="lg:col-span-2">
+            <h2 className="text-sm font-semibold text-white">Client access</h2>
+            <ul className="mt-3">
               <li>
                 <button
                   onClick={() => {
@@ -96,10 +81,10 @@ export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
                       router.push('/client-hub/login');
                     }
                   }}
-                  className="hover:text-white transition-colors flex items-center gap-1 text-blue-400 py-2 min-h-[44px]"
+                  className={`${linkClass} gap-1 text-mint-300`}
                 >
-                  <span>Open the client portal</span>
-                  <ArrowUpRight className="w-3 h-3" />
+                  Open the client portal
+                  <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
                 </button>
               </li>
               {/* The internal studio is never linked from the public site (its path is not advertised);
@@ -111,58 +96,19 @@ export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
                       dispatch(switchRole('ADMIN'));
                       dispatch(setActiveView('ADMIN'));
                     }}
-                    className="hover:text-white transition-colors flex items-center gap-1 text-slate-400 py-2 min-h-[44px]"
+                    className={`${linkClass} gap-1`}
                   >
-                    <span>Open the demo team workspace</span>
-                    <ArrowUpRight className="w-3 h-3" aria-hidden="true" />
+                    Open the demo team workspace
+                    <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
                   </button>
                 </li>
               )}
-              <li>
-                <a href="#process" onClick={(event) => handleFooterSectionClick(event, 'process')} className="hover:text-white transition-colors block py-2">
-                  How we work
-                </a>
-              </li>
-              <li>
-                <a href="#work" onClick={(event) => handleFooterSectionClick(event, 'work')} className="hover:text-white transition-colors block py-2">
-                  Client work
-                </a>
-              </li>
-              <li>
-                <a href="#faq" onClick={(event) => handleFooterSectionClick(event, 'faq')} className="hover:text-white transition-colors block py-2">
-                  Common questions
-                </a>
-              </li>
             </ul>
-          </div>
-
-          {/* Col 5: Inquiry CTA */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-semibold text-white uppercase tracking-wider">
-              Start a conversation
-            </h4>
-            <p className="text-sm text-slate-400 leading-relaxed">
-              Need to build something, fix something, or make a routine task easier?
-            </p>
-            <button
-              onClick={onOpenQuote}
-              className="mt-2 w-full py-3.5 px-3 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-500 transition-colors shadow-xs min-h-[44px]"
-            >
-              Tell us what you need
-            </button>
           </div>
         </div>
 
-        {/* Bottom line */}
-        <div className="mt-12 pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-          <div>
-            &copy; 2026 GrowthPrint Technology Partners LLC. All rights reserved.
-          </div>
-          <div className="flex items-center gap-4 sm:gap-6">
-            <span className="hover:text-slate-400 cursor-pointer py-2 min-h-[44px] flex items-center">Privacy Policy</span>
-            <span className="hover:text-slate-400 cursor-pointer py-2 min-h-[44px] flex items-center">Terms of Service</span>
-            <span className="hover:text-slate-400 cursor-pointer py-2 min-h-[44px] flex items-center">Security Standards</span>
-          </div>
+        <div className="border-t border-white/10 py-8 text-sm text-white/50">
+          &copy; 2026 GrowthPrint Technology Partners LLC. All rights reserved.
         </div>
       </div>
     </footer>

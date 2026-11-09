@@ -78,7 +78,7 @@ export function TeamManagement() {
     <div className="mx-auto max-w-6xl space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-ink-900">Users & team</h1>
+          <h2 className="text-lg font-semibold text-ink-950">Users & team</h2>
           <p className="mt-1 text-sm text-ink-500">Invite team members and client users, control access and deactivate accounts.</p>
         </div>
         <Button onClick={() => setInviting(v => !v)} icon={<UserPlus className="h-4 w-4" aria-hidden="true" />}>

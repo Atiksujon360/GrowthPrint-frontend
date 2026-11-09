@@ -16,8 +16,21 @@
  * teal-leaning brand primary. New code should use brand-/mint-/ink- names directly.
  */
 @theme {
-  --font-sans: "Inter", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-sans: var(--font-ui), "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-display-face), var(--font-ui), "Segoe UI", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Deep navy for dark public surfaces and the app sidebar (between ink-900 and ink-950). */
+  --color-navy-700: #163250;
+  --color-navy-800: #0f2740;
+  --color-navy-900: #0a1d33;
+  --color-navy-950: #061427;
+
+  /* Motion tokens: short for UI feedback, longer only for the one public hero moment. */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
 
   --color-brand-50: #ecfbf6;
   --color-brand-100: #d1f4e7;
@@ -178,10 +191,11 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
+  /* App panels: depth from a quiet border, not a shadow (design system "Shape and depth"). */
   .glass-card {
     background: #ffffff;
     border: 1px solid var(--color-ink-200);
-    box-shadow: var(--shadow-card);
+    box-shadow: none;
   }
 
   .gradient-bg {
@@ -193,6 +207,60 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+}
+
+/*
+ * Public website: the "blueprint frame". Content sits inside a centred column bounded by hairline guide lines
+ * (GrowthPrint = growth + print/blueprint). Dark sections break out full-bleed and keep the guides.
+ */
+@layer components {
+  .gp-frame {
+    position: relative;
+    margin-inline: auto;
+    max-width: 76rem;
+    padding-inline: 1.25rem;
+  }
+  @media (min-width: 768px) {
+    .gp-frame { padding-inline: 2.5rem; }
+    .gp-frame::before,
+    .gp-frame::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: var(--gp-guide, var(--color-ink-200));
+      pointer-events: none;
+    }
+    .gp-frame::before { left: 0; }
+    .gp-frame::after { right: 0; }
+  }
+  .gp-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.025em;
+  }
+  /* Two-tone headline: a strong statement continued by a quieter clause, read as one sentence. */
+  .gp-headline-muted { color: var(--color-ink-500); }
+  .gp-on-dark { --gp-guide: rgb(255 255 255 / 0.08); }
+  .gp-on-dark .gp-headline-muted { color: var(--color-mint-300); }
+
+  /* Blueprint hero drawing: strokes draw in once on load; reduced motion shows the finished drawing. */
+  .gp-draw {
+    stroke-dasharray: var(--len, 600);
+    stroke-dashoffset: var(--len, 600);
+    animation: gpDraw 1.6s var(--ease-out-soft) forwards;
+    animation-delay: var(--delay, 0ms);
+  }
+  .gp-fade-late {
+    opacity: 0;
+    animation: fadeIn 0.6s ease-out forwards;
+    animation-delay: var(--delay, 900ms);
+  }
+  @keyframes gpDraw { to { stroke-dashoffset: 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    .gp-draw { stroke-dashoffset: 0; animation: none; }
+    .gp-fade-late { opacity: 1; animation: none; }
   }
 }
 

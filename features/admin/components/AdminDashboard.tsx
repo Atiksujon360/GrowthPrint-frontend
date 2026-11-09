@@ -1,42 +1,19 @@
 import React, { useEffect } from 'react';
-import { motion } from 'motion/react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks.ts';
 import { fetchClients, fetchCrmLeads, fetchProjects, fetchSupportRequests, fetchInvoices, fetchOutreachDrafts } from '../../../store/index.ts';
 import { buildCashFlowSeries, countPipeline, countActiveClients, countRetainerClients } from '../../../lib/dashboardMetrics.ts';
-import { StatCard, StatusBadge } from '../../../components/ui/Badges.tsx';
-import { 
-  Users, 
-  FolderKanban, 
-  Sparkles, 
-  DollarSign, 
-  Send, 
-  AlertCircle, 
-  CheckCircle2, 
-  ArrowRight,
-  Clock,
-  Workflow,
-  TrendingUp,
-  FileText,
-  Calendar,
-  AlertTriangle,
-  Play,
-  CreditCard
-} from 'lucide-react';
-import { 
-  ResponsiveContainer, 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  Tooltip, 
-  CartesianGrid,
-  Cell
-} from 'recharts';
+import { isMockModeEnv } from '../../../lib/api/client.ts';
+import { Users, FolderKanban, DollarSign, Send, ArrowRight, TrendingUp } from 'lucide-react';
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
+import { KpiCard, MiniStat, Panel, percentChange } from '../../../components/ui/app-kit.tsx';
 import type { AdminTab } from './AdminLayout.tsx';
 
-interface AdminDashboardProps {
-  onNavigateTab: (tab: AdminTab) => void;
-}
+const money = (n: number) => `$${n.toLocaleString()}`;
+/** Activity codes are stored as PREPARED_ESTIMATE; show "Prepared estimate". */
+const humanize = (code: string) => {
+  const text = code.replace(/_/g, ' ').toLowerCase();
+  return text.charAt(0).toUpperCase() + text.slice(1);
+};
 
 export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTab) => void }) {
   const dispatch = useAppDispatch();
@@ -53,6 +30,9 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
   const leads = useAppSelector(state => state.agency.leads);
   const drafts = useAppSelector(state => state.agency.outreachDrafts);
   const invoices = useAppSelector(state => state.agency.invoices);
+  const activities = useAppSelector(state => state.agency.activities);
+  // There is no activity API in MVP1: events exist only in demo mode (same rule as the Activity log tab).
+  const activityConnected = isMockModeEnv();
 
   // The dashboard loads its own data instead of showing whatever the store happened to hold.
   useEffect(() => {
@@ -64,369 +44,236 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
     dispatch(fetchOutreachDrafts());
   }, [dispatch]);
 
-  // Computed metrics
   const pendingDrafts = drafts.filter(d => d.status === 'AWAITING_HUMAN_APPROVAL');
   const pendingRequests = requests.filter(r => r.status === 'NEW' || r.status === 'NEEDS_CLASSIFICATION');
-  const requestsAwaitingClientApproval = requests.filter(r => r.status === 'AWAITING_CLIENT_APPROVAL');
   const readyToStartRequests = requests.filter(r => r.status === 'READY_TO_START');
 
-  const cashCollected = invoices
-    .filter(i => i.status === 'PAID')
-    .reduce((sum, i) => sum + i.totalAmount, 0);
-
-  const outstandingReceivables = invoices
-    .filter(i => i.status === 'ISSUED')
-    .reduce((sum, i) => sum + i.totalAmount, 0);
-
+  const cashCollected = invoices.filter(i => i.status === 'PAID').reduce((sum, i) => sum + i.totalAmount, 0);
+  const outstandingReceivables = invoices.filter(i => i.status === 'ISSUED').reduce((sum, i) => sum + i.totalAmount, 0);
   const overdueInvoices = invoices.filter(i => i.status === 'OVERDUE');
 
-  // Real counts only (previously: invented $18.5k-per-lead, 45% close rate and $1.8k-per-retainer figures).
+  // Real counts only.
   const pipeline = countPipeline(leads);
   const activeClients = countActiveClients(clients);
   const retainerClients = countRetainerClients(clients);
+  const activeProjects = projects.filter(p => p.status === 'IN_PROGRESS');
 
-  // Cash flow from actual invoices (previously Jul–Sep 2026 were hard-coded amounts).
+  // Cash flow from actual invoices; month-over-month change only when last month had collections.
   const cashFlowData = buildCashFlowSeries(invoices, new Date());
+  const thisMonth = cashFlowData[cashFlowData.length - 1]?.collected ?? 0;
+  const lastMonth = cashFlowData[cashFlowData.length - 2]?.collected ?? 0;
+  const cashChange = percentChange(thisMonth, lastMonth);
 
-  // Sales Funnel Data
   const funnelData = [
-    { stage: 'Discovered', count: leads.length, color: '#3867E8' },
-    { stage: 'Qualified', count: leads.filter(l => l.pipelineStage !== 'DISCOVERED').length, color: '#16A6A1' },
-    { stage: 'Outreach Ready', count: leads.filter(l => ['READY_FOR_OUTREACH', 'OUTREACH_APPROVED', 'CONTACTED', 'MEETING_SCHEDULED', 'WON'].includes(l.pipelineStage)).length, color: '#5489FF' },
-    { stage: 'Contacted', count: leads.filter(l => ['CONTACTED', 'MEETING_SCHEDULED', 'WON'].includes(l.pipelineStage)).length, color: '#FF8066' },
-    { stage: 'Meeting Set', count: leads.filter(l => ['MEETING_SCHEDULED', 'WON'].includes(l.pipelineStage)).length, color: '#16835D' }
+    { stage: 'Discovered', count: leads.length },
+    { stage: 'Qualified', count: leads.filter(l => l.pipelineStage !== 'DISCOVERED').length },
+    { stage: 'Outreach ready', count: leads.filter(l => ['READY_FOR_OUTREACH', 'OUTREACH_APPROVED', 'CONTACTED', 'MEETING_SCHEDULED', 'WON'].includes(l.pipelineStage)).length },
+    { stage: 'Contacted', count: leads.filter(l => ['CONTACTED', 'MEETING_SCHEDULED', 'WON'].includes(l.pipelineStage)).length },
+    { stage: 'Meeting set', count: leads.filter(l => ['MEETING_SCHEDULED', 'WON'].includes(l.pipelineStage)).length },
   ];
+  // Computed from the funnel (previously a hard-coded "33%").
+  const qualifiedToMeeting = funnelData[1].count ? Math.round((funnelData[4].count / funnelData[1].count) * 100) : null;
 
-  // Founder Action Center: Prioritized High-Value Actions
+  // Prioritised next actions from live data.
   const actionItems = [
     ...(pendingDrafts.length > 0 ? [{
-      id: 'act-outreach',
-      priority: 'HIGH' as const,
+      id: 'act-outreach', priority: 'High' as const, area: 'Outreach',
       title: `Review outreach note for ${pendingDrafts[0].recipientName} (${pendingDrafts[0].companyName})`,
-      reason: `${pendingDrafts.length} outreach draft${pendingDrafts.length === 1 ? '' : 's'} awaiting your review and sign-off before sending.`,
-      cta: 'Review in Outreach Studio',
-      onExecute: () => onNavigateTab('OUTREACH')
+      reason: `${pendingDrafts.length} draft${pendingDrafts.length === 1 ? '' : 's'} waiting for your sign-off before sending.`,
+      cta: 'Review drafts', onExecute: () => onNavigateTab('OUTREACH'),
     }] : []),
     ...(readyToStartRequests.length > 0 ? [{
-      id: 'act-start-work',
-      priority: 'MEDIUM' as const,
+      id: 'act-start-work', priority: 'Medium' as const, area: 'Support',
       title: `Client approved estimate: ${readyToStartRequests[0].title}`,
-      reason: `${readyToStartRequests[0].clientName} authorized the estimate. Clear to begin implementation in this week's sprint.`,
-      cta: 'Open Support Queue',
-      onExecute: () => onNavigateTab('REQUESTS')
+      reason: `${readyToStartRequests[0].clientName} approved the estimate. Ready to schedule.`,
+      cta: 'Open queue', onExecute: () => onNavigateTab('REQUESTS'),
+    }] : []),
+    ...(pendingRequests.length > 0 ? [{
+      id: 'act-triage', priority: 'Medium' as const, area: 'Support',
+      title: `${pendingRequests.length} new request${pendingRequests.length === 1 ? '' : 's'} to classify`,
+      reason: 'New client requests need a type, priority and estimate.',
+      cta: 'Triage', onExecute: () => onNavigateTab('REQUESTS'),
     }] : []),
     ...(outstandingReceivables > 0 ? [{
-      id: 'act-invoices',
-      priority: 'MEDIUM' as const,
-      title: `Keep an eye on pending invoice ($${outstandingReceivables.toLocaleString()} USD)`,
-      reason: 'Issued invoices awaiting payment. Reconcile once payment arrives.',
-      cta: 'View Invoices',
-      onExecute: () => onNavigateTab('INVOICES')
-    }] : [])
+      id: 'act-invoices', priority: overdueInvoices.length ? 'High' as const : 'Low' as const, area: 'Finance',
+      title: `${money(outstandingReceivables)} awaiting payment`,
+      reason: overdueInvoices.length ? `${overdueInvoices.length} invoice${overdueInvoices.length === 1 ? ' is' : 's are'} overdue.` : 'Issued invoices not yet paid. Reconcile when payment arrives.',
+      cta: 'View invoices', onExecute: () => onNavigateTab('INVOICES'),
+    }] : []),
   ];
 
+  const recent = [...activities].slice(0, 6);
+
   return (
-    <div className="space-y-8">
-      {/* Welcome & Timezone Status Bar */}
-      <motion.div
-        className="relative overflow-hidden rounded-2xl p-6 sm:p-7 bg-slate-950 text-white flex flex-col md:flex-row md:items-center justify-between gap-6"
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35 }}
-      >
+    <div className="space-y-6">
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <motion.div
-            className="flex flex-wrap items-center gap-2 text-xs font-semibold text-brand-300 uppercase tracking-wider"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
-            <span>Command Centre</span>
-            <span aria-hidden="true">·</span>
-            <span className="text-slate-400 normal-case tracking-normal">{timeZone}</span>
-          </motion.div>
-          <h1 className="mt-2 text-2xl sm:text-3xl font-semibold tracking-tight text-balance">
-            {greeting}{firstName ? `, ${firstName}` : ''}. Here&apos;s where things stand today.
-          </h1>
-          <p className="mt-2 text-sm text-slate-300 max-w-2xl">
-            A clear view of active client work, cash in the bank, pending approvals, and your next best steps.
-          </p>
+          <h2 className="gp-display text-[1.75rem] font-semibold leading-tight text-ink-950">
+            {greeting}{firstName ? `, ${firstName}` : ''}
+          </h2>
+          <p className="mt-1 text-[0.95rem] text-ink-500">Here is where client work, cash and the pipeline stand today.</p>
         </div>
-
-        <div className="flex items-center gap-3 self-start md:self-auto">
-          <div className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-slate-300 font-medium">
-            Period: <strong className="text-white">{periodLabel}</strong>
-          </div>
-          <motion.button
-            onClick={() => onNavigateTab('OUTREACH')}
-            className="min-h-10 px-4 py-2 text-sm font-semibold text-slate-950 bg-brand-300 hover:bg-brand-200 rounded-xl transition-colors flex items-center gap-2"
-            whileTap={{ scale: 0.98 }}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <Send className="w-3.5 h-3.5" />
-            <span>Outreach Queue ({pendingDrafts.length})</span>
-          </motion.button>
-        </div>
-      </motion.div>
-
-      {/* 10 Executive KPI Cards Grid */}
-      <motion.div
-        className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4"
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.4 }}
-      >
-        <StatCard
-          label="Cash Collected"
-          value={`$${cashCollected.toLocaleString()}`}
-          subtext="Cleared payments this month"
-          icon={DollarSign}
-        />
-        <StatCard
-          label="Receivables"
-          value={`$${outstandingReceivables.toLocaleString()}`}
-          subtext="Billed & awaiting payment"
-          icon={CreditCard}
-        />
-        <StatCard
-          label="Qualified Leads"
-          value={pipeline.qualified}
-          subtext="Qualification score 80+"
-          icon={Sparkles}
-        />
-        <StatCard
-          label="Open Pipeline"
-          value={pipeline.open}
-          subtext="Leads not yet won or lost"
-          icon={TrendingUp}
-        />
-        <StatCard
-          label="Active Clients"
-          value={activeClients}
-          subtext={`${clients.length} total`}
-          icon={Users}
-        />
-        <StatCard
-          label="Active Projects"
-          value={projects.filter(p => p.status === 'IN_PROGRESS').length}
-          subtext="In active sprint delivery"
-          icon={FolderKanban}
-        />
-        <StatCard
-          label="Retainer Clients"
-          value={retainerClients}
-          subtext="On a support retainer"
-          icon={Clock}
-        />
-        <StatCard
-          label="Overdue Invoices"
-          value={overdueInvoices.length}
-          subtext={overdueInvoices.length === 0 ? 'All client accounts current' : 'Requires follow-up'}
-          icon={AlertCircle}
-        />
-        <StatCard
-          label="Support Queue"
-          value={requests.length}
-          subtext={`${pendingRequests.length} needing review`}
-          icon={AlertCircle}
-        />
-        <StatCard
-          label="Automations"
-          value="5 Active"
-          subtext="Background jobs running"
-          icon={Workflow}
-        />
-      </motion.div>
-
-      {/* Founder Action Center: Prioritized High-Value Next Actions */}
-      <motion.div
-        className="bg-amber-50/60 border border-amber-200/90 rounded-2xl p-6 space-y-4 glass-card"
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, delay: 0.5 }}
-      >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <motion.div
-              className="w-8 h-8 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center shrink-0"
-              whileHover={{ scale: 1.03 }}
-              transition={{ type: 'spring', stiffness: 300 }}
-            >
-              <AlertCircle className="w-4 h-4" />
-            </motion.div>
-            <div>
-              <h2 className="text-sm font-bold text-slate-900">
-                Founder Action Center: What Needs Your Focus Today
-              </h2>
-              <p className="text-xs text-slate-600">
-                Prioritized items pulled directly from live client requests, pipeline milestones, and cash-flow deadlines.
-              </p>
-            </div>
-          </div>
-          <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900">
-            {actionItems.length} Actions
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="inline-flex h-10 items-center rounded-lg border border-ink-200 bg-white px-3 text-sm text-ink-600">
+            {periodLabel}<span className="mx-2 text-ink-300" aria-hidden="true">|</span>{timeZone}
           </span>
+          <button onClick={() => onNavigateTab('OUTREACH')}
+            className="inline-flex h-10 items-center gap-2 rounded-lg border border-ink-200 bg-white px-3 text-sm font-semibold text-ink-800 hover:border-ink-300">
+            <Send className="h-4 w-4 text-brand-600" aria-hidden="true" />
+            Outreach queue ({pendingDrafts.length})
+          </button>
         </div>
+      </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
-          {actionItems.map((item, idx) => (
-            <motion.div
-              key={item.id}
-              className="bg-white rounded-xl p-4 border border-amber-200/70 shadow-2xs flex flex-col justify-between gap-3 hover:border-amber-300 transition-colors"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 + idx * 0.1 }}
-              whileHover={{ y: -2 }}
-            >
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded ${
-                    item.priority === 'HIGH' 
-                      ? 'bg-rose-100 text-rose-800' 
-                      : 'bg-amber-100 text-amber-800'
-                  }`}>
-                    {item.priority}
-                  </span>
-                  <h3 className="text-xs font-bold text-slate-900">{item.title}</h3>
-                </div>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  {item.reason}
-                </p>
-              </div>
+      {/* KPI row */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <KpiCard label="Cash collected" icon={DollarSign} value={money(cashCollected)}
+          delta={cashChange === null ? null : { value: cashChange, label: 'versus last month' }}
+          context={cashChange === null ? 'All paid invoices' : 'vs last month'}
+          spark={cashFlowData.map(p => p.collected)} sparkLabel="Cash collected over the last four months"
+          onClick={() => onNavigateTab('INVOICES')} />
+        <KpiCard label="Open pipeline" icon={TrendingUp} value={pipeline.open}
+          context={`${pipeline.qualified} qualified (score 80+)`} onClick={() => onNavigateTab('LEADS')} />
+        <KpiCard label="Active clients" icon={Users} value={activeClients}
+          context={`${retainerClients} on a retainer, ${clients.length} total`} onClick={() => onNavigateTab('CLIENTS')} />
+        <KpiCard label="Active projects" icon={FolderKanban} value={activeProjects.length}
+          context={`${projects.length} projects in total`} onClick={() => onNavigateTab('PROJECTS')} />
+      </div>
 
-              <div className="flex justify-end pt-1">
-                <motion.button
-                  onClick={item.onExecute}
-                  className="px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg flex items-center gap-1.5 transition-colors"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <span>{item.cta}</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </motion.button>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
+      <dl className="grid grid-cols-2 gap-x-6 gap-y-4 rounded-2xl border border-ink-200 bg-white px-5 py-4 sm:grid-cols-4">
+        <MiniStat label="Receivables" value={money(outstandingReceivables)} />
+        <MiniStat label="Overdue invoices" value={overdueInvoices.length} tone={overdueInvoices.length ? 'danger' : 'neutral'} />
+        <MiniStat label="Support requests" value={`${requests.length}`} />
+        <MiniStat label="Needing triage" value={pendingRequests.length} tone={pendingRequests.length ? 'warning' : 'neutral'} />
+      </dl>
 
-      {/* Visual Analytics Split: Revenue Cash Flow & CRM Funnel */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Cash Flow Bar Chart (7 cols) */}
-        <motion.div
-          className="lg:col-span-7 bg-white rounded-2xl p-6 border border-slate-200/90 shadow-xs space-y-4 glass-card"
-          initial={{ opacity: 0, x: -30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6, delay: 0.7 }}
-        >
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-            <div>
-              <h3 className="text-sm font-bold text-slate-900">
-                Cash in the Bank vs. Invoiced Revenue
-              </h3>
-              <p className="text-xs text-slate-500">
-                Real dollars collected each month compared with total billing sent out.
-              </p>
+      {/* Main chart + breakdown */}
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
+        <Panel className="xl:col-span-8" title="Cash collected vs invoiced"
+          description="Paid invoices by payment month, compared with invoices issued. USD."
+          action={(
+            <div className="flex items-center gap-4 text-sm text-ink-600">
+              <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-brand-600" />Collected</span>
+              <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-ink-800" />Invoiced</span>
             </div>
-            <span className="text-xs font-mono font-medium text-slate-400">USD</span>
-          </div>
-
-          <div className="h-64 w-full">
+          )}>
+          <div className="h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={cashFlowData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-                <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v/1000}k`} />
-                <Tooltip 
-                  formatter={(val: any) => [`$${Number(val).toLocaleString()} USD`, '']}
-                  contentStyle={{ backgroundColor: '#ffffff', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '12px' }}
-                />
-                <Bar dataKey="collected" name="Cash Collected" fill="#0c826c" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="invoiced" name="Invoiced Total" fill="#22304a" radius={[4, 4, 0, 0]} />
+              <BarChart data={cashFlowData} margin={{ top: 8, right: 8, left: -8, bottom: 0 }} barGap={4}>
+                <CartesianGrid stroke="#eef1f5" vertical={false} />
+                <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#647184' }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 12, fill: '#647184' }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v / 1000}k`} />
+                <Tooltip cursor={{ fill: '#f6f8fa' }}
+                  formatter={(val: unknown, name: unknown) => [`$${Number(val).toLocaleString()}`, String(name)]}
+                  contentStyle={{ backgroundColor: '#ffffff', borderRadius: '10px', border: '1px solid #dde3ea', fontSize: '13px' }} />
+                <Bar dataKey="collected" name="Collected" fill="#0c826c" radius={[6, 6, 0, 0]} maxBarSize={40} />
+                <Bar dataKey="invoiced" name="Invoiced" fill="#22304a" radius={[6, 6, 0, 0]} maxBarSize={40} />
               </BarChart>
             </ResponsiveContainer>
           </div>
+        </Panel>
 
-          <div className="flex items-center justify-center gap-6 text-xs text-slate-600 pt-2 border-t border-slate-100">
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded bg-[#16835D]" />
-              <span>Cash Collected</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded bg-[#3867E8]" />
-              <span>Invoiced Revenue</span>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* CRM Sales Funnel (5 cols) */}
-        <motion.div
-          className="lg:col-span-5 bg-white rounded-2xl p-6 border border-slate-200/90 shadow-xs space-y-4 glass-card"
-          initial={{ opacity: 0, x: 30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
-        >
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-            <div>
-              <h3 className="text-sm font-bold text-slate-900">
-                Sales Pipeline Conversion Funnel
-              </h3>
-              <p className="text-xs text-slate-500">
-                Stage-by-stage lead progression in active CRM.
-              </p>
-            </div>
-            <motion.button
-              onClick={() => onNavigateTab('LEADS')}
-              className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
-              whileHover={{ x: 3 }}
-              transition={{ type: 'spring', stiffness: 300 }}
-            >
-              <span>View CRM</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </motion.button>
-          </div>
-
-          <div className="space-y-3 pt-2">
-            {funnelData.map((stage, idx) => {
-              const maxVal = Math.max(1, funnelData[0].count);
-              const percent = Math.round((stage.count / maxVal) * 100);
+        <Panel className="xl:col-span-4" title="Pipeline breakdown" description="How far leads have progressed"
+          action={(
+            <button onClick={() => onNavigateTab('LEADS')} className="inline-flex items-center gap-1 text-sm font-semibold text-brand-700 hover:text-brand-800">
+              View CRM <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </button>
+          )}>
+          <ul className="space-y-4">
+            {funnelData.map(stage => {
+              const percent = Math.round((stage.count / Math.max(1, funnelData[0].count)) * 100);
               return (
-                <motion.div
-                  key={idx}
-                  className="space-y-1"
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.9 + idx * 0.1 }}
-                >
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-semibold text-slate-700">{stage.stage}</span>
-                    <span className="font-bold text-slate-900 tabular-nums">{stage.count} leads</span>
+                <li key={stage.stage}>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-ink-700">{stage.stage}</span>
+                    <span className="font-semibold tabular-nums text-ink-950">{stage.count}</span>
                   </div>
-                  <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
-                    <motion.div
-                      className="h-full rounded-full"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${percent}%` }}
-                      transition={{ duration: 1, delay: 1 + idx * 0.1, ease: 'easeOut' }}
-                      style={{ backgroundColor: stage.color }}
-                    />
+                  <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-ink-100" aria-hidden="true">
+                    <div className="h-full rounded-full bg-brand-500 transition-[width] duration-500" style={{ width: `${percent}%` }} />
                   </div>
-                </motion.div>
+                </li>
               );
             })}
-          </div>
+          </ul>
+          <p className="mt-5 border-t border-ink-100 pt-4 text-sm text-ink-500">
+            {qualifiedToMeeting === null
+              ? 'No qualified leads yet.'
+              : <>Qualified to meeting: <strong className="font-semibold text-ink-900">{qualifiedToMeeting}%</strong></>}
+          </p>
+        </Panel>
+      </div>
 
-          <motion.div
-            className="pt-4 border-t border-slate-100 text-[11px] text-slate-400"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.4 }}
-          >
-            Average conversion from Qualification to Scheduled Meeting: <strong>33%</strong>
-          </motion.div>
-        </motion.div>
+      {/* Task overview + recent activity */}
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
+        <Panel className="xl:col-span-8" title="Needs your attention" description="Prioritised from live requests, pipeline and invoices"
+          bodyClassName="p-0">
+          {actionItems.length === 0 ? (
+            <p className="px-5 py-10 text-center text-sm text-ink-500">Nothing needs your attention right now.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <caption className="sr-only">Prioritised actions</caption>
+                <thead>
+                  <tr className="border-b border-ink-100 text-ink-500">
+                    <th scope="col" className="px-5 py-2.5 font-medium">Task</th>
+                    <th scope="col" className="hidden px-3 py-2.5 font-medium md:table-cell">Area</th>
+                    <th scope="col" className="px-3 py-2.5 font-medium">Priority</th>
+                    <th scope="col" className="hidden px-5 py-2.5 text-right font-medium sm:table-cell"><span className="sr-only">Action</span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {actionItems.map(item => (
+                    <tr key={item.id} className="border-b border-ink-100 last:border-0">
+                      <td className="px-5 py-3.5">
+                        <p className="font-medium text-ink-900">{item.title}</p>
+                        <p className="mt-0.5 text-ink-500">{item.reason}</p>
+                        <button onClick={item.onExecute}
+                          className="mt-2 inline-flex min-h-9 items-center gap-1 text-sm font-semibold text-brand-700 sm:hidden">
+                          {item.cta} <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                        </button>
+                      </td>
+                      <td className="hidden px-3 py-3.5 text-ink-600 md:table-cell">{item.area}</td>
+                      <td className="px-3 py-3.5">
+                        <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                          item.priority === 'High' ? 'bg-rose-50 text-rose-700' : item.priority === 'Medium' ? 'bg-amber-50 text-amber-800' : 'bg-ink-100 text-ink-700'
+                        }`}>{item.priority}</span>
+                      </td>
+                      <td className="hidden px-5 py-3.5 text-right sm:table-cell">
+                        <button onClick={item.onExecute}
+                          className="inline-flex min-h-9 items-center gap-1 whitespace-nowrap rounded-lg px-2.5 text-sm font-semibold text-brand-700 hover:bg-brand-50">
+                          {item.cta} <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </Panel>
+
+        <Panel className="xl:col-span-4" title="Recent activity" bodyClassName="p-0"
+          action={activityConnected ? (
+            <button onClick={() => onNavigateTab('ACTIVITY')} className="text-sm font-semibold text-brand-700 hover:text-brand-800">See all</button>
+          ) : undefined}>
+          {!activityConnected ? (
+            <p className="px-5 py-8 text-sm text-ink-500">The activity log is not connected yet: there is no activity API in MVP1.</p>
+          ) : recent.length === 0 ? (
+            <p className="px-5 py-8 text-sm text-ink-500">No activity yet.</p>
+          ) : (
+            <ol className="divide-y divide-ink-100">
+              {recent.map(a => (
+                <li key={a.id} className="flex gap-3 px-5 py-3">
+                  <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-brand-500" aria-hidden="true" />
+                  <div className="min-w-0 text-sm">
+                    <p className="text-ink-900">{humanize(a.action)}</p>
+                    <p className="mt-0.5 truncate text-ink-500">{a.actor}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          )}
+        </Panel>
       </div>
     </div>
   );

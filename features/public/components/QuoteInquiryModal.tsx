@@ -116,10 +116,10 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
         {/* Modal Header */}
         <div className="px-6 py-5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
           <div>
-            <div className="text-sm font-semibold uppercase tracking-wider text-blue-600">
+            <div className="text-sm font-medium text-brand-700">
               A quick conversation
             </div>
-            <h3 id="quote-modal-title" className="text-lg font-bold text-slate-900">
+            <h3 id="quote-modal-title" className="gp-display mt-1 text-2xl font-semibold text-ink-950">
               {referenceNumber ? 'Thanks — we got it' : 'Tell us what you need'}
             </h3>
           </div>
@@ -171,7 +171,7 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
               <div className="pt-4">
                 <button
                   onClick={handleReset}
-                  className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-xs"
+                  className="min-h-11 rounded-full bg-navy-950 px-6 text-sm font-semibold text-white hover:bg-brand-700"
                 >
                   Done
                 </button>
@@ -270,7 +270,7 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
                       value={formData.website}
                       onChange={(e) => setFormData({ ...formData, website: e.target.value })}
                       placeholder="https://company.com"
-                      className="w-full pl-9 pr-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                      className="w-full pl-9 pr-3 py-2.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                     />
                   </div>
                   {errors.website && (
@@ -288,7 +288,7 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
                   <select
                     value={formData.serviceCategory}
                     onChange={(e) => setFormData({ ...formData, serviceCategory: e.target.value as ServiceCategory })}
-                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-white"
+                    className="w-full px-3 py-2.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-white"
                   >
                     <option value="SOFTWARE_DEV">Custom Software Development</option>
                     <option value="WEBSITE_MAINTENANCE">Website & Application Support</option>
@@ -307,7 +307,7 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
                     value={formData.projectType}
                     onChange={(e) => setFormData({ ...formData, projectType: e.target.value })}
                     placeholder="e.g. Portal, API pipeline, Bug overhaul"
-                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                    className="w-full px-3 py-2.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                   />
                 </div>
               </div>
@@ -321,7 +321,7 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
                   <select
                     value={formData.budgetRange}
                     onChange={(e) => setFormData({ ...formData, budgetRange: e.target.value })}
-                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-white"
+                    className="w-full px-3 py-2.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-white"
                   >
                     <option value="Under $5,000">Under $5,000 (Small sprint / audit)</option>
                     <option value="$5,000 – $10,000">$5,000 – $10,000 (Standard integration)</option>
@@ -331,13 +331,13 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
                     Preferred Timeline
                   </label>
                   <select
                     value={formData.preferredTimeline}
                     onChange={(e) => setFormData({ ...formData, preferredTimeline: e.target.value })}
-                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-white"
+                    className="w-full px-3 py-2.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-white"
                   >
                     <option value="Immediate (< 2 weeks)">Immediate (&lt; 2 weeks)</option>
                     <option value="1–2 Months">1–2 Months</option>
@@ -400,7 +400,7 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
 
               {/* Consent checkbox */}
               <div>
-                <label className="flex items-start gap-2 text-xs text-slate-600 cursor-pointer">
+                <label className="flex items-start gap-2 text-sm text-slate-600 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={formData.consent}
@@ -425,14 +425,14 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
                 <button
                   type="button"
                   onClick={handleReset}
-                  className="px-4 py-2 text-xs font-medium text-slate-600 hover:text-slate-900"
+                  className="min-h-11 rounded-full px-5 text-sm font-semibold text-slate-700 hover:bg-slate-100"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-5 py-2.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-xs flex items-center gap-2 disabled:opacity-50"
+                  className="min-h-11 rounded-full bg-navy-950 px-6 text-sm font-semibold text-white hover:bg-brand-700 flex items-center gap-2 disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <span>Sending your note...</span>

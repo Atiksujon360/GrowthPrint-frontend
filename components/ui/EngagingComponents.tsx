@@ -110,26 +110,15 @@ export function FloatingActionButton({
   };
 
   return (
-    <div className={`fixed ${positionClasses[position]} z-50`}>
+    // Phones and small tablets only: on wider screens the same action is in the sidebar. No endless pulse.
+    <div className={`fixed ${positionClasses[position]} z-50 md:hidden`}>
       <motion.button
         onClick={onClick}
+        aria-label={label}
         className={`${colorClasses[color]} w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-white relative`}
-        whileHover={{ scale: 1.03 }}
-        whileTap={{ scale: 0.9 }}
+        whileTap={{ scale: 0.94 }}
       >
-        <motion.div
-          className="absolute inset-0 rounded-full bg-current opacity-75"
-          animate={{
-            scale: [1, 1.4, 1.4],
-            opacity: [0.5, 0, 0]
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: 'easeOut'
-          }}
-        />
-        <Icon className="w-6 h-6 relative z-10" />
+        <Icon className="w-6 h-6 relative z-10" aria-hidden="true" />
       </motion.button>
       {label && (
         <motion.div

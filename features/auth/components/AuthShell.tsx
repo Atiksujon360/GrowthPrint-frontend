@@ -2,10 +2,11 @@
 
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { LockKeyhole, ShieldCheck } from 'lucide-react';
+import { Check, LockKeyhole } from 'lucide-react';
+import { GrowthPrintMark } from '../../public/components/GrowthPrintMark.tsx';
 
 /**
- * Frame for sign-in, password recovery and invitation pages: a calm brand panel (desktop) and a focused
+ * Frame for sign-in, password recovery and invitation pages: a navy blueprint panel (desktop) beside a focused
  * single-column form. No stock photos, invented customers or marketing claims.
  */
 export function AuthShell({ eyebrow, title, subtitle, children, footer, aside }: {
@@ -25,49 +26,53 @@ export function AuthShell({ eyebrow, title, subtitle, children, footer, aside }:
     ],
   };
   return (
-    <div className="min-h-screen bg-ink-50 px-4 py-6 sm:px-6 lg:py-10">
-      <div className="mx-auto grid min-h-[min(720px,calc(100vh-5rem))] max-w-5xl overflow-hidden rounded-3xl border border-ink-200 bg-white shadow-[0_24px_64px_-32px_rgba(15,23,42,0.35)] lg:grid-cols-[0.9fr_1.1fr]">
-        <aside className="relative hidden flex-col justify-between bg-ink-950 p-10 text-white lg:flex">
-          <Link href="/" className="flex items-center gap-3 rounded-lg focus-visible:outline-white">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-sm font-black text-brand-700">GP</span>
-            <span className="text-sm font-semibold tracking-tight">GrowthPrint</span>
-          </Link>
-          <div>
-            <p className="text-2xl font-semibold leading-snug tracking-tight">{panel.heading}</p>
-            <ul className="mt-6 space-y-3">
-              {panel.points.map(point => (
-                <li key={point} className="flex gap-3 text-sm leading-6 text-ink-300">
-                  <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-brand-300" aria-hidden="true" />
-                  {point}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <p className="flex items-center gap-2 text-xs text-ink-400">
-            <LockKeyhole className="h-3.5 w-3.5" aria-hidden="true" />
-            Encrypted connection · Private workspace
-          </p>
-        </aside>
+    <div className="grid min-h-screen bg-white lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+      <aside className="relative hidden overflow-hidden bg-navy-950 text-white lg:flex lg:flex-col lg:justify-between lg:p-12">
+        {/* Blueprint grid, purely decorative. */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-100"
+          style={{
+            backgroundImage: 'linear-gradient(rgb(255 255 255 / 0.05) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 0.05) 1px, transparent 1px)',
+            backgroundSize: '24px 24px',
+          }} />
+        <Link href="/" className="relative flex w-fit items-center gap-2.5 rounded-md focus-visible:outline-white">
+          <GrowthPrintMark className="h-8 w-8" tone="light" />
+          <span className="gp-display text-lg font-semibold">GrowthPrint</span>
+        </Link>
+        <div className="relative">
+          <p className="gp-display max-w-md text-[2rem] font-semibold leading-[1.12]">{panel.heading}</p>
+          <ul className="mt-8 max-w-md space-y-4">
+            {panel.points.map(point => (
+              <li key={point} className="flex gap-3 text-[0.98rem] leading-6 text-white/70">
+                <Check className="mt-1 h-4 w-4 shrink-0 text-mint-300" aria-hidden="true" />
+                {point}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <p className="relative flex items-center gap-2 text-sm text-white/50">
+          <LockKeyhole className="h-4 w-4" aria-hidden="true" />
+          Encrypted connection. Private workspace.
+        </p>
+      </aside>
 
-        <main className="flex flex-col p-6 sm:p-10 lg:p-12">
-          <div className="flex items-center justify-between gap-4">
-            <Link href="/" className="flex items-center gap-2 lg:hidden">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-600 text-xs font-black text-white">GP</span>
-              <span className="text-sm font-semibold text-ink-900">GrowthPrint</span>
-            </Link>
-            <Link href="/" className="ml-auto rounded-md text-sm font-medium text-ink-500 hover:text-brand-700">
-              Back to website
-            </Link>
-          </div>
-          <div className="mx-auto my-auto w-full max-w-sm py-10">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-700">{eyebrow}</p>
-            <h1 className="mt-2 text-2xl font-semibold tracking-tight text-ink-900 sm:text-3xl">{title}</h1>
-            {subtitle && <div className="mt-2 text-sm leading-6 text-ink-500">{subtitle}</div>}
-            <div className="mt-7">{children}</div>
-          </div>
-          {footer && <div className="text-center text-xs text-ink-500">{footer}</div>}
-        </main>
-      </div>
+      <main className="flex flex-col px-5 py-6 sm:px-10 lg:px-16 lg:py-10">
+        <div className="flex items-center justify-between gap-4">
+          <Link href="/" className="flex items-center gap-2 rounded-md lg:hidden">
+            <GrowthPrintMark className="h-7 w-7" />
+            <span className="gp-display font-semibold text-ink-950">GrowthPrint</span>
+          </Link>
+          <Link href="/" className="ml-auto inline-flex min-h-10 items-center rounded-md text-sm font-medium text-ink-600 hover:text-brand-700">
+            Back to website
+          </Link>
+        </div>
+        <div className="mx-auto my-auto w-full max-w-[26rem] py-12">
+          <p className="text-sm font-medium text-brand-700">{eyebrow}</p>
+          <h1 className="gp-display mt-2 text-[2.1rem] font-semibold leading-tight text-ink-950">{title}</h1>
+          {subtitle && <div className="mt-3 text-[0.98rem] leading-relaxed text-ink-600">{subtitle}</div>}
+          <div className="mt-8">{children}</div>
+        </div>
+        {footer && <div className="text-center text-sm text-ink-500">{footer}</div>}
+      </main>
     </div>
   );
 }

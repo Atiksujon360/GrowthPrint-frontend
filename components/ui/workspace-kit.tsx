@@ -118,7 +118,7 @@ export function PageHeader({ title, description, actions, breadcrumb }: {
             </ol>
           </nav>
         )}
-        <h1 className="truncate text-2xl font-semibold tracking-tight text-ink-900">{title}</h1>
+        <h1 className="gp-display truncate text-[1.75rem] font-semibold leading-tight text-ink-950">{title}</h1>
         {description && <p className="mt-1 max-w-2xl text-sm text-ink-500">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
@@ -138,7 +138,7 @@ export function SearchInput({ value, onChange, placeholder, label }: {
     <div className="w-full sm:max-w-xs">
       <label htmlFor={id} className="sr-only">{label}</label>
       <input id={id} type="search" value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-        className="block min-h-10 w-full rounded-xl border border-ink-200 bg-white px-3.5 text-sm text-ink-900 shadow-xs placeholder:text-ink-400 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-100" />
+        className="block min-h-10 w-full rounded-xl border border-ink-200 bg-white px-3.5 text-sm text-ink-900 placeholder:text-ink-400 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-100" />
     </div>
   );
 }
@@ -151,7 +151,7 @@ export function FilterTabs<T extends string>({ value, onChange, options, label }
       {options.map(o => (
         <button key={o.value} type="button" onClick={() => onChange(o.value)} aria-pressed={value === o.value}
           className={cx('min-h-8 shrink-0 rounded-lg px-3 text-xs font-medium transition-colors',
-            value === o.value ? 'bg-ink-900 text-white' : 'text-ink-600 hover:bg-ink-100')}>
+            value === o.value ? 'bg-navy-950 text-white' : 'text-ink-600 hover:bg-ink-100')}>
           {o.label}{o.count !== undefined && <span className="ml-1.5 tabular-nums opacity-70">{o.count}</span>}
         </button>
       ))}
@@ -216,12 +216,12 @@ export function StatusPill({ tone = 'neutral', children }: { tone?: Tone; childr
 export function StatCard({ label, value, hint, href }: { label: string; value: ReactNode; hint?: ReactNode; href?: string }) {
   const body = (
     <>
-      <p className="text-xs font-medium uppercase tracking-wide text-ink-500">{label}</p>
-      <p className="mt-2 text-2xl font-semibold tabular-nums tracking-tight text-ink-900">{value}</p>
-      {hint && <p className="mt-1 text-xs text-ink-500">{hint}</p>}
+      <p className="text-sm font-medium text-ink-600">{label}</p>
+      <p className="gp-display mt-3 text-[1.9rem] font-semibold leading-none text-ink-950">{value}</p>
+      {hint && <p className="mt-2 text-sm text-ink-500">{hint}</p>}
     </>
   );
-  const cls = 'block rounded-2xl border border-ink-200 bg-white p-4 shadow-xs';
+  const cls = 'block rounded-2xl border border-ink-200 bg-white p-5';
   return href
     ? <Link href={href} className={cx(cls, 'transition-colors hover:border-brand-300')}>{body}</Link>
     : <div className={cls}>{body}</div>;

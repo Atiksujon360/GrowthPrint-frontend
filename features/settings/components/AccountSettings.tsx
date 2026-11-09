@@ -66,7 +66,7 @@ export function AccountSettings() {
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       <header>
-        <h1 className="text-2xl font-semibold tracking-tight text-ink-900">Account settings</h1>
+        <h2 className="text-lg font-semibold text-ink-950">Account settings</h2>
         <p className="mt-1 text-sm text-ink-500">Manage your profile, password and how GrowthPrint contacts you.</p>
       </header>
       {loadError && <ErrorState message={loadError} onRetry={load} />}
