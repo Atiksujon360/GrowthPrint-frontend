@@ -146,7 +146,7 @@ export function AdminOutreachStudio({ preselectedLeadId }: { preselectedLeadId?:
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+            <h2 className="text-lg font-semibold text-ink-950">
               Outreach Studio · Founder Review & Send
             </h2>
             <span className="text-xs font-semibold bg-emerald-100 text-emerald-900 px-2.5 py-0.5 rounded-full flex items-center gap-1">
@@ -162,7 +162,7 @@ export function AdminOutreachStudio({ preselectedLeadId }: { preselectedLeadId?:
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
         {/* Left: Draft selector (4 cols) */}
         <div className="lg:col-span-4 space-y-3 order-2 lg:order-1">
-          <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+          <div className="text-xs font-semibold text-slate-400 mb-2">
             Pending Review ({drafts.length})
           </div>
 
@@ -177,7 +177,7 @@ export function AdminOutreachStudio({ preselectedLeadId }: { preselectedLeadId?:
               }}
               className={`p-4 rounded-xl border cursor-pointer transition-all min-h-[88px] ${
                 d.id === activeDraft.id
-                  ? 'bg-blue-50/50 border-blue-400 shadow-xs'
+                  ? 'bg-blue-50/50 border-blue-400'
                   : 'bg-white border-slate-200 hover:border-slate-300'
               }`}
             >
@@ -188,7 +188,7 @@ export function AdminOutreachStudio({ preselectedLeadId }: { preselectedLeadId?:
               <div className="text-xs text-slate-500 mt-1 truncate">
                 To: {d.recipientName} ({d.recipientEmail})
               </div>
-              <div className="text-[11px] text-slate-400 mt-2 truncate">
+              <div className="text-xs text-slate-400 mt-2 truncate">
                 Subj: {d.subject}
               </div>
             </div>
@@ -196,18 +196,18 @@ export function AdminOutreachStudio({ preselectedLeadId }: { preselectedLeadId?:
         </div>
 
         {/* Right: Message Inspector & Approval Station (8 cols) */}
-        <div className="lg:col-span-8 bg-white rounded-2xl border border-slate-200/90 shadow-xs p-4 sm:p-6 space-y-4 sm:space-y-6 order-1 lg:order-2">
+        <div className="lg:col-span-8 bg-white rounded-2xl border border-slate-200/90 p-4 sm:p-6 space-y-4 sm:space-y-6 order-1 lg:order-2">
           {/* Header of station */}
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-4 border-b border-slate-100">
             <div className="flex-1 min-w-0">
-              <div className="text-xs font-semibold text-blue-600 uppercase tracking-wider">
+              <div className="text-xs font-semibold text-blue-600">
                 Personalized Email Draft
               </div>
               <h3 className="text-base font-bold text-slate-900 mt-0.5 truncate">
                 {activeDraft.recipientName} · {activeDraft.companyName}
               </h3>
               <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                <span className="text-xs text-slate-500 font-mono truncate">
+                <span className="text-xs text-slate-500 truncate">
                   {activeDraft.recipientEmail}
                 </span>
                 <CopyButton value={activeDraft.recipientEmail} title="Copy recipient email" />
@@ -220,7 +220,7 @@ export function AdminOutreachStudio({ preselectedLeadId }: { preselectedLeadId?:
                 <button
                   onClick={handleApprove}
                   disabled={isApproving}
-                  className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs flex items-center gap-1.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
+                  className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
                 >
                   {isApproving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <UserCheck className="w-3.5 h-3.5" />}
                   <span>{isApproving ? 'Approving...' : 'Approve Email'}</span>
@@ -231,7 +231,7 @@ export function AdminOutreachStudio({ preselectedLeadId }: { preselectedLeadId?:
                 <button
                   onClick={() => setIsConfirmSendOpen(true)}
                   disabled={isSending}
-                  className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-xs flex items-center gap-1.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
+                  className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
                 >
                   {isSending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
                   <span>{isSending ? 'Sending...' : 'Send via Email'}</span>
@@ -250,7 +250,7 @@ export function AdminOutreachStudio({ preselectedLeadId }: { preselectedLeadId?:
               <strong className="text-slate-800">Verified details: </strong>
               {activeDraft.personalizationEvidence}
             </p>
-            <div className="text-[11px] text-emerald-700 flex items-center gap-1 pt-1 font-medium">
+            <div className="text-xs text-emerald-700 flex items-center gap-1 pt-1 font-medium">
               <CheckCircle2 className="w-3.5 h-3.5" />
               <span>Referenced case study matches our actual work with Nexus Logistics.</span>
             </div>
@@ -277,7 +277,7 @@ export function AdminOutreachStudio({ preselectedLeadId }: { preselectedLeadId?:
 
             {/* Subject */}
             <div>
-              <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-semibold text-slate-400 mb-1">
                 Subject Line
               </label>
               {isEditing ? (
@@ -296,7 +296,7 @@ export function AdminOutreachStudio({ preselectedLeadId }: { preselectedLeadId?:
 
             {/* Body */}
             <div>
-              <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-semibold text-slate-400 mb-1">
                 Message Body
               </label>
               {isEditing ? (
@@ -304,7 +304,7 @@ export function AdminOutreachStudio({ preselectedLeadId }: { preselectedLeadId?:
                   rows={9}
                   value={editedBody}
                   onChange={(e) => setEditedBody(e.target.value)}
-                  className="w-full px-3 py-2.5 text-xs font-mono border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 leading-relaxed min-h-[180px]"
+                  className="w-full px-3 py-2.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 leading-relaxed min-h-[180px]"
                 />
               ) : (
                 <div className="text-xs text-slate-800 bg-slate-50/60 p-4 rounded-xl border border-slate-200 whitespace-pre-wrap leading-relaxed min-h-[180px]">
@@ -315,7 +315,7 @@ export function AdminOutreachStudio({ preselectedLeadId }: { preselectedLeadId?:
           </div>
 
           {/* Audit footer */}
-          <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4 text-[11px] text-slate-400">
+          <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-400">
             <span>Outreach policy: 1-to-1 researched, helpful, zero spam blasts</span>
             <span>Sender: alex@growthprint.io</span>
           </div>

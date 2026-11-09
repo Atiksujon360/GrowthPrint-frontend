@@ -81,7 +81,7 @@ export function ReportPaymentForm({ invoice, onDone }: ReportPaymentFormProps) {
     'aria-describedby': errors[name] ? `${id}-${name}-error` : undefined
   });
   const errorText = (name: string) =>
-    errors[name] ? <p id={`${id}-${name}-error`} className="mt-1 text-[11px] text-rose-700">{errors[name]}</p> : null;
+    errors[name] ? <p id={`${id}-${name}-error`} className="mt-1 text-xs text-rose-700">{errors[name]}</p> : null;
   const inputClass = 'w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30';
 
   return (
@@ -135,7 +135,7 @@ export function ReportPaymentForm({ invoice, onDone }: ReportPaymentFormProps) {
           Cancel
         </button>
         <button type="submit" disabled={isSubmitting}
-          className="px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-xs disabled:opacity-50 min-h-[36px]">
+          className="px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg disabled:opacity-50 min-h-[36px]">
           {isSubmitting ? 'Sending…' : 'Report payment'}
         </button>
       </div>

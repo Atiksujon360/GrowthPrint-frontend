@@ -99,7 +99,7 @@ export function ConfirmDialog({
             type="button"
             onClick={onConfirm}
             disabled={isLoading}
-            className={`px-4 py-2 text-xs font-semibold rounded-xl shadow-xs transition-colors flex items-center gap-2 ${variantStyles.button} ${
+            className={`px-4 py-2 text-xs font-semibold rounded-xl transition-colors flex items-center gap-2 ${variantStyles.button} ${
               isLoading ? 'opacity-70 cursor-not-allowed' : ''
             }`}
           >

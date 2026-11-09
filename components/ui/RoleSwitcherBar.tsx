@@ -67,7 +67,7 @@ function RoleSwitcherBarContent() {
               onClick={() => router.push(ROUTES.public.home)}
               className={`px-2 py-1 rounded-md font-medium transition-all flex items-center gap-1 shrink-0 ${
                 isActiveRoute('/')
-                  ? 'bg-blue-600 text-white shadow-xs'
+                  ? 'bg-blue-600 text-white'
                   : 'text-slate-300 hover:text-white'
               }`}
             >
@@ -78,15 +78,15 @@ function RoleSwitcherBarContent() {
             <button
               onClick={handleNavToPortal}
               className={`px-2 py-1 rounded-md font-medium transition-all flex items-center gap-1 shrink-0 relative ${
-                isActiveRoute('/portal')
-                  ? 'bg-blue-600 text-white shadow-xs'
+                isActiveRoute(ROUTES.portal.home)
+                  ? 'bg-blue-600 text-white'
                   : 'text-slate-300 hover:text-white'
               }`}
             >
               <UserCheck className="w-3 h-3" />
               <span>Portal</span>
               {pendingEstimates > 0 && (
-                <span className="bg-amber-500 text-slate-900 text-[10px] font-bold px-1 rounded-full leading-none py-0.5">
+                <span className="bg-amber-500 text-slate-900 text-xs font-bold px-1 rounded-full leading-none py-0.5">
                   {pendingEstimates}
                 </span>
               )}
@@ -95,15 +95,15 @@ function RoleSwitcherBarContent() {
             <button
               onClick={handleNavToAdmin}
               className={`px-2 py-1 rounded-md font-medium transition-all flex items-center gap-1 shrink-0 relative ${
-                isActiveRoute('/admin')
-                  ? 'bg-blue-600 text-white shadow-xs'
+                isActiveRoute(ROUTES.admin.home)
+                  ? 'bg-blue-600 text-white'
                   : 'text-slate-300 hover:text-white'
               }`}
             >
               <ShieldAlert className="w-3 h-3" />
               <span>Admin</span>
               {pendingApprovals > 0 && (
-                <span className="bg-amber-400 text-slate-900 text-[10px] font-bold px-1 rounded-full leading-none py-0.5">
+                <span className="bg-amber-400 text-slate-900 text-xs font-bold px-1 rounded-full leading-none py-0.5">
                   {pendingApprovals}
                 </span>
               )}

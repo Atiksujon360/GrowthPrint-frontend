@@ -89,15 +89,15 @@ export function PortalInvoicesView() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">Invoices</h2>
+          <h2 className="text-lg font-semibold text-ink-950">Invoices</h2>
           <p className="text-xs text-slate-500">
             Your invoices from GrowthPrint. Paid one? Let us know here and we’ll confirm it once the payment arrives.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="bg-white px-4 py-2 rounded-xl border border-slate-200 text-right self-start shadow-xs">
-            <div className="text-[11px] text-slate-500 font-medium uppercase tracking-wider">Outstanding</div>
+          <div className="bg-white px-4 py-2 rounded-xl border border-slate-200 text-right self-start">
+            <div className="text-xs text-slate-500 font-medium">Outstanding</div>
             {outstandingEntries.length === 0 ? (
               <div className="text-lg font-bold text-slate-900 tabular-nums">Nothing due</div>
             ) : outstandingEntries.map(([currency, total]) => (
@@ -108,7 +108,7 @@ export function PortalInvoicesView() {
             type="button"
             onClick={handleRefresh}
             disabled={isRefreshing || isLoadingInvoices}
-            className="p-2 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-slate-600 shadow-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             title="Refresh invoices"
             aria-label="Refresh invoices"
           >
@@ -142,12 +142,12 @@ export function PortalInvoicesView() {
           const canReport = PAYABLE_STATUSES.includes(inv.status) && !pendingReport;
 
           return (
-            <div key={inv.id} className="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
+            <div key={inv.id} className="bg-white rounded-2xl border border-slate-200/90 overflow-hidden">
               {/* Header */}
               <div className="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50/40">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-bold text-slate-700">{inv.invoiceNumber}</span>
+                    <span className="text-xs font-bold text-slate-700">{inv.invoiceNumber}</span>
                     <StatusBadge status={inv.status} />
                   </div>
                   <div className="text-xs text-slate-500">Issued {inv.issueDate} · Due {inv.dueDate}</div>
@@ -165,14 +165,14 @@ export function PortalInvoicesView() {
                         type="button"
                         onClick={() => setReportingInvoiceId(current => (current === inv.id ? null : inv.id))}
                         aria-expanded={reportingInvoiceId === inv.id}
-                        className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow-xs flex items-center gap-1.5 transition-colors min-h-[36px]"
+                        className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors min-h-[36px]"
                       >
                         <CreditCard className="w-3.5 h-3.5" aria-hidden="true" />
                         <span>Report a payment</span>
                       </button>
                     )}
                     {pendingReport && (
-                      <span className="px-2.5 py-1 rounded-lg border text-[11px] font-medium bg-amber-50 text-amber-800 border-amber-200 flex items-center gap-1">
+                      <span className="px-2.5 py-1 rounded-lg border text-xs font-medium bg-amber-50 text-amber-800 border-amber-200 flex items-center gap-1">
                         <Clock className="w-3 h-3" aria-hidden="true" />
                         Payment reported — awaiting confirmation
                       </span>
@@ -204,7 +204,7 @@ export function PortalInvoicesView() {
                 <table className="w-full text-left text-xs">
                   <caption className="sr-only">Line items for invoice {inv.invoiceNumber}</caption>
                   <thead>
-                    <tr className="border-b border-slate-100 text-slate-500 font-medium uppercase tracking-wider text-[10px]">
+                    <tr className="border-b border-slate-100 text-slate-500 font-medium text-xs">
                       <th scope="col" className="pb-2">Description</th>
                       <th scope="col" className="pb-2 text-right">Qty</th>
                       <th scope="col" className="pb-2 text-right">Rate</th>
@@ -224,7 +224,7 @@ export function PortalInvoicesView() {
                 </table>
 
                 {inv.notes && (
-                  <div className="mt-3 pt-3 border-t border-slate-100 text-[11px] text-slate-600">
+                  <div className="mt-3 pt-3 border-t border-slate-100 text-xs text-slate-600">
                     <span className="font-semibold text-slate-700">Notes: </span>
                     {inv.notes}
                   </div>
@@ -232,7 +232,7 @@ export function PortalInvoicesView() {
 
                 {reports.length > 0 && (
                   <div className="mt-4 pt-3 border-t border-slate-100">
-                    <h4 className="text-[11px] font-semibold text-slate-700 uppercase tracking-wider mb-2">Your payment reports</h4>
+                    <h4 className="text-xs font-semibold text-slate-700 mb-2">Your payment reports</h4>
                     <ul className="space-y-2">
                       {reports.map(report => (
                         <li key={report.id} className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-700">
@@ -240,11 +240,11 @@ export function PortalInvoicesView() {
                             {formatMoney(report.amount, report.currency)} by {METHOD_LABEL[report.paymentMethod]} on {report.paidOn}
                             {report.reference ? ` · ref ${report.reference}` : ''}
                           </span>
-                          <span className={`px-2 py-0.5 rounded-md border text-[11px] font-medium ${REPORT_STATUS_LABEL[report.status].className}`}>
+                          <span className={`px-2 py-0.5 rounded-md border text-xs font-medium ${REPORT_STATUS_LABEL[report.status].className}`}>
                             {REPORT_STATUS_LABEL[report.status].label}
                           </span>
                           {report.status === 'REJECTED' && report.reviewNote && (
-                            <span className="w-full text-[11px] text-rose-700">Reason: {report.reviewNote}</span>
+                            <span className="w-full text-xs text-rose-700">Reason: {report.reviewNote}</span>
                           )}
                         </li>
                       ))}

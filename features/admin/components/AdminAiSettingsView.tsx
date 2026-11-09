@@ -127,7 +127,7 @@ export function AdminAiSettingsView() {
   return (
     <div className="space-y-6 max-w-3xl">
       <div>
-        <h2 className="text-xl font-bold text-slate-900 tracking-tight">AI providers</h2>
+        <h2 className="text-lg font-semibold text-ink-950">AI providers</h2>
         <p className="text-sm text-slate-600 mt-1">
           Choose which AI service GrowthPrint uses for suggestions. AI is optional — everything else keeps working when it’s off.
         </p>
@@ -164,7 +164,7 @@ export function AdminAiSettingsView() {
               {providers.map(p => <option key={p.id} value={p.id}>{p.displayName}</option>)}
             </select>
             {providerChanged && settings.apiKeyConfigured && (
-              <p className="mt-1 text-[11px] text-amber-800">Saving a different provider removes the current API key.</p>
+              <p className="mt-1 text-xs text-amber-800">Saving a different provider removes the current API key.</p>
             )}
           </div>
           <div>
@@ -179,7 +179,7 @@ export function AdminAiSettingsView() {
             )}
             {settings.apiKeyConfigured && !providerChanged && selected?.supportsModelListing && (
               <button type="button" onClick={() => void loadModels()} disabled={busy !== null}
-                className="mt-1 text-[11px] font-semibold text-blue-700 hover:underline disabled:opacity-50">
+                className="mt-1 text-xs font-semibold text-blue-700 hover:underline disabled:opacity-50">
                 {busy === 'models' ? 'Loading models…' : 'Show models available to this key'}
               </button>
             )}
@@ -191,7 +191,7 @@ export function AdminAiSettingsView() {
             <label htmlFor={`${id}-base-url`} className="block text-xs font-medium text-slate-700 mb-1">Base URL</label>
             <input id={`${id}-base-url`} className={inputClass} value={form.baseUrl} placeholder="https://your-endpoint.example.com/v1"
               inputMode="url" autoComplete="off" onChange={e => setForm({ ...form, baseUrl: e.target.value })} />
-            <p className="mt-1 text-[11px] text-slate-500">Must use https:// (plain http is only allowed for localhost).</p>
+            <p className="mt-1 text-xs text-slate-500">Must use https:// (plain http is only allowed for localhost).</p>
           </div>
         )}
 
@@ -219,7 +219,7 @@ export function AdminAiSettingsView() {
           <span>
             Turn on AI suggestions
             {!canEnable && !form.enabled && (
-              <span className="block text-[11px] text-slate-500">Save a provider, model and API key first.</span>
+              <span className="block text-xs text-slate-500">Save a provider, model and API key first.</span>
             )}
           </span>
         </label>

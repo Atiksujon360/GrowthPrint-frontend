@@ -19,7 +19,7 @@ export function CircularProgress({
   progress, 
   size = 80, 
   strokeWidth = 8,
-  color = '#2563EB',
+  color = '#0c826c',
   showLabel = true,
   label
 }: { 
@@ -110,26 +110,15 @@ export function FloatingActionButton({
   };
 
   return (
-    <div className={`fixed ${positionClasses[position]} z-50`}>
+    // Phones and small tablets only: on wider screens the same action is in the sidebar. No endless pulse.
+    <div className={`fixed ${positionClasses[position]} z-50 md:hidden`}>
       <motion.button
         onClick={onClick}
+        aria-label={label}
         className={`${colorClasses[color]} w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-white relative`}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
+        whileTap={{ scale: 0.94 }}
       >
-        <motion.div
-          className="absolute inset-0 rounded-full bg-current opacity-75"
-          animate={{
-            scale: [1, 1.4, 1.4],
-            opacity: [0.5, 0, 0]
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: 'easeOut'
-          }}
-        />
-        <Icon className="w-6 h-6 relative z-10" />
+        <Icon className="w-6 h-6 relative z-10" aria-hidden="true" />
       </motion.button>
       {label && (
         <motion.div
@@ -230,8 +219,8 @@ export function SuccessCelebration({
           transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
         >
           <motion.div
-            initial={{ scale: 0, rotate: -180 }}
-            animate={{ scale: 1, rotate: 0 }}
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
             transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
           >
             <CheckCircle2 className="w-10 h-10 text-emerald-600" />
@@ -361,7 +350,7 @@ export function AchievementBadge({
   return (
     <motion.div
       className={`relative ${unlocked ? '' : 'opacity-50 grayscale'} bg-linear-to-br ${colorClasses[color]} p-4 rounded-2xl text-white shadow-lg`}
-      whileHover={{ scale: 1.05, rotate: 2 }}
+      whileHover={{ scale: 1.05 }}
       transition={{ type: 'spring', stiffness: 300 }}
     >
       {unlocked && (

@@ -18,6 +18,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import type { Project } from '../../../types/agency.ts';
+import { humanizeCode } from '../../../lib/labels.ts';
 
 export function AdminProjectsView() {
   const dispatch = useAppDispatch();
@@ -64,7 +65,7 @@ export function AdminProjectsView() {
       sortable: true,
       cell: ({ row }) => (
         <div className="flex items-center gap-1.5">
-          <span className="font-mono font-bold text-slate-800 text-xs">
+          <span className="font-bold text-slate-800 text-xs">
             {row.reference}
           </span>
           <CopyButton value={row.reference} title="Copy project reference" />
@@ -79,7 +80,7 @@ export function AdminProjectsView() {
       cell: ({ row }) => (
         <div>
           <div className="font-bold text-slate-900">{row.name}</div>
-          <div className="text-[11px] text-slate-400">{row.serviceCategory}</div>
+          <div className="text-xs text-slate-400">{humanizeCode(row.serviceCategory)}</div>
         </div>
       )
     },
@@ -104,7 +105,7 @@ export function AdminProjectsView() {
           <div className="font-bold text-slate-900 tabular-nums text-xs">
             ${row.budgetSpent.toLocaleString()} / ${row.budgetTotal.toLocaleString()} USD
           </div>
-          <div className="text-[11px] text-slate-400">
+          <div className="text-xs text-slate-400">
             {Math.round((row.budgetSpent / row.budgetTotal) * 100)}% consumed
           </div>
         </div>
@@ -117,7 +118,7 @@ export function AdminProjectsView() {
       sortable: true,
       cell: ({ row }) => (
         <div className="min-w-[120px]">
-          <div className="flex justify-between text-[11px] text-slate-600 mb-1">
+          <div className="flex justify-between text-xs text-slate-600 mb-1">
             <span className="font-medium">Milestones</span>
             <span className="font-bold text-slate-800 tabular-nums">{row.progressPercent}%</span>
           </div>
@@ -136,7 +137,7 @@ export function AdminProjectsView() {
       accessorKey: 'targetCompletionDate',
       sortable: true,
       cell: ({ row }) => (
-        <span className="font-mono text-slate-500 text-[11px]">
+        <span className="text-slate-500 text-xs">
           {row.targetCompletionDate}
         </span>
       )
@@ -154,7 +155,7 @@ export function AdminProjectsView() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+          <h2 className="text-lg font-semibold text-ink-950">
             Client Projects & Delivery Sprints
           </h2>
           <p className="text-xs text-slate-500">
@@ -261,16 +262,16 @@ export function AdminProjectsView() {
       ) : (
         <div className="space-y-6">
           {projects.map((p) => (
-            <div key={p.id} className="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
+            <div key={p.id} className="bg-white rounded-2xl border border-slate-200/90 overflow-hidden">
               <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-50/50">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-bold text-slate-400">{p.reference}</span>
+                    <span className="text-xs font-bold text-slate-400">{p.reference}</span>
                     <StatusBadge status={p.status} />
                   </div>
                   <h3 className="text-lg font-bold text-slate-900">{p.name}</h3>
                   <div className="text-xs text-slate-500">
-                    Client: <strong className="text-slate-800">{p.clientName}</strong> · Service: <strong>{p.serviceCategory}</strong>
+                    Client: <strong className="text-slate-800">{p.clientName}</strong> · Service: <strong>{humanizeCode(p.serviceCategory)}</strong>
                   </div>
                 </div>
 
@@ -299,7 +300,7 @@ export function AdminProjectsView() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                   <div>
-                    <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                    <h4 className="text-xs font-bold text-slate-700 mb-2">
                       Milestones ({p.milestones.length})
                     </h4>
                     <div className="space-y-2">
@@ -311,14 +312,14 @@ export function AdminProjectsView() {
                               {m.title}
                             </span>
                           </div>
-                          <span className="text-[11px] font-mono text-slate-400">{m.dueDate}</span>
+                          <span className="text-xs text-slate-400">{m.dueDate}</span>
                         </div>
                       ))}
                     </div>
                   </div>
 
                   <div>
-                    <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                    <h4 className="text-xs font-bold text-slate-700 mb-2">
                       Deliverables & Scope
                     </h4>
                     <ul className="space-y-1.5 text-xs text-slate-600">

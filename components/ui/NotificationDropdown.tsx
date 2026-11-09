@@ -87,7 +87,7 @@ export function NotificationDropdown({ onNavigateTab }: NotificationDropdownProp
       >
         <Bell className="w-4 h-4" />
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-pulse shadow-xs">
+          <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-600 text-white text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
@@ -101,7 +101,7 @@ export function NotificationDropdown({ onNavigateTab }: NotificationDropdownProp
             <div className="flex items-center gap-2">
               <h3 className="text-sm font-bold text-slate-900">Notifications</h3>
               {unreadCount > 0 && (
-                <span className="text-[11px] font-bold px-1.5 py-0.2 bg-blue-100 text-blue-800 rounded-full">
+                <span className="text-xs font-bold px-1.5 py-0.2 bg-blue-100 text-blue-800 rounded-full">
                   {unreadCount} new
                 </span>
               )}
@@ -175,7 +175,7 @@ export function NotificationDropdown({ onNavigateTab }: NotificationDropdownProp
                       <h4 className={`text-xs ${!notif.isRead ? 'font-bold text-slate-900' : 'font-medium text-slate-700'}`}>
                         {notif.title}
                       </h4>
-                      <span className="text-[10px] text-slate-400 whitespace-nowrap">
+                      <span className="text-xs text-slate-400 whitespace-nowrap">
                         {formatRelativeTime(notif.timestamp)}
                       </span>
                     </div>
@@ -184,7 +184,7 @@ export function NotificationDropdown({ onNavigateTab }: NotificationDropdownProp
                       {notif.message}
                     </p>
 
-                    <div className="mt-2 flex items-center justify-between text-[11px]">
+                    <div className="mt-2 flex items-center justify-between text-xs">
                       {notif.targetTab ? (
                         <span className="text-blue-600 font-semibold flex items-center gap-1 group-hover:underline">
                           <span>View {notif.targetTab.toLowerCase()}</span>

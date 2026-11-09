@@ -53,7 +53,7 @@ export function PortalProjectsView() {
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+          <h2 className="text-lg font-semibold text-ink-950">
             Active Projects & Technical Milestones
           </h2>
           <p className="text-xs text-slate-500">
@@ -106,12 +106,12 @@ export function PortalProjectsView() {
       {!isLoadingProjects && !projectsError && projects.length > 0 && (
         <div className="space-y-8">
           {projects.map((project) => (
-          <div key={project.id} className="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
+          <div key={project.id} className="bg-white rounded-2xl border border-slate-200/90 overflow-hidden">
             {/* Project Header */}
             <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-50/50">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-xs font-bold text-slate-400">{project.reference}</span>
+                  <span className="text-xs font-bold text-slate-400">{project.reference}</span>
                   <StatusBadge status={project.status} />
                 </div>
                 <h3 className="text-lg font-bold text-slate-900">{project.name}</h3>
@@ -143,7 +143,7 @@ export function PortalProjectsView() {
             <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Milestones */}
               <div>
-                <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+                <h4 className="text-xs font-semibold text-slate-500 mb-4 flex items-center gap-2">
                   <Clock className="w-3.5 h-3.5 text-blue-600" />
                   <span>Sprint Milestones</span>
                 </h4>
@@ -166,7 +166,7 @@ export function PortalProjectsView() {
                         }`} />
                         <span>{m.title}</span>
                       </div>
-                      <span className="text-[11px] font-mono text-slate-400">{m.dueDate}</span>
+                      <span className="text-xs text-slate-400">{m.dueDate}</span>
                     </div>
                   ))}
                 </div>
@@ -174,7 +174,7 @@ export function PortalProjectsView() {
 
               {/* Deliverables */}
               <div>
-                <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+                <h4 className="text-xs font-semibold text-slate-500 mb-4 flex items-center gap-2">
                   <FileText className="w-3.5 h-3.5 text-blue-600" />
                   <span>Scope Deliverables</span>
                 </h4>
@@ -192,17 +192,17 @@ export function PortalProjectsView() {
 
             {/* Client Visible Tasks for this project */}
             <div className="p-6 bg-slate-50/50 border-t border-slate-100">
-              <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
+              <h4 className="text-xs font-semibold text-slate-500 mb-3">
                 Client-Visible Tasks ({tasks.filter(t => t.projectId === project.id).length})
               </h4>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {tasks.filter(t => t.projectId === project.id).map(t => (
-                  <div key={t.id} className="p-3 bg-white rounded-xl border border-slate-200 shadow-xs flex items-start justify-between gap-2">
+                  <div key={t.id} className="p-3 bg-white rounded-xl border border-slate-200 flex items-start justify-between gap-2">
                     <div className="space-y-1">
                       <div className="text-xs font-bold text-slate-900">{t.title}</div>
-                      <p className="text-[11px] text-slate-500">{t.description}</p>
-                      <div className="text-[10px] text-slate-400">Assigned: {t.assignedTo} · Due {t.dueDate}</div>
+                      <p className="text-xs text-slate-500">{t.description}</p>
+                      <div className="text-xs text-slate-400">Assigned: {t.assignedTo} · Due {t.dueDate}</div>
                     </div>
                     <PriorityBadge priority={t.priority} />
                   </div>

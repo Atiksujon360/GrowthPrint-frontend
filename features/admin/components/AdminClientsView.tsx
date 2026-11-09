@@ -18,6 +18,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import type { Client } from '../../../types/agency.ts';
+import { humanizeCode } from '../../../lib/labels.ts';
 
 export function AdminClientsView() {
   const dispatch = useAppDispatch();
@@ -50,7 +51,7 @@ export function AdminClientsView() {
       cell: ({ row }) => (
         <div>
           <div className="font-bold text-slate-900">{row.name}</div>
-          <div className="text-[11px] text-slate-400">{row.legalName}</div>
+          <div className="text-xs text-slate-400">{row.legalName}</div>
         </div>
       )
     },
@@ -67,7 +68,7 @@ export function AdminClientsView() {
             <CopyButton value={row.contactEmail} title="Copy client email" />
           </div>
           {row.phone && (
-            <div className="flex items-center gap-1.5 text-slate-400 text-[11px]">
+            <div className="flex items-center gap-1.5 text-slate-400 text-xs">
               <Phone className="w-3 h-3" />
               <span>{row.phone}</span>
             </div>
@@ -85,7 +86,7 @@ export function AdminClientsView() {
           href={row.website} 
           target="_blank" 
           rel="noreferrer" 
-          className="text-blue-600 hover:text-blue-700 flex items-center gap-1 font-mono text-[11px]"
+          className="text-blue-600 hover:text-blue-700 flex items-center gap-1 text-xs"
         >
           <span>{row.website.replace('https://', '')}</span>
           <ExternalLink className="w-3 h-3" />
@@ -100,14 +101,14 @@ export function AdminClientsView() {
       cell: ({ row }) => (
         <div>
           <div className="font-semibold text-slate-800 text-xs">
-            {row.retainerTier || 'None'}
+            {humanizeCode(row.retainerTier) || 'None'}
           </div>
           {row.monthlyRetainerHours ? (
-            <div className="text-[11px] text-slate-500 tabular-nums">
+            <div className="text-xs text-slate-500 tabular-nums">
               {row.consumedHoursCurrentMonth} / {row.monthlyRetainerHours} hrs used
             </div>
           ) : (
-            <div className="text-[11px] text-slate-400">Ad-hoc billing</div>
+            <div className="text-xs text-slate-400">Ad-hoc billing</div>
           )}
         </div>
       )
@@ -118,7 +119,7 @@ export function AdminClientsView() {
       accessorKey: 'contractStartDate',
       sortable: true,
       cell: ({ row }) => (
-        <span className="font-mono text-slate-500 text-[11px]">
+        <span className="text-slate-500 text-xs">
           {row.contractStartDate}
         </span>
       )
@@ -137,7 +138,7 @@ export function AdminClientsView() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+            <h2 className="text-lg font-semibold text-ink-950">
               Client Partnerships & Retainers
             </h2>
             <button
@@ -179,7 +180,7 @@ export function AdminClientsView() {
 
       {/* Loading State */}
       {isLoadingClients && (
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-8 flex items-center justify-center">
+        <div className="bg-white rounded-2xl border border-slate-200/90 p-8 flex items-center justify-center">
           <div className="flex items-center gap-3 text-slate-500">
             <RefreshCw className="w-5 h-5 animate-spin" />
             <span className="text-sm">Loading clients...</span>
@@ -206,7 +207,7 @@ export function AdminClientsView() {
 
       {/* Empty State */}
       {!isLoadingClients && !clientsError && clients.length === 0 && (
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-12 text-center">
+        <div className="bg-white rounded-2xl border border-slate-200/90 p-12 text-center">
           <Users className="w-12 h-12 text-slate-300 mx-auto mb-4" />
           <h3 className="text-base font-semibold text-slate-900 mb-2">No clients yet</h3>
           <p className="text-sm text-slate-500">Client accounts will appear here once they are added to the system.</p>
@@ -243,7 +244,7 @@ export function AdminClientsView() {
               exportFilename="growthprint-clients"
             />
           ) : (
-            <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
+            <div className="bg-white rounded-2xl border border-slate-200/90 overflow-hidden">
               <div className="divide-y divide-slate-100">
                 {clients.map((c) => (
                   <div key={c.id} className="p-6 hover:bg-slate-50/50 transition-colors">
@@ -282,9 +283,9 @@ export function AdminClientsView() {
                       {/* Retainer & Contract status */}
                       <div className="flex items-center gap-6">
                         <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200/80 text-xs space-y-1 min-w-[200px]">
-                          <div className="text-slate-400 font-medium text-[11px] uppercase tracking-wider flex items-center justify-between">
+                          <div className="text-slate-400 font-medium text-xs flex items-center justify-between">
                             <span>Monthly Retainer</span>
-                            <span className="font-semibold text-blue-700">{c.retainerTier || 'None'}</span>
+                            <span className="font-semibold text-blue-700">{humanizeCode(c.retainerTier) || 'None'}</span>
                           </div>
                           {c.monthlyRetainerHours ? (
                             <div>

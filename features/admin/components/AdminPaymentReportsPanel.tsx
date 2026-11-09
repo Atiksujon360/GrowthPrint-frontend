@@ -126,14 +126,14 @@ function PendingReportItem({ report, invoice, onReviewed }: { report: PaymentRep
           {report.note && <div className="text-slate-600">Client note: {report.note}</div>}
         </div>
         {amountMismatch && invoice && (
-          <span className="px-2 py-0.5 rounded-md border text-[11px] font-medium bg-amber-50 text-amber-800 border-amber-200">
+          <span className="px-2 py-0.5 rounded-md border text-xs font-medium bg-amber-50 text-amber-800 border-amber-200">
             Invoice total is {formatMoney(invoice.totalAmount, invoice.currency)}
           </span>
         )}
       </div>
 
       <div>
-        <label htmlFor={`${id}-note`} className="block text-[11px] font-medium text-slate-700 mb-1">
+        <label htmlFor={`${id}-note`} className="block text-xs font-medium text-slate-700 mb-1">
           Review note (required if you reject)
         </label>
         <textarea

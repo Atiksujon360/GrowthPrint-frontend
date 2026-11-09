@@ -3,14 +3,14 @@ import { test, expect } from '@playwright/test';
 test.describe('Client Portal Login', () => {
   test('should authenticate client user and redirect to portal dashboard', async ({ page }) => {
     // Navigate to portal login page
-    await page.goto('/portal/login');
+    await page.goto('/client-hub/login');
 
     // Verify login page elements
-    await expect(page.getByRole('heading', { name: /everything your team needs/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /welcome back/i })).toBeVisible();
 
     // Fill in credentials (using seed data accounts)
     await page.getByLabel(/email/i).fill('clienta@growthprint.dev');
-    await page.getByLabel(/password/i).fill('ClientA123!');
+    await page.getByLabel(/^Password/).fill('ClientA123!');
 
     // Listen for API response
     const apiResponsePromise = page.waitForResponse(
@@ -18,14 +18,14 @@ test.describe('Client Portal Login', () => {
     );
 
     // Submit login form
-    await page.getByRole('button', { name: /continue to workspace/i }).click();
+    await page.getByRole('button', { name: /^sign in$/i }).click();
 
     // Verify API response
     const response = await apiResponsePromise;
     expect(response.status()).toBe(200);
 
     // Verify redirect to portal dashboard
-    await expect(page).toHaveURL('/portal');
+    await expect(page).toHaveURL('/client-hub');
 
     // Verify dashboard is visible
     await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible();

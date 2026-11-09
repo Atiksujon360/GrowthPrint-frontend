@@ -1,9 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { isMockModeEnv } from '../../../lib/api/client.ts';
 import { useAppDispatch } from '../../../store/hooks.ts';
 import { useRouter } from 'next/navigation';
 import { setActiveView, switchRole } from '../../../store/index.ts';
 import { scrollToSection } from '../../../lib/scroll.ts';
-import { ArrowRight, Menu, X, ShieldCheck } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
+import { GrowthPrintMark } from './GrowthPrintMark.tsx';
+
+/** Section anchors on the home page. Ids match the sections (the old "Case Studies"/"Why" links pointed nowhere). */
+export const PUBLIC_SECTIONS = [
+  { id: 'services', label: 'Services' },
+  { id: 'work', label: 'Work' },
+  { id: 'process', label: 'Process' },
+  { id: 'why-growthprint', label: 'Why GrowthPrint' },
+  { id: 'faq', label: 'FAQ' },
+] as const;
 
 export function PublicHeader({ onOpenQuote }: { onOpenQuote: () => void }) {
   const dispatch = useAppDispatch();
@@ -12,18 +23,17 @@ export function PublicHeader({ onOpenQuote }: { onOpenQuote: () => void }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
-  const isMockMode = process.env.NEXT_PUBLIC_USE_MOCK_API !== 'false';
+  // Same opt-in rule as the API client: demo shortcuts only when NEXT_PUBLIC_USE_MOCK_API === 'true'.
+  const isMockMode = isMockModeEnv();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-
-    window.addEventListener('scroll', handleScroll);
+    const handleScroll = () => setIsScrolled(window.scrollY > 8);
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Handle escape key to close menu
+  // Escape closes the mobile menu and returns focus to its button.
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && mobileMenuOpen) {
@@ -31,44 +41,25 @@ export function PublicHeader({ onOpenQuote }: { onOpenQuote: () => void }) {
         menuButtonRef.current?.focus();
       }
     };
-
-    if (mobileMenuOpen) {
-      document.addEventListener('keydown', handleEscape);
-    }
-
+    if (mobileMenuOpen) document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
   }, [mobileMenuOpen]);
 
-  // Focus trap for mobile menu
+  // Focus trap for the mobile menu.
   useEffect(() => {
-    if (mobileMenuOpen && menuRef.current) {
-      const focusableElements = menuRef.current.querySelectorAll(
-        'a, button, [tabindex]:not([tabindex="-1"])'
-      );
-      const firstElement = focusableElements[0] as HTMLElement;
-      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
-
-      firstElement?.focus();
-
-      const handleTab = (e: KeyboardEvent) => {
-        if (e.key === 'Tab') {
-          if (e.shiftKey) {
-            if (document.activeElement === firstElement) {
-              e.preventDefault();
-              lastElement?.focus();
-            }
-          } else {
-            if (document.activeElement === lastElement) {
-              e.preventDefault();
-              firstElement?.focus();
-            }
-          }
-        }
-      };
-
-      menuRef.current.addEventListener('keydown', handleTab);
-      return () => menuRef.current?.removeEventListener('keydown', handleTab);
-    }
+    const menu = menuRef.current;
+    if (!mobileMenuOpen || !menu) return;
+    const focusable = menu.querySelectorAll<HTMLElement>('a, button, [tabindex]:not([tabindex="-1"])');
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    first?.focus();
+    const handleTab = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); }
+    };
+    menu.addEventListener('keydown', handleTab);
+    return () => menu.removeEventListener('keydown', handleTab);
   }, [mobileMenuOpen]);
 
   const handleSectionClick = (event: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
@@ -77,134 +68,108 @@ export function PublicHeader({ onOpenQuote }: { onOpenQuote: () => void }) {
     scrollToSection(sectionId);
   };
 
+  const openClientPortal = () => {
+    if (isMockMode) {
+      dispatch(switchRole('CLIENT'));
+      dispatch(setActiveView('PORTAL'));
+    } else {
+      router.push('/client-hub/login');
+    }
+  };
+
   return (
     <header
-      className={`sticky top-0 z-40 transition-all duration-300 ${
-        isScrolled
-          ? 'bg-white/95 backdrop-blur-xl border-b border-slate-200/80 shadow-sm'
-          : 'bg-white/80 backdrop-blur-md border-b border-slate-200/50'
+      className={`sticky top-0 z-40 border-b bg-white/90 backdrop-blur-md transition-[border-color] duration-200 ${
+        isScrolled ? 'border-ink-200' : 'border-transparent'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-8">
-        {/* Zone 1: Brand Wordmark (Single text element) */}
+      <div className="gp-frame flex h-16 items-center justify-between gap-6 [--gp-guide:transparent]">
         <a
           href="/"
           onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-          className="text-xl font-bold tracking-tight text-slate-900 whitespace-nowrap shrink-0 flex items-center gap-2 hover:scale-105 transition-all"
+          className="flex shrink-0 items-center gap-2.5 rounded-md text-ink-950"
+          aria-label="GrowthPrint, back to top"
         >
-          <span className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white font-black text-sm">
-            GP
-          </span>
-          <span>GrowthPrint</span>
+          <GrowthPrintMark className="h-7 w-7" />
+          <span className="gp-display text-[1.15rem] font-semibold">GrowthPrint</span>
         </a>
 
-        {/* Zone 2: Navigation Links (Single-line clean text) */}
-        <nav className="hidden md:flex items-center gap-7 text-base font-medium text-slate-600">
-          {['Services', 'Process', 'Case Studies', 'Why GrowthPrint', 'FAQ'].map((item) => (
+        <nav aria-label="Main" className="hidden items-center gap-1 lg:flex">
+          {PUBLIC_SECTIONS.map(s => (
             <a
-              key={item}
-              href={`#${item.toLowerCase().replace(' ', '-')}`}
-              onClick={(event) => handleSectionClick(event, item.toLowerCase().replace(' ', '-'))}
-              className="hover:text-slate-900 hover:-translate-y-0.5 transition-all whitespace-nowrap shrink-0"
+              key={s.id}
+              href={`#${s.id}`}
+              onClick={(event) => handleSectionClick(event, s.id)}
+              className="rounded-md px-3 py-2 text-[0.94rem] font-medium text-ink-600 transition-colors hover:bg-ink-50 hover:text-ink-950"
             >
-              {item}
+              {s.label}
             </a>
           ))}
-          <button
-            onClick={() => {
-              if (isMockMode) {
-                dispatch(switchRole('CLIENT'));
-                dispatch(setActiveView('PORTAL'));
-              } else {
-                router.push('/portal/login');
-              }
-            }}
-            className="hover:text-blue-600 hover:translate-x-0.5 transition-all whitespace-nowrap shrink-0 flex items-center gap-1 font-medium"
-          >
-            <span>Client Portal</span>
-          </button>
         </nav>
 
-        {/* Zone 3: Single Primary Action */}
-        <div className="hidden md:flex items-center gap-3 shrink-0">
+        <div className="hidden items-center gap-2 lg:flex">
+          <button
+            onClick={openClientPortal}
+            className="rounded-md px-3 py-2 text-[0.94rem] font-medium text-ink-700 transition-colors hover:bg-ink-50 hover:text-ink-950"
+          >
+            Client Portal
+          </button>
           <button
             onClick={onOpenQuote}
-            className="px-4 py-2.5 text-base font-semibold text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 rounded-lg shadow-xs hover:shadow-md hover:scale-105 active:scale-95 transition-all whitespace-nowrap shrink-0 flex items-center gap-2"
+            className="inline-flex min-h-10 items-center rounded-full bg-navy-950 px-4 text-[0.94rem] font-semibold text-white transition-colors hover:bg-brand-700"
           >
-            <span>Tell us what you need</span>
-            <ArrowRight className="w-4 h-4" />
+            Tell us what you need
           </button>
         </div>
 
-        {/* Mobile menu trigger */}
-        <div className="md:hidden flex items-center gap-2">
-          <button
-            ref={menuButtonRef}
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-3 text-slate-600 hover:text-slate-900 min-w-[44px] min-h-[44px] active:scale-95 transition-transform"
-            aria-label="Toggle Navigation Menu"
-            aria-expanded={mobileMenuOpen}
-            aria-controls="mobile-menu"
-          >
-            {mobileMenuOpen ? (
-              <div key="close">
-                  <X className="w-6 h-6" />
-                </div>
-              ) : (
-                <div key="menu">
-                  <Menu className="w-6 h-6" />
-                </div>
-              )}
-          </button>
-        </div>
+        <button
+          ref={menuButtonRef}
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="-mr-2 flex min-h-11 min-w-11 items-center justify-center rounded-md text-ink-700 hover:text-ink-950 lg:hidden"
+          aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-expanded={mobileMenuOpen}
+          aria-controls="mobile-menu"
+        >
+          {mobileMenuOpen ? <X className="h-6 w-6" aria-hidden="true" /> : <Menu className="h-6 w-6" aria-hidden="true" />}
+        </button>
       </div>
 
-      {/* Mobile drawer */}
       {mobileMenuOpen && (
         <div
           ref={menuRef}
           id="mobile-menu"
-          className="md:hidden border-b border-slate-200 bg-white/95 backdrop-blur-xl px-4 py-4 space-y-3"
+          className="border-t border-ink-100 bg-white lg:hidden"
           role="navigation"
           aria-label="Mobile navigation"
         >
-          {['Services', 'Process', 'Case Studies', 'FAQ', 'Why GrowthPrint'].map((item) => (
+          <div className="gp-frame space-y-1 py-4 [--gp-guide:transparent]">
+            {PUBLIC_SECTIONS.map(s => (
               <a
-                key={item}
-                href={`#${item.toLowerCase().replace(' ', '-')}`}
-                onClick={(event) => handleSectionClick(event, item.toLowerCase().replace(' ', '-'))}
-                className="block py-3 px-2 text-base font-medium text-slate-700 hover:text-blue-600 min-h-[44px] flex items-center hover:translate-x-1 transition-transform"
+                key={s.id}
+                href={`#${s.id}`}
+                onClick={(event) => handleSectionClick(event, s.id)}
+                className="flex min-h-12 items-center border-b border-ink-100 text-lg font-medium text-ink-900"
               >
-                {item}
+                {s.label}
               </a>
             ))}
             <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                if (isMockMode) {
-                  dispatch(switchRole('CLIENT'));
-                  dispatch(setActiveView('PORTAL'));
-                } else {
-                  router.push('/portal/login');
-                }
-              }}
-              className="w-full text-left py-3 px-2 text-base font-medium text-blue-600 min-h-[44px] flex items-center hover:translate-x-1 transition-transform"
+              onClick={() => { setMobileMenuOpen(false); openClientPortal(); }}
+              className="flex min-h-12 w-full items-center text-left text-lg font-medium text-brand-700"
             >
               Client Portal Sign In
             </button>
-            <div className="pt-2">
+            <div className="pt-3">
               <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  onOpenQuote();
-                }}
-                className="w-full py-3.5 px-4 text-center text-sm font-semibold text-white bg-blue-600 rounded-lg shadow-xs min-h-[44px] hover:scale-102 active:scale-95 transition-transform"
+                onClick={() => { setMobileMenuOpen(false); onOpenQuote(); }}
+                className="min-h-12 w-full rounded-full bg-navy-950 px-4 text-base font-semibold text-white"
               >
                 Tell us what you need
               </button>
             </div>
           </div>
-        )}
-      </header>
+        </div>
+      )}
+    </header>
   );
 }

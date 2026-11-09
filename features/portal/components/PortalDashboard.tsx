@@ -26,6 +26,7 @@ import {
   Zap
 } from 'lucide-react';
 import type { PortalTab } from './PortalLayout.tsx';
+import { humanizeCode } from '../../../lib/labels.ts';
 
 interface PortalDashboardProps {
   onNavigateTab: (tab: PortalTab) => void;
@@ -101,23 +102,21 @@ export function PortalDashboard({ onNavigateTab, onOpenNewRequest }: PortalDashb
       </AnimatePresence>
       {/* Welcome Banner */}
       <motion.div
-        className="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6 glass-card"
-        initial={{ opacity: 0, y: 20 }}
+        className="bg-white rounded-2xl p-6 border border-slate-200/90 flex flex-col md:flex-row md:items-center justify-between gap-6 glass-card"
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
         <div>
           <motion.div
-            className="text-xs font-semibold text-blue-600 uppercase tracking-wider"
-            initial={{ opacity: 0 }}
+            className="text-xs font-semibold text-blue-600"
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
             Client Workspace
           </motion.div>
-          <h1 className="mt-1 text-2xl font-bold text-slate-900 tracking-tight">
+          <h2 className="mt-1 gp-display text-[1.75rem] font-semibold text-ink-950">
             Welcome back, {currentUser.name}
-          </h1>
+          </h2>
           <p className="mt-1 text-xs sm:text-sm text-slate-500">
             {currentUser.clientName} · Retainer active (8.5 of 15.0 hours utilized this billing cycle)
           </p>
@@ -125,10 +124,9 @@ export function PortalDashboard({ onNavigateTab, onOpenNewRequest }: PortalDashb
 
         <motion.button
           onClick={onOpenNewRequest}
-          className="px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-xs transition-colors flex items-center gap-2"
+          className="px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors flex items-center gap-2"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
         >
@@ -141,7 +139,6 @@ export function PortalDashboard({ onNavigateTab, onOpenNewRequest }: PortalDashb
       {estimateApprovals.length > 0 && (
         <motion.div
           className="bg-amber-50/70 border border-amber-200 rounded-2xl p-6 glass-card"
-          initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
         >
@@ -149,7 +146,7 @@ export function PortalDashboard({ onNavigateTab, onOpenNewRequest }: PortalDashb
             <div className="flex items-start gap-3">
               <motion.div
                 className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0"
-                whileHover={{ scale: 1.1, rotate: 5 }}
+                whileHover={{ scale: 1.03 }}
                 transition={{ type: 'spring', stiffness: 300 }}
               >
                 <AlertCircle className="w-5 h-5" />
@@ -169,15 +166,14 @@ export function PortalDashboard({ onNavigateTab, onOpenNewRequest }: PortalDashb
             {estimateApprovals.map((req, idx) => (
               <motion.div
                 key={req.id}
-                className="bg-white rounded-xl p-4 border border-amber-200/80 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-                initial={{ opacity: 0, y: 10 }}
+                className="bg-white rounded-xl p-4 border border-amber-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 + idx * 0.1 }}
                 whileHover={{ y: -2 }}
               >
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs text-slate-400 font-semibold">{req.reference}</span>
+                    <span className="text-xs text-slate-400 font-semibold">{req.reference}</span>
                     <span className="text-xs font-bold text-slate-900">{req.title}</span>
                   </div>
                   <p className="text-xs text-slate-500 max-w-xl">
@@ -192,7 +188,7 @@ export function PortalDashboard({ onNavigateTab, onOpenNewRequest }: PortalDashb
                   <motion.button
                     onClick={() => handleApprove(req)}
                     disabled={isApproving === req.id}
-                    className={`px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs flex items-center gap-1.5 transition-colors ${isApproving === req.id ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    className={`px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors ${isApproving === req.id ? 'opacity-50 cursor-not-allowed' : ''}`}
                     whileHover={isApproving !== req.id ? { scale: 1.05 } : {}}
                     whileTap={isApproving !== req.id ? { scale: 0.95 } : {}}
                   >
@@ -209,7 +205,6 @@ export function PortalDashboard({ onNavigateTab, onOpenNewRequest }: PortalDashb
       {/* KPI Overview Cards */}
       <motion.div
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
-        initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.5 }}
       >
@@ -243,8 +238,7 @@ export function PortalDashboard({ onNavigateTab, onOpenNewRequest }: PortalDashb
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Active Projects (7 cols) */}
         <motion.div
-          className="lg:col-span-7 bg-white rounded-2xl p-6 border border-slate-200/90 shadow-xs glass-card"
-          initial={{ opacity: 0, x: -30 }}
+          className="lg:col-span-7 bg-white rounded-2xl p-6 border border-slate-200/90 glass-card"
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
         >
@@ -268,14 +262,13 @@ export function PortalDashboard({ onNavigateTab, onOpenNewRequest }: PortalDashb
               <motion.div
                 key={p.id}
                 className="p-4 rounded-xl border border-slate-200/80 bg-slate-50/40 space-y-3"
-                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 + idx * 0.1 }}
                 whileHover={{ y: -2 }}
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <span className="font-mono text-[11px] text-slate-400 font-medium">{p.reference}</span>
+                    <span className="text-xs text-slate-400 font-medium">{p.reference}</span>
                     <h4 className="text-sm font-bold text-slate-900">{p.name}</h4>
                   </div>
                   <StatusBadge status={p.status} />
@@ -290,7 +283,6 @@ export function PortalDashboard({ onNavigateTab, onOpenNewRequest }: PortalDashb
                   <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
                     <motion.div 
                       className="h-full bg-blue-600 rounded-full"
-                      initial={{ width: 0 }}
                       animate={{ width: `${p.progressPercent}%` }}
                       transition={{ duration: 1, delay: 0.8 + idx * 0.1, ease: 'easeOut' }}
                     />
@@ -309,12 +301,11 @@ export function PortalDashboard({ onNavigateTab, onOpenNewRequest }: PortalDashb
         {/* Action Items & Support Tickets (5 cols) */}
         <motion.div
           className="lg:col-span-5 space-y-6"
-          initial={{ opacity: 0, x: 30 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6, delay: 0.7 }}
         >
           {/* Action Items */}
-          <div className="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-xs glass-card">
+          <div className="bg-white rounded-2xl p-6 border border-slate-200/90 glass-card">
             <h3 className="text-sm font-bold text-slate-900 pb-3 border-b border-slate-100">
               Client Action Items ({tasksRequiringAction.length})
             </h3>
@@ -325,15 +316,14 @@ export function PortalDashboard({ onNavigateTab, onOpenNewRequest }: PortalDashb
                   <motion.div
                     key={t.id}
                     className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/60 flex items-start justify-between gap-3"
-                    initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.8 + idx * 0.1 }}
                     whileHover={{ y: -2, scale: 1.01 }}
                   >
                     <div className="space-y-1">
                       <div className="text-xs font-bold text-slate-900">{t.title}</div>
-                      <p className="text-[11px] text-slate-500">{t.description}</p>
-                      <div className="text-[10px] text-amber-700 font-medium">Due: {t.dueDate}</div>
+                      <p className="text-xs text-slate-500">{t.description}</p>
+                      <div className="text-xs text-amber-700 font-medium">Due: {t.dueDate}</div>
                     </div>
                     <motion.button
                       onClick={() => dispatch(toggleTaskStatus({ taskId: t.id }))}
@@ -348,7 +338,6 @@ export function PortalDashboard({ onNavigateTab, onOpenNewRequest }: PortalDashb
               ) : (
                 <motion.div
                   className="py-4 text-center text-xs text-slate-400"
-                  initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.8 }}
                 >
@@ -359,7 +348,7 @@ export function PortalDashboard({ onNavigateTab, onOpenNewRequest }: PortalDashb
           </div>
 
           {/* Recent Support Tickets */}
-          <div className="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-xs glass-card">
+          <div className="bg-white rounded-2xl p-6 border border-slate-200/90 glass-card">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <h3 className="text-sm font-bold text-slate-900">
                 Support Requests
@@ -380,14 +369,13 @@ export function PortalDashboard({ onNavigateTab, onOpenNewRequest }: PortalDashb
                 <motion.div
                   key={r.id}
                   className="p-3 rounded-lg border border-slate-100 bg-slate-50 flex items-center justify-between"
-                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.9 + idx * 0.05 }}
                   whileHover={{ y: -1 }}
                 >
                   <div className="space-y-0.5 truncate mr-2">
                     <div className="text-xs font-semibold text-slate-800 truncate">{r.title}</div>
-                    <div className="text-[11px] text-slate-400">{r.reference} · {r.category}</div>
+                    <div className="text-xs text-slate-400">{r.reference} · {humanizeCode(r.category)}</div>
                   </div>
                   <StatusBadge status={r.status} />
                 </motion.div>
