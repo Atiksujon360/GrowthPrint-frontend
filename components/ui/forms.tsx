@@ -45,7 +45,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     disabled, type = 'button', ...rest },
   ref,
 ) {
-  const sizes = { sm: 'min-h-9 px-3 text-xs', md: 'min-h-11 px-4 text-sm', lg: 'min-h-12 px-5 text-sm' };
+  const sizes = { sm: 'min-h-9 px-3 text-xs', md: 'min-h-10 px-4 text-sm', lg: 'min-h-11 px-5 text-sm' };
   return (
     <button
       ref={ref}
@@ -109,7 +109,7 @@ export function Field({ label, required, help, error, className, children }: Fie
 }
 
 export const inputClass = (invalid: boolean, extra?: string) => cx(
-  'block w-full rounded-xl border bg-white px-3.5 py-2.5 text-sm text-ink-900 shadow-xs transition',
+  'block w-full rounded-xl border bg-white px-3 py-2 text-sm text-ink-900 transition',
   'placeholder:text-ink-400 focus:outline-none focus:ring-4',
   'disabled:cursor-not-allowed disabled:bg-ink-50 disabled:text-ink-500',
   invalid ? 'border-red-400 focus:border-red-500 focus:ring-red-100' : 'border-ink-200 focus:border-brand-500 focus:ring-brand-100',

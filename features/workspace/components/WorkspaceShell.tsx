@@ -16,7 +16,7 @@ import type { Business } from '../model/types.ts';
 import { useBusinessQuery, useMyBusinessesQuery } from '../api/workspaceApi.ts';
 import { USING_MOCK_WORKSPACE_DATA, resetWorkspaceDemoData } from '../services/index.ts';
 import { workspaceApi } from '../api/workspaceApi.ts';
-import { GrowthPrintMark } from '../../public/components/GrowthPrintMark.tsx';
+import { AppShell } from '../../../components/shell/AppShell.tsx';
 
 const cx = (...c: Array<string | false | null | undefined>) => c.filter(Boolean).join(' ');
 
@@ -122,9 +122,6 @@ export function WorkspaceShell({ businessId, children }: { businessId: string; c
   const user = useAppSelector(s => s.auth.currentUser);
   const { data: business } = useBusinessQuery(businessId);
   const nav = useNav(businessId, business);
-  const [drawer, setDrawer] = useState(false);
-
-  useEffect(() => { setDrawer(false); }, [pathname]);
 
   const isActive = (href: string, exact?: boolean) => (exact ? pathname === href : pathname === href || pathname.startsWith(`${href}/`));
 
@@ -134,80 +131,29 @@ export function WorkspaceShell({ businessId, children }: { businessId: string; c
     router.replace(ROUTES.admin.login);
   };
 
-  const sidebar = (
-    <div className="flex h-full flex-col gap-5 p-4">
-      <Link href={ROUTES.workspace.home} className="flex h-8 items-center gap-2.5 px-1">
-        <GrowthPrintMark className="h-7 w-7" />
-        <span className="gp-display text-[1.05rem] font-semibold text-ink-950">GrowthPrint</span>
-      </Link>
-      <BusinessSwitcher current={business} />
-      <nav aria-label="Workspace" className="flex-1">
-        <ul className="space-y-0.5">
-          {nav.map(item => {
-            const active = isActive(item.href, item.exact);
-            const Icon = item.icon;
-            return (
-              <li key={item.href}>
-                <Link href={item.href} aria-current={active ? 'page' : undefined}
-                  className={cx('group flex min-h-10 items-center gap-3 rounded-lg px-3 text-[0.92rem] font-medium transition-colors',
-                    active ? 'bg-brand-50 text-brand-800' : 'text-ink-600 hover:bg-ink-50 hover:text-ink-950')}>
-                  <Icon className={cx('h-[18px] w-[18px]', active ? 'text-brand-600' : 'text-ink-400 group-hover:text-ink-700')} aria-hidden="true" />
-                  {item.label}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
-      <div className="space-y-1 border-t border-ink-200 pt-3">
-        <Link href={ROUTES.admin.home} className="flex min-h-10 items-center gap-3 rounded-lg px-3 text-[0.92rem] font-medium text-ink-600 hover:bg-ink-50 hover:text-ink-950">
-          <ArrowLeftRight className="h-4 w-4" aria-hidden="true" /> Back to studio
-        </Link>
-        <div className="flex items-center gap-3 px-3 py-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-navy-950 text-xs font-semibold text-white" aria-hidden="true">
-            {initialsOf(user.name, user.email)}
-          </span>
-          <span className="min-w-0 flex-1">
-            <span className="block truncate text-sm font-semibold text-ink-900">{user.name || user.email}</span>
-            <span className="block truncate text-xs text-ink-500">{user.email}</span>
-          </span>
-          <button type="button" onClick={() => void signOut()} aria-label="Sign out"
-            className="rounded-lg p-2 text-ink-500 hover:bg-ink-100 hover:text-ink-900">
-            <LogOut className="h-4 w-4" aria-hidden="true" />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+  const active = nav.find(item => isActive(item.href, item.exact));
 
   return (
-    <div className="min-h-screen bg-ink-50">
-      <MockDataBanner />
-      <div className="flex">
-        <aside className="sticky top-0 hidden h-screen w-64 shrink-0 border-r border-ink-200 bg-white lg:block">{sidebar}</aside>
-        {drawer && (
-          <div className="fixed inset-0 z-40 lg:hidden" role="dialog" aria-modal="true" aria-label="Navigation">
-            <div className="absolute inset-0 bg-navy-950/40" onClick={() => setDrawer(false)} aria-hidden="true" />
-            <aside className="relative h-full w-72 max-w-[85vw] bg-white shadow-xl">
-              <button type="button" onClick={() => setDrawer(false)} aria-label="Close navigation"
-                className="absolute right-3 top-4 rounded-lg p-2 text-ink-500 hover:bg-ink-100">
-                <X className="h-4 w-4" aria-hidden="true" />
-              </button>
-              {sidebar}
-            </aside>
-          </div>
-        )}
-        <div className="min-w-0 flex-1">
-          <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-ink-200 bg-white/95 px-4 py-3 backdrop-blur lg:hidden">
-            <button type="button" onClick={() => setDrawer(true)} aria-label="Open navigation" aria-expanded={drawer}
-              className="rounded-lg p-2 text-ink-700 hover:bg-ink-100">
-              <Menu className="h-5 w-5" aria-hidden="true" />
-            </button>
-            <span className="truncate text-sm font-semibold text-ink-900">{business?.name ?? 'Workspace'}</span>
-          </header>
-          <main className="mx-auto max-w-[90rem] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">{children}</main>
-        </div>
-      </div>
-    </div>
+    <AppShell
+      brand={{ title: 'GrowthPrint', href: ROUTES.workspace.home }}
+      navLabel="Workspace"
+      groups={[{ label: business?.name ?? 'Business', items: nav.map(item => ({
+        key: item.href, label: item.label, icon: item.icon, href: item.href, active: isActive(item.href, item.exact),
+      })) }]}
+      user={{ name: user.name || user.email, subtitle: user.email, initials: initialsOf(user.name, user.email) }}
+      userMenu={[
+        { label: 'All businesses', icon: ArrowLeftRight, href: ROUTES.workspace.home },
+        { label: 'Back to studio', icon: LayoutDashboard, href: ROUTES.admin.home },
+        { label: 'Sign out', icon: LogOut, onSelect: () => void signOut(), danger: true },
+      ]}
+      // Workspace pages render their own h1 (PageHeader), so the top bar title is not a heading.
+      titleAs="p"
+      title={active?.label ?? 'Workspace'}
+      subtitle={business ? `${business.name} · ${ROLE_LABEL[business.myRole]}` : undefined}
+      topbarContext={<div className="w-64"><BusinessSwitcher current={business} /></div>}
+      banner={<MockDataBanner />}
+    >
+      {children}
+    </AppShell>
   );
 }

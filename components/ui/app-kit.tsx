@@ -49,38 +49,47 @@ export type Delta = { value: number; label: string } | null;
 /**
  * KPI card: icon, label, large value, optional change versus a real previous period, context line, sparkline.
  */
-export function KpiCard({ label, value, icon: Icon, context, delta, spark, onClick, sparkLabel }: {
+export function KpiCard({ label, value, icon: Icon, context, delta, spark, onClick, sparkLabel, tone = 'primary' }: {
   label: string; value: ReactNode; icon?: React.ComponentType<{ className?: string }>;
   context?: ReactNode; delta?: Delta; spark?: number[]; onClick?: () => void; sparkLabel?: string;
+  /** Icon tint. Semantic only: 'danger' or 'warning' when the value itself needs attention. */
+  tone?: 'primary' | 'success' | 'warning' | 'danger';
 }) {
+  const iconTone = {
+    primary: 'bg-gp-primary-soft text-gp-primary',
+    success: 'bg-gp-success-soft text-gp-success',
+    warning: 'bg-gp-warning-soft text-gp-warning',
+    danger: 'bg-gp-danger-soft text-gp-danger',
+  }[tone];
   const body = (
     <>
-      <div className="flex items-center gap-2.5">
+      {/* Reference layout: label top-left, soft icon circle top-right, value, then change / context. */}
+      <div className="flex items-start justify-between gap-3">
+        <span className="pt-1 text-sm font-medium text-ink-600">{label}</span>
         {Icon && (
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
-            <Icon className="h-4 w-4" aria-hidden="true" />
+          <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${iconTone}`}>
+            <Icon className="h-[18px] w-[18px]" aria-hidden="true" />
           </span>
         )}
-        <span className="text-sm font-medium text-ink-600">{label}</span>
       </div>
-      <div className="mt-4 flex items-end justify-between gap-3">
+      <div className="mt-1 flex items-end justify-between gap-3">
         <div className="min-w-0">
-          <p className="gp-display text-[1.9rem] font-semibold leading-none text-ink-950">{value}</p>
-          <p className="mt-2 flex flex-wrap items-center gap-x-2 text-sm text-ink-500">
+          <p className="text-[1.65rem] font-semibold leading-tight tabular-nums text-ink-950">{value}</p>
+          <p className="mt-2 flex flex-wrap items-center gap-x-1.5 text-xs text-ink-500">
             {delta && (
-              <span className={`font-semibold tabular-nums ${delta.value >= 0 ? 'text-emerald-700' : 'text-rose-700'}`}>
-                {delta.value >= 0 ? '+' : ''}{delta.value}%
-                <span className="sr-only"> {delta.label}</span>
+              <span className={`font-semibold tabular-nums ${delta.value >= 0 ? 'text-gp-success' : 'text-gp-danger'}`}>
+                {delta.value >= 0 ? '↑' : '↓'} {Math.abs(delta.value)}%
+                <span className="sr-only"> {delta.value >= 0 ? 'up' : 'down'} {delta.label}</span>
               </span>
             )}
             {context}
           </p>
         </div>
-        {spark && <Sparkline values={spark} label={sparkLabel} />}
+        {spark && <Sparkline values={spark} label={sparkLabel} className="h-9 w-24" />}
       </div>
     </>
   );
-  const cls = 'block w-full rounded-2xl border border-ink-200 bg-white p-5 text-left';
+  const cls = 'block w-full rounded-gp-card border border-gp-border bg-gp-surface p-5 text-left shadow-gp-card';
   return onClick
     ? <button type="button" onClick={onClick} className={`${cls} transition-colors hover:border-ink-300`}>{body}</button>
     : <div className={cls}>{body}</div>;

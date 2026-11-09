@@ -132,7 +132,82 @@
   --shadow-xs: 0 1px 2px 0 rgb(10 22 40 / 0.05);
   --shadow-card: 0 1px 2px rgb(10 22 40 / 0.04), 0 8px 24px -12px rgb(10 22 40 / 0.12);
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Enterprise UI Kit tokens (docs/ui-transformation/DESIGN-SPECIFICATION.md §3). */
+  --color-gp-canvas: #f5f7fa;
+  --color-gp-surface: #ffffff;
+  --color-gp-sidebar: #10264a;
+  --color-gp-sidebar-hover: #19365f;
+  --color-gp-sidebar-active: #244675;
+  --color-gp-primary: #3569c8;
+  --color-gp-primary-hover: #2858ae;
+  --color-gp-primary-soft: #edf3fc;
+  --color-gp-text: #172033;
+  --color-gp-text-secondary: #667085;
+  --color-gp-text-muted: #98a2b3;
+  --color-gp-border: #e5e9f0;
+  --color-gp-divider: #eef1f5;
+  --color-gp-success: #16845b;
+  --color-gp-success-soft: #eaf6f0;
+  --color-gp-warning: #a86b13;
+  --color-gp-warning-soft: #fff5e5;
+  --color-gp-danger: #c24145;
+  --color-gp-danger-soft: #fdeeef;
+  --radius-gp-card: 10px;
+  --radius-gp-control: 7px;
+  --radius-gp-badge: 6px;
+  --shadow-gp-card: 0 1px 2px rgb(16 24 40 / 0.04);
+  --shadow-gp-pop: 0 12px 32px -12px rgb(16 24 40 / 0.18);
 }
+
+/*
+ * Application scope (D1, D2). Applied by the studio, client hub, workspace and sign-in layouts. Tailwind v4 utilities
+ * read CSS variables, so re-pointing the scales here re-themes every existing screen in the app (primary = kit blue,
+ * neutrals = kit greys, radii = kit radii, font = Inter) while the public website keeps the brand teal.
+ */
+.gp-app {
+  --font-sans: var(--font-inter), "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-inter), "Segoe UI", system-ui, sans-serif;
+  font-family: var(--font-sans);
+  color: var(--color-gp-text);
+  background-color: var(--color-gp-canvas);
+
+  --color-brand-50: #edf3fc;  --color-brand-100: #dce7f9; --color-brand-200: #bbd0f2; --color-brand-300: #8fb1e8;
+  --color-brand-400: #5e8bda; --color-brand-500: #4577cf; --color-brand-600: #3569c8; --color-brand-700: #2858ae;
+  --color-brand-800: #234b91; --color-brand-900: #1f3f76; --color-brand-950: #142849;
+  --color-blue-50: #edf3fc;   --color-blue-100: #dce7f9;  --color-blue-200: #bbd0f2;  --color-blue-300: #8fb1e8;
+  --color-blue-400: #5e8bda;  --color-blue-500: #4577cf;  --color-blue-600: #3569c8;  --color-blue-700: #2858ae;
+  --color-blue-800: #234b91;  --color-blue-900: #1f3f76;  --color-blue-950: #142849;
+  --color-indigo-50: #edf3fc; --color-indigo-100: #dce7f9; --color-indigo-500: #4577cf; --color-indigo-600: #3569c8;
+  --color-indigo-700: #2858ae;
+  /* Info and legacy accent scales follow the primary, so no decorative second colour remains. */
+  --color-mint-50: #edf3fc;   --color-mint-100: #dce7f9;  --color-mint-200: #bbd0f2;  --color-mint-300: #8fb1e8;
+  --color-mint-400: #5e8bda;  --color-mint-500: #4577cf;  --color-mint-600: #3569c8;  --color-mint-700: #2858ae;
+  --color-mint-800: #234b91;  --color-mint-900: #1f3f76;
+  --color-sky-50: #edf3fc;    --color-sky-100: #dce7f9;   --color-sky-600: #3569c8;   --color-sky-700: #2858ae;
+  --color-purple-50: #edf3fc; --color-purple-100: #dce7f9; --color-purple-600: #3569c8; --color-purple-700: #2858ae;
+  --color-violet-50: #edf3fc; --color-violet-100: #dce7f9; --color-violet-600: #3569c8; --color-violet-700: #2858ae;
+
+  --color-ink-50: #f5f7fa;  --color-ink-100: #eef1f5; --color-ink-200: #e5e9f0; --color-ink-300: #d0d5dd;
+  --color-ink-400: #98a2b3; --color-ink-500: #667085; --color-ink-600: #475467; --color-ink-700: #344054;
+  --color-ink-800: #1d2939; --color-ink-900: #172033; --color-ink-950: #101828;
+  --color-slate-50: #f5f7fa;  --color-slate-100: #eef1f5; --color-slate-200: #e5e9f0; --color-slate-300: #d0d5dd;
+  --color-slate-400: #98a2b3; --color-slate-500: #667085; --color-slate-600: #475467; --color-slate-700: #344054;
+  --color-slate-800: #1d2939; --color-slate-900: #172033; --color-slate-950: #101828;
+  --color-navy-950: #10264a;
+
+  /* Kit success green (Tailwind emerald stays the "success" scale). */
+  --color-emerald-50: #eaf6f0; --color-emerald-100: #d3eee1; --color-emerald-600: #16845b; --color-emerald-700: #126c4b;
+  --color-emerald-800: #0f5a3e;
+
+  /* Radii: cards 10px, controls 7–8px (replaces 16px/12px). */
+  --radius-lg: 0.4375rem;
+  --radius-xl: 0.5rem;
+  --radius-2xl: 0.625rem;
+  --radius-3xl: 0.75rem;
+}
+.gp-app :focus-visible { outline-color: var(--color-gp-primary); }
+.gp-app ::selection { background: var(--color-gp-primary-soft); }
 
 @layer base {
   body {
