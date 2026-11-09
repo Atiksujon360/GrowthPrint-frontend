@@ -38,7 +38,10 @@ test.describe('Public Inquiry Form', () => {
     await expect(page.getByRole('dialog')).not.toBeVisible();
   });
 
+  // Writes a real inquiry to the backend's database, so it runs only when GP_E2E_BACKEND_WRITES=1 is set against an
+  // isolated test database (never the shared Render database).
   test('should submit inquiry and create lead (requires backend)', async ({ page }) => {
+    test.skip(process.env.GP_E2E_BACKEND_WRITES !== '1', 'Set GP_E2E_BACKEND_WRITES=1 with an isolated test database');
     // Generate unique test data to avoid collisions
     const timestamp = Date.now();
     const testEmail = `test-inquiry-${timestamp}@example.com`;
@@ -75,7 +78,7 @@ test.describe('Public Inquiry Form', () => {
     const response = await apiResponsePromise;
     expect(response.status()).toBe(201);
 
-    // Verify success message or modal close
-    await expect(page.getByRole('dialog')).not.toBeVisible();
+    // The modal confirms the submission instead of closing (unchanged behaviour since MVP1; decision D5).
+    await expect(page.getByRole('dialog').getByText(/thanks — we got it/i)).toBeVisible();
   });
 });

@@ -8,6 +8,7 @@
 import { useEffect, useId, useRef, type ReactNode } from 'react';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { pageWindow } from '../../lib/pageWindow.ts';
 
 const cx = (...c: Array<string | false | null | undefined>) => c.filter(Boolean).join(' ');
 
@@ -180,7 +181,17 @@ export function Pagination({ page, pageSize, total, onPage, noun = 'results' }: 
           className="inline-flex min-h-9 items-center gap-1 rounded-lg border border-ink-200 bg-white px-2.5 text-xs font-medium text-ink-700 hover:bg-ink-50 disabled:cursor-not-allowed disabled:opacity-40">
           <ChevronLeft className="h-3.5 w-3.5" aria-hidden="true" /> Previous
         </button>
-        <span className="px-2 text-xs tabular-nums text-ink-600">Page {page} of {pages}</span>
+        <span className="sr-only">Page {page} of {pages}</span>
+        {pageWindow(page, pages).map((token, i) => token === 'gap'
+          ? <span key={`gap-${i}`} className="px-1 text-xs text-ink-400" aria-hidden="true">…</span>
+          : (
+            <button key={token} type="button" onClick={() => onPage(token)} aria-label={`Page ${token}`}
+              aria-current={token === page ? 'page' : undefined}
+              className={cx('min-h-9 min-w-9 rounded-md px-2 text-xs font-medium tabular-nums transition-colors',
+                token === page ? 'bg-brand-600 text-white' : 'border border-ink-200 bg-white text-ink-700 hover:bg-ink-50')}>
+              {token}
+            </button>
+          ))}
         <button type="button" onClick={() => onPage(page + 1)} disabled={page >= pages} aria-label="Next page"
           className="inline-flex min-h-9 items-center gap-1 rounded-lg border border-ink-200 bg-white px-2.5 text-xs font-medium text-ink-700 hover:bg-ink-50 disabled:cursor-not-allowed disabled:opacity-40">
           Next <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
@@ -207,7 +218,7 @@ const TONES: Record<Tone, string> = {
 
 export function StatusPill({ tone = 'neutral', children }: { tone?: Tone; children: ReactNode }) {
   return (
-    <span className={cx('inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset', TONES[tone])}>
+    <span className={cx('inline-flex items-center gap-1 whitespace-nowrap rounded-gp-badge px-2 py-0.5 text-xs font-medium ring-1 ring-inset', TONES[tone])}>
       {children}
     </span>
   );
@@ -217,11 +228,11 @@ export function StatCard({ label, value, hint, href }: { label: string; value: R
   const body = (
     <>
       <p className="text-sm font-medium text-ink-600">{label}</p>
-      <p className="gp-display mt-3 text-[1.9rem] font-semibold leading-none text-ink-950">{value}</p>
-      {hint && <p className="mt-2 text-sm text-ink-500">{hint}</p>}
+      <p className="mt-2 text-[1.65rem] font-semibold leading-tight tabular-nums text-ink-950">{value}</p>
+      {hint && <p className="mt-2 text-xs text-ink-500">{hint}</p>}
     </>
   );
-  const cls = 'block rounded-2xl border border-ink-200 bg-white p-5';
+  const cls = 'block rounded-gp-card border border-gp-border bg-gp-surface p-5 shadow-gp-card';
   return href
     ? <Link href={href} className={cx(cls, 'transition-colors hover:border-brand-300')}>{body}</Link>
     : <div className={cls}>{body}</div>;

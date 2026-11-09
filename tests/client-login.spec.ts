@@ -27,7 +27,8 @@ test.describe('Client Portal Login', () => {
     // Verify redirect to portal dashboard
     await expect(page).toHaveURL('/client-hub');
 
-    // Verify dashboard is visible
-    await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible();
+    // Verify the portal overview is visible. (Updated 2026-11-09, decision D5: the portal never had a
+    // "dashboard" heading; its first page is titled "Overview".)
+    await expect(page.getByRole('heading', { level: 1, name: 'Overview' })).toBeVisible();
   });
 });

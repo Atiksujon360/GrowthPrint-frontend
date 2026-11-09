@@ -3,17 +3,19 @@ import { useAppDispatch, useAppSelector } from '../../../store/hooks.ts';
 import { fetchClients, fetchCrmLeads, fetchProjects, fetchSupportRequests, fetchInvoices, fetchOutreachDrafts } from '../../../store/index.ts';
 import { buildCashFlowSeries, countPipeline, countActiveClients, countRetainerClients } from '../../../lib/dashboardMetrics.ts';
 import { isMockModeEnv } from '../../../lib/api/client.ts';
-import { Users, FolderKanban, DollarSign, Send, ArrowRight, TrendingUp } from 'lucide-react';
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
-import { KpiCard, MiniStat, Panel, percentChange } from '../../../components/ui/app-kit.tsx';
+import dynamic from 'next/dynamic';
+import { Users, FolderKanban, DollarSign, Send, ArrowRight, TrendingUp, CreditCard, TicketCheck } from 'lucide-react';
+import { KpiCard, Panel, percentChange } from '../../../components/ui/app-kit.tsx';
+import { humanizeCode } from '../../../lib/labels.ts';
+
+// Recharts is heavy and client-only: load it after the page shell (React best practice bundle-dynamic-imports).
+const CashFlowChart = dynamic(() => import('./CashFlowChart.tsx'), {
+  ssr: false,
+  loading: () => <div className="h-full w-full animate-pulse rounded-gp-control bg-gp-canvas" aria-hidden="true" />,
+});
 import type { AdminTab } from './AdminLayout.tsx';
 
 const money = (n: number) => `$${n.toLocaleString()}`;
-/** Activity codes are stored as PREPARED_ESTIMATE; show "Prepared estimate". */
-const humanize = (code: string) => {
-  const text = code.replace(/_/g, ' ').toLowerCase();
-  return text.charAt(0).toUpperCase() + text.slice(1);
-};
 
 export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTab) => void }) {
   const dispatch = useAppDispatch();
@@ -108,7 +110,7 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
     <div className="space-y-6">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <h2 className="gp-display text-[1.75rem] font-semibold leading-tight text-ink-950">
+          <h2 className="text-2xl font-semibold text-ink-950">
             {greeting}{firstName ? `, ${firstName}` : ''}
           </h2>
           <p className="mt-1 text-[0.95rem] text-ink-500">Here is where client work, cash and the pipeline stand today.</p>
@@ -125,12 +127,18 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
         </div>
       </div>
 
-      {/* KPI row */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      {/* KPI row: six cards, real values only (reference A) */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
         <KpiCard label="Cash collected" icon={DollarSign} value={money(cashCollected)}
           delta={cashChange === null ? null : { value: cashChange, label: 'versus last month' }}
           context={cashChange === null ? 'All paid invoices' : 'vs last month'}
           spark={cashFlowData.map(p => p.collected)} sparkLabel="Cash collected over the last four months"
+          onClick={() => onNavigateTab('INVOICES')} />
+        <KpiCard label="Receivables" icon={CreditCard} value={money(outstandingReceivables)}
+          tone={overdueInvoices.length ? 'danger' : 'primary'}
+          context={overdueInvoices.length
+            ? <span className="font-medium text-gp-danger">{overdueInvoices.length} overdue</span>
+            : 'No overdue invoices'}
           onClick={() => onNavigateTab('INVOICES')} />
         <KpiCard label="Open pipeline" icon={TrendingUp} value={pipeline.open}
           context={`${pipeline.qualified} qualified (score 80+)`} onClick={() => onNavigateTab('LEADS')} />
@@ -138,14 +146,11 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
           context={`${retainerClients} on a retainer, ${clients.length} total`} onClick={() => onNavigateTab('CLIENTS')} />
         <KpiCard label="Active projects" icon={FolderKanban} value={activeProjects.length}
           context={`${projects.length} projects in total`} onClick={() => onNavigateTab('PROJECTS')} />
+        <KpiCard label="Support requests" icon={TicketCheck} value={requests.length}
+          tone={pendingRequests.length ? 'warning' : 'primary'}
+          context={pendingRequests.length ? `${pendingRequests.length} need triage` : 'Nothing to triage'}
+          onClick={() => onNavigateTab('REQUESTS')} />
       </div>
-
-      <dl className="grid grid-cols-2 gap-x-6 gap-y-4 rounded-2xl border border-ink-200 bg-white px-5 py-4 sm:grid-cols-4">
-        <MiniStat label="Receivables" value={money(outstandingReceivables)} />
-        <MiniStat label="Overdue invoices" value={overdueInvoices.length} tone={overdueInvoices.length ? 'danger' : 'neutral'} />
-        <MiniStat label="Support requests" value={`${requests.length}`} />
-        <MiniStat label="Needing triage" value={pendingRequests.length} tone={pendingRequests.length ? 'warning' : 'neutral'} />
-      </dl>
 
       {/* Main chart + breakdown */}
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
@@ -153,23 +158,12 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
           description="Paid invoices by payment month, compared with invoices issued. USD."
           action={(
             <div className="flex items-center gap-4 text-sm text-ink-600">
-              <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-brand-600" />Collected</span>
-              <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-ink-800" />Invoiced</span>
+              <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-gp-primary" />Collected</span>
+              <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-slate-300" />Invoiced</span>
             </div>
           )}>
           <div className="h-72 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={cashFlowData} margin={{ top: 8, right: 8, left: -8, bottom: 0 }} barGap={4}>
-                <CartesianGrid stroke="#eef1f5" vertical={false} />
-                <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#647184' }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 12, fill: '#647184' }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v / 1000}k`} />
-                <Tooltip cursor={{ fill: '#f6f8fa' }}
-                  formatter={(val: unknown, name: unknown) => [`$${Number(val).toLocaleString()}`, String(name)]}
-                  contentStyle={{ backgroundColor: '#ffffff', borderRadius: '10px', border: '1px solid #dde3ea', fontSize: '13px' }} />
-                <Bar dataKey="collected" name="Collected" fill="#0c826c" radius={[6, 6, 0, 0]} maxBarSize={40} />
-                <Bar dataKey="invoiced" name="Invoiced" fill="#22304a" radius={[6, 6, 0, 0]} maxBarSize={40} />
-              </BarChart>
-            </ResponsiveContainer>
+            <CashFlowChart data={cashFlowData} />
           </div>
         </Panel>
 
@@ -266,7 +260,7 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
                 <li key={a.id} className="flex gap-3 px-5 py-3">
                   <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-brand-500" aria-hidden="true" />
                   <div className="min-w-0 text-sm">
-                    <p className="text-ink-900">{humanize(a.action)}</p>
+                    <p className="text-ink-900">{humanizeCode(a.action)}</p>
                     <p className="mt-0.5 truncate text-ink-500">{a.actor}</p>
                   </div>
                 </li>

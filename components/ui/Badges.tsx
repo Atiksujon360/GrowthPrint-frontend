@@ -1,5 +1,6 @@
 import React from 'react';
 import { humanizeCode } from '../../lib/labels.ts';
+import { KpiCard } from './app-kit.tsx';
 
 export function StatusBadge({ status }: { status: string }) {
   const getStyle = () => {
@@ -35,7 +36,7 @@ export function StatusBadge({ status }: { status: string }) {
   };
 
   return (
-    <span className={`inline-flex items-center whitespace-nowrap rounded-full border px-2.5 py-0.5 text-xs font-medium ${getStyle()}`}>
+    <span className={`inline-flex items-center whitespace-nowrap rounded-gp-badge border px-2 py-0.5 text-xs font-medium ${getStyle()}`}>
       {humanizeCode(status)}
     </span>
   );
@@ -56,7 +57,7 @@ export function PriorityBadge({ priority }: { priority: 'LOW' | 'MEDIUM' | 'HIGH
   };
 
   return (
-    <span className={`inline-flex items-center whitespace-nowrap rounded-full border px-2.5 py-0.5 text-xs font-medium ${getStyle()}`}>
+    <span className={`inline-flex items-center whitespace-nowrap rounded-gp-badge border px-2 py-0.5 text-xs font-medium ${getStyle()}`}>
       {humanizeCode(priority)}
     </span>
   );
@@ -75,21 +76,13 @@ export function StatCard({
   trend?: string;
   icon?: React.ComponentType<{ className?: string }>;
 }) {
+  // Same markup as the application KPI card (one card style everywhere).
   return (
-    <div className="rounded-2xl border border-ink-200 bg-white p-5">
-      <div className="flex items-center gap-2.5">
-        {Icon && (
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
-            <Icon className="h-4 w-4" />
-          </span>
-        )}
-        <span className="text-sm font-medium text-ink-600">{label}</span>
-      </div>
-      <div className="mt-3 flex items-baseline gap-2">
-        <span className="gp-display text-[1.7rem] font-semibold leading-none text-ink-950">{value}</span>
-        {trend && <span className="text-sm font-semibold text-emerald-700">{trend}</span>}
-      </div>
-      {subtext && <p className="mt-2 text-sm text-ink-500">{subtext}</p>}
-    </div>
+    <KpiCard
+      label={label}
+      value={value}
+      icon={Icon}
+      context={<>{trend && <span className="font-semibold text-gp-success">{trend}</span>}{subtext}</>}
+    />
   );
 }

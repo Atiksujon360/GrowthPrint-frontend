@@ -1,8 +1,14 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Admin Create Project', () => {
-  test('should create a new project via Quick Create Modal', async ({ page }) => {
-    // Login as admin first
+/**
+ * Quick create from the studio (requires backend for sign-in).
+ *
+ * Updated 2026-11-09 (owner decision D5): the previous version expected Ctrl+K to open a "project" form with tabs,
+ * budget and category fields. That UI never existed: Ctrl+K opens the command palette, and Quick create is a
+ * lead / support-ticket form. This test now checks the real flow without submitting, so it writes no data.
+ */
+test.describe('Admin Quick Create', () => {
+  test('opens Quick create from the top bar and offers lead and ticket forms', async ({ page }) => {
     await page.goto('/studio/ops/login');
     await page.getByLabel(/email/i).fill('admin@growthprint.dev');
     await page.getByLabel(/^Password/).fill('Admin123!');
@@ -12,52 +18,18 @@ test.describe('Admin Create Project', () => {
     );
     await page.getByRole('button', { name: /^sign in$/i }).click();
     await loginResponsePromise;
-
-    // Wait for dashboard to load
     await expect(page).toHaveURL('/studio/ops');
 
-    // Open Quick Create Modal (keyboard shortcut Ctrl+K or click button)
-    await page.keyboard.press('Control+K');
+    await page.getByRole('button', { name: /new record/i }).click();
+    const dialog = page.getByRole('dialog', { name: 'Quick-create record' });
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole('button', { name: /new lead/i })).toBeVisible();
+    await expect(dialog.getByText(/company name/i)).toBeVisible();
 
-    // Wait for modal to appear
-    await expect(page.getByRole('dialog')).toBeVisible();
+    await dialog.getByRole('button', { name: /support ticket/i }).click();
+    await expect(dialog.getByText(/ticket title/i)).toBeVisible();
 
-    // Switch to TICKET tab (project/ticket creation)
-    await page.getByRole('tab', { name: /ticket/i }).click();
-
-    // Generate unique test data
-    const timestamp = Date.now();
-    const testProjectName = `E2E Test Project ${timestamp}`;
-
-    // Fill in project details
-    await page.getByLabel(/title/i).fill(testProjectName);
-    await page.getByLabel(/client/i).selectOption({ index: 0 }); // Select first client
-    await page.getByLabel(/category/i).selectOption('WEB_DEVELOPMENT');
-    await page.getByLabel(/budget/i).fill('10000');
-    await page.getByLabel(/description/i).fill('This is an E2E test project');
-
-    // Listen for API response
-    const apiResponsePromise = page.waitForResponse(
-      response => response.url().includes('/projects') && response.status() === 201
-    );
-
-    // Submit form
-    await page.getByRole('button', { name: /create/i }).click();
-
-    // Verify API response
-    const response = await apiResponsePromise;
-    expect(response.status()).toBe(201);
-
-    // Verify modal closes
-    await expect(page.getByRole('dialog')).not.toBeVisible();
-
-    // Navigate to projects tab to verify project appears
-    await page.getByRole('tab', { name: /projects/i }).click();
-
-    // Wait for projects to load
-    await expect(page.getByRole('heading', { name: /projects/i })).toBeVisible();
-
-    // Verify project appears in list
-    await expect(page.getByText(testProjectName)).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(dialog).toBeHidden();
   });
 });

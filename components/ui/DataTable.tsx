@@ -18,6 +18,7 @@ import {
   type SortDirection 
 } from '../../lib/datatable-rules.ts';
 import { exportToCsv } from '../../lib/utils.ts';
+import { pageWindow } from '../../lib/pageWindow.ts';
 
 export interface ColumnDef<T> {
   id: string;
@@ -297,7 +298,7 @@ export function DataTable<T extends Record<string, any>>({
       <div className="overflow-x-auto min-h-[220px] relative">
         <table className="w-full text-left text-sm border-collapse">
           <thead>
-            <tr className="border-b border-slate-200/90 bg-slate-50/70 text-slate-500 font-semibold text-xs">
+            <tr className="border-b border-gp-border bg-gp-canvas text-gp-text-secondary font-medium text-xs">
               {columns.map((col) => {
                 const isSorted = sortKey === col.id || sortKey === col.accessorKey;
                 const canSort = col.sortable !== false;
@@ -424,7 +425,7 @@ export function DataTable<T extends Record<string, any>>({
       </div>
 
       {/* Pagination Footer */}
-      <div className="p-4 border-t border-slate-100 bg-slate-50/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-500">
+      <div className="px-4 py-3 border-t border-gp-divider flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-500">
         <div className="flex items-center gap-4">
           <div>
             Showing <strong className="text-slate-800 tabular-nums">{paginationResult.startIndex}</strong> to{' '}
@@ -461,10 +462,26 @@ export function DataTable<T extends Record<string, any>>({
             <ChevronLeft className="w-3.5 h-3.5" />
           </button>
 
-          {/* Compact page pill */}
-          <span className="px-2.5 py-1 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-lg tabular-nums">
-            Page {paginationResult.currentPage} of {paginationResult.totalPages}
-          </span>
+          {/* Numbered pages (reference: 1 2 3 … n) */}
+          <span className="sr-only">Page {paginationResult.currentPage} of {paginationResult.totalPages}</span>
+          {pageWindow(paginationResult.currentPage, paginationResult.totalPages).map((token, i) => token === 'gap'
+            ? <span key={`gap-${i}`} className="px-1 text-slate-400" aria-hidden="true">…</span>
+            : (
+              <button
+                key={token}
+                type="button"
+                onClick={() => handlePageChange(token)}
+                aria-label={`Page ${token}`}
+                aria-current={token === paginationResult.currentPage ? 'page' : undefined}
+                className={`min-w-8 h-8 px-2 rounded-md text-xs font-medium tabular-nums transition-colors ${
+                  token === paginationResult.currentPage
+                    ? 'bg-gp-primary text-white'
+                    : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                }`}
+              >
+                {token}
+              </button>
+            ))}
 
           <button
             onClick={() => handlePageChange(currentPage + 1)}

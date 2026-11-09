@@ -26,7 +26,7 @@ export function AuthShell({ eyebrow, title, subtitle, children, footer, aside }:
     ],
   };
   return (
-    <div className="grid min-h-screen bg-white lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+    <div className="gp-app grid min-h-screen bg-white lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
       <aside className="relative hidden overflow-hidden bg-navy-950 text-white lg:flex lg:flex-col lg:justify-between lg:p-12">
         {/* Blueprint grid, purely decorative. */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-100"
