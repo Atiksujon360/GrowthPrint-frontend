@@ -1,5 +1,6 @@
 import React from 'react';
-import { motion } from 'motion/react';
+import { humanizeCode } from '../../lib/labels.ts';
+import { KpiCard } from './app-kit.tsx';
 
 export function StatusBadge({ status }: { status: string }) {
   const getStyle = () => {
@@ -34,19 +35,10 @@ export function StatusBadge({ status }: { status: string }) {
     }
   };
 
-  const formatText = (text: string) => {
-    return text.replace(/_/g, ' ');
-  };
-
   return (
-    <motion.span
-      className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${getStyle()} whitespace-nowrap`}
-      initial={{ scale: 0.9, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      transition={{ duration: 0.3 }}
-    >
-      {formatText(status)}
-    </motion.span>
+    <span className={`inline-flex items-center whitespace-nowrap rounded-gp-badge border px-2 py-0.5 text-xs font-medium ${getStyle()}`}>
+      {humanizeCode(status)}
+    </span>
   );
 }
 
@@ -65,14 +57,9 @@ export function PriorityBadge({ priority }: { priority: 'LOW' | 'MEDIUM' | 'HIGH
   };
 
   return (
-    <motion.span
-      className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${getStyle()} whitespace-nowrap`}
-      initial={{ scale: 0.9, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      transition={{ duration: 0.3 }}
-    >
-      {priority}
-    </motion.span>
+    <span className={`inline-flex items-center whitespace-nowrap rounded-gp-badge border px-2 py-0.5 text-xs font-medium ${getStyle()}`}>
+      {humanizeCode(priority)}
+    </span>
   );
 }
 
@@ -89,55 +76,13 @@ export function StatCard({
   trend?: string;
   icon?: React.ComponentType<{ className?: string }>;
 }) {
+  // Same markup as the application KPI card (one card style everywhere).
   return (
-    <motion.div
-      className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-xs hover:border-slate-300 hover:shadow-md transition-all glass-card"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -4, scale: 1.02 }}
-      transition={{ type: 'spring', stiffness: 300 }}
-    >
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">{label}</span>
-        {Icon && (
-          <motion.div
-            whileHover={{ scale: 1.1, rotate: 5 }}
-            transition={{ type: 'spring', stiffness: 300 }}
-          >
-            <Icon className="w-4 h-4 text-slate-400" />
-          </motion.div>
-        )}
-      </div>
-      <div className="mt-2 flex items-baseline gap-2">
-        <motion.span
-          className="text-2xl font-bold text-slate-900 tracking-tight tabular-nums"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-        >
-          {value}
-        </motion.span>
-        {trend && (
-          <motion.span
-            className="text-xs font-medium text-emerald-600"
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3, delay: 0.2 }}
-          >
-            {trend}
-          </motion.span>
-        )}
-      </div>
-      {subtext && (
-        <motion.p
-          className="mt-1 text-xs text-slate-500"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-        >
-          {subtext}
-        </motion.p>
-      )}
-    </motion.div>
+    <KpiCard
+      label={label}
+      value={value}
+      icon={Icon}
+      context={<>{trend && <span className="font-semibold text-gp-success">{trend}</span>}{subtext}</>}
+    />
   );
 }

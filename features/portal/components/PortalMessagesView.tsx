@@ -70,7 +70,7 @@ export function PortalMessagesView() {
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden flex flex-col h-[600px]">
+    <div className="bg-white rounded-2xl border border-slate-200/90 overflow-hidden flex flex-col h-[600px]">
       {/* Header */}
       <div className="p-4 border-b border-slate-200 bg-slate-50/70 flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -81,7 +81,7 @@ export function PortalMessagesView() {
             <h3 className="text-xs font-bold text-slate-900">
               GrowthPrint Direct Engineering Channel
             </h3>
-            <span className="text-[11px] text-slate-500">
+            <span className="text-xs text-slate-500">
               Direct communication with assigned technical lead
             </span>
           </div>
@@ -102,7 +102,7 @@ export function PortalMessagesView() {
               key={msg.id} 
               className={`flex flex-col ${isClient ? 'items-end' : 'items-start'}`}
             >
-              <div className="flex items-center gap-2 mb-1 text-[11px] text-slate-400">
+              <div className="flex items-center gap-2 mb-1 text-xs text-slate-400">
                 <span className="font-semibold text-slate-700">{msg.sender}</span>
                 <span>·</span>
                 <span>{msg.timestamp}</span>
@@ -142,7 +142,7 @@ export function PortalMessagesView() {
         <button
           type="submit"
           disabled={!MESSAGING_AVAILABLE}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-xs flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <span>Send</span>
           <Send className="w-3.5 h-3.5" />

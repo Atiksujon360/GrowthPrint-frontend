@@ -97,7 +97,7 @@ export function KeyboardShortcutsModal({ onNavigateTab, onOpenQuickCreate }: Key
         <div className="space-y-4">
           {shortcutGroups.map((group) => (
             <div key={group.group} className="space-y-2">
-              <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+              <h4 className="text-xs font-bold text-slate-400">
                 {group.group}
               </h4>
               <div className="bg-slate-50 rounded-xl p-2.5 border border-slate-200/70 divide-y divide-slate-200/50">
@@ -108,7 +108,7 @@ export function KeyboardShortcutsModal({ onNavigateTab, onOpenQuickCreate }: Key
                       {item.keys.map((k, kIdx) => (
                         <kbd
                           key={kIdx}
-                          className="px-2 py-0.5 bg-white border border-slate-300 rounded shadow-2xs font-mono text-[11px] font-semibold text-slate-800"
+                          className="px-2 py-0.5 bg-white border border-slate-300 rounded shadow-2xs font-mono text-xs font-semibold text-slate-800"
                         >
                           {k}
                         </kbd>
@@ -121,7 +121,7 @@ export function KeyboardShortcutsModal({ onNavigateTab, onOpenQuickCreate }: Key
           ))}
         </div>
 
-        <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+        <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
           <span>Tip: Press <kbd className="px-1.5 py-0.5 bg-slate-100 rounded border border-slate-200 font-mono font-bold text-slate-700">?</kbd> anytime to open this sheet</span>
           <button
             onClick={() => dispatch(setShortcutsModalOpen(false))}

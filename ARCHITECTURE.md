@@ -374,6 +374,31 @@ export const agencyApi = {
 
 ## Routing Architecture
 
+### Route map (2026-11-02)
+
+| Path | Who | Notes |
+|---|---|---|
+| `/` | Public | Marketing site and inquiry form |
+| `/forgot-password` | Public | Request a reset link (generic answer for every address) |
+| `/reset-password#token=…` | Public | One-time link from email or admin; token read from the URL fragment, then removed from the address bar; `noindex` |
+| `/accept-invite#token=…` | Public | Invitation: preview + choose password + automatic sign-in; `noindex` |
+| `/client-hub`, `/client-hub/settings` | CLIENT | Client workspace (`WorkspaceGuard workspace="portal"`) |
+| `/client-hub/login` | Public | Client sign-in |
+| `/studio/ops`, `/studio/ops/settings` | ADMIN, TEAM_MEMBER | Internal studio; team members see only granted modules (`canUseStudioTab`) |
+| `/studio/ops/login` | Public | Studio sign-in; not linked from the public site |
+| `/portal/*` (legacy) | – | `proxy.ts` 308-redirects to `/client-hub/*` (client bookmarks keep working) |
+| `/admin/*` (legacy) | – | `proxy.ts` answers 404 without revealing the new path |
+
+All route constants and the legacy-route rules live in `lib/routes.ts` (unit-tested in `lib/routes.test.ts`).
+`proxy.ts` (Next.js 16 Proxy, formerly Middleware) also sets `X-Robots-Tag: noindex` and `Cache-Control: no-store`
+on private and one-time-link pages.
+
+**The paths are not a security control.** Tokens live in the browser, so the edge cannot authorize pages. The
+backend authorizes every API call (JWT + per-request account check + role/module permissions). `WorkspaceGuard` and
+hidden menu items only keep people out of screens whose data they could never load.
+
+### Previous notes
+
 ### Route Groups
 
 **Public Route Group `(public)`:**

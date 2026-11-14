@@ -1,14 +1,234 @@
 @import "tailwindcss";
 
+/*
+ * GrowthPrint design tokens (Tailwind v4 @theme).
+ *
+ * Brand: emerald-teal primary, mint highlights, navy text and dark surfaces, white and cool grey neutrals.
+ *   brand-*  primary actions, links, active navigation, focus rings (600+ meets AA on white)
+ *   mint-*   soft highlights and illustration tints
+ *   ink-*    navy text, borders and neutral surfaces
+ *
+ * Most existing screens were written with Tailwind's default `blue-*`, `purple-*`/`violet-*` and `slate-*`
+ * utilities. Instead of editing ~300 class names (and risking regressions), those palettes are re-pointed
+ * here at the GrowthPrint scales, so every screen picks up the brand consistently:
+ *   blue -> brand, purple/violet -> mint, slate 800-950 -> navy.
+ * `emerald-*` keeps Tailwind's values and stays the semantic "success" colour, distinct from the
+ * teal-leaning brand primary. New code should use brand-/mint-/ink- names directly.
+ */
+@theme {
+  --font-sans: var(--font-ui), "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-display-face), var(--font-ui), "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Deep navy for dark public surfaces and the app sidebar (between ink-900 and ink-950). */
+  --color-navy-700: #163250;
+  --color-navy-800: #0f2740;
+  --color-navy-900: #0a1d33;
+  --color-navy-950: #061427;
+
+  /* Motion tokens: short for UI feedback, longer only for the one public hero moment. */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+
+  --color-brand-50: #ecfbf6;
+  --color-brand-100: #d1f4e7;
+  --color-brand-200: #a6e9d3;
+  --color-brand-300: #6fd6b9;
+  --color-brand-400: #37bb9a;
+  --color-brand-500: #16a083;
+  --color-brand-600: #0c826c;
+  --color-brand-700: #0b6858;
+  --color-brand-800: #0c5348;
+  --color-brand-900: #0c453d;
+  --color-brand-950: #032824;
+
+  --color-mint-50: #f0fbf8;
+  --color-mint-100: #d9f5ee;
+  --color-mint-200: #b4eadc;
+  --color-mint-300: #84d8c5;
+  --color-mint-400: #52bfaa;
+  --color-mint-500: #2fa391;
+  --color-mint-600: #228477;
+  --color-mint-700: #1f6a61;
+  --color-mint-800: #1d5550;
+  --color-mint-900: #1b4743;
+  --color-mint-950: #0a2927;
+
+  --color-ink-50: #f6f8fa;
+  --color-ink-100: #eef1f5;
+  --color-ink-200: #dde3ea;
+  --color-ink-300: #c3ccd7;
+  --color-ink-400: #8f9bab;
+  --color-ink-500: #647184;
+  --color-ink-600: #4a5668;
+  --color-ink-700: #364254;
+  --color-ink-800: #22304a;
+  --color-ink-900: #132239;
+  --color-ink-950: #0a1628;
+
+  /* Legacy palettes re-pointed at the brand (see note above). */
+  --color-blue-50: #ecfbf6;
+  --color-blue-100: #d1f4e7;
+  --color-blue-200: #a6e9d3;
+  --color-blue-300: #6fd6b9;
+  --color-blue-400: #37bb9a;
+  --color-blue-500: #16a083;
+  --color-blue-600: #0c826c;
+  --color-blue-700: #0b6858;
+  --color-blue-800: #0c5348;
+  --color-blue-900: #0c453d;
+  --color-blue-950: #032824;
+  --color-indigo-50: #ecfbf6;
+  --color-indigo-100: #d1f4e7;
+  --color-indigo-200: #a6e9d3;
+  --color-indigo-300: #6fd6b9;
+  --color-indigo-400: #37bb9a;
+  --color-indigo-500: #16a083;
+  --color-indigo-600: #0c826c;
+  --color-indigo-700: #0b6858;
+  --color-indigo-800: #0c5348;
+  --color-indigo-900: #0c453d;
+  --color-indigo-950: #032824;
+  --color-sky-50: #f0fbf8;
+  --color-sky-100: #d9f5ee;
+  --color-sky-200: #b4eadc;
+  --color-sky-300: #84d8c5;
+  --color-sky-400: #52bfaa;
+  --color-sky-500: #2fa391;
+  --color-sky-600: #228477;
+  --color-sky-700: #1f6a61;
+  --color-sky-800: #1d5550;
+  --color-sky-900: #1b4743;
+  --color-sky-950: #0a2927;
+  --color-purple-50: #f0fbf8;
+  --color-purple-100: #d9f5ee;
+  --color-purple-200: #b4eadc;
+  --color-purple-300: #84d8c5;
+  --color-purple-400: #52bfaa;
+  --color-purple-500: #2fa391;
+  --color-purple-600: #228477;
+  --color-purple-700: #1f6a61;
+  --color-purple-800: #1d5550;
+  --color-purple-900: #1b4743;
+  --color-purple-950: #0a2927;
+  --color-violet-50: #f0fbf8;
+  --color-violet-100: #d9f5ee;
+  --color-violet-200: #b4eadc;
+  --color-violet-300: #84d8c5;
+  --color-violet-400: #52bfaa;
+  --color-violet-500: #2fa391;
+  --color-violet-600: #228477;
+  --color-violet-700: #1f6a61;
+  --color-violet-800: #1d5550;
+  --color-violet-900: #1b4743;
+  --color-violet-950: #0a2927;
+  --color-slate-800: #22304a;
+  --color-slate-900: #132239;
+  --color-slate-950: #0a1628;
+
+  --radius-card: 1rem;
+  --shadow-xs: 0 1px 2px 0 rgb(10 22 40 / 0.05);
+  --shadow-card: 0 1px 2px rgb(10 22 40 / 0.04), 0 8px 24px -12px rgb(10 22 40 / 0.12);
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* COMPREO direction tokens (docs/ui-transformation/DESIGN-TOKENS.md). Contrast-safe: primary text and fills use
+     the "strong" teal (4.9:1 on white); the lighter teal is for charts and icons only. */
+  --color-gp-canvas: #fafbfc;
+  --color-gp-surface: #ffffff;
+  --color-gp-primary: #117f76;
+  --color-gp-primary-hover: #0e6c64;
+  --color-gp-primary-soft: #e9f6f4;
+  --color-gp-accent: #159f91;
+  --color-gp-text: #17212b;
+  --color-gp-text-secondary: #66717d;
+  --color-gp-text-muted: #8a949e;
+  --color-gp-border: #e8ecef;
+  --color-gp-divider: #f0f2f4;
+  --color-gp-success: #1e7d45;
+  --color-gp-success-soft: #e9f6ee;
+  --color-gp-warning: #8f5b0a;
+  --color-gp-warning-soft: #fdf4e3;
+  --color-gp-danger: #c23b42;
+  --color-gp-danger-soft: #fceced;
+  --color-gp-info: #2a62a0;
+  --color-gp-info-soft: #eaf1f9;
+  --radius-gp-card: 10px;
+  --radius-gp-control: 8px;
+  --radius-gp-badge: 6px;
+  --shadow-gp-card: 0 1px 2px rgb(23 33 43 / 0.04), 0 1px 3px rgb(23 33 43 / 0.04);
+  --shadow-gp-pop: 0 12px 32px -12px rgb(23 33 43 / 0.2);
+}
+
+/*
+ * Application scope (D1, D2). Applied by the studio, client hub, workspace and sign-in layouts. Tailwind v4 utilities
+ * read CSS variables, so re-pointing the scales here re-themes every existing screen in the app (primary = kit blue,
+ * neutrals = kit greys, radii = kit radii, font = Inter) while the public website keeps the brand teal.
+ */
+.gp-app {
+  --font-sans: var(--font-inter), "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-inter), "Segoe UI", system-ui, sans-serif;
+  font-family: var(--font-sans);
+  color: var(--color-gp-text);
+  background-color: var(--color-gp-canvas);
+
+  /* Primary (teal) — legacy blue/indigo/sky/mint/purple/violet utilities follow it, so no stray accent colours remain. */
+  --color-brand-50: #e9f6f4;  --color-brand-100: #d0ede8; --color-brand-200: #a3dbd2; --color-brand-300: #6fc6ba;
+  --color-brand-400: #3db2a3; --color-brand-500: #159f91; --color-brand-600: #117f76; --color-brand-700: #0e6c64;
+  --color-brand-800: #0c5a53; --color-brand-900: #0a4a44; --color-brand-950: #062e2b;
+  --color-blue-50: #e9f6f4;  --color-blue-100: #d0ede8; --color-blue-200: #a3dbd2; --color-blue-300: #6fc6ba;
+  --color-blue-400: #3db2a3; --color-blue-500: #159f91; --color-blue-600: #117f76; --color-blue-700: #0e6c64;
+  --color-blue-800: #0c5a53; --color-blue-900: #0a4a44; --color-blue-950: #062e2b;
+  --color-indigo-50: #e9f6f4;  --color-indigo-100: #d0ede8; --color-indigo-200: #a3dbd2; --color-indigo-300: #6fc6ba;
+  --color-indigo-400: #3db2a3; --color-indigo-500: #159f91; --color-indigo-600: #117f76; --color-indigo-700: #0e6c64;
+  --color-indigo-800: #0c5a53; --color-indigo-900: #0a4a44; --color-indigo-950: #062e2b;
+  --color-sky-50: #e9f6f4;  --color-sky-100: #d0ede8; --color-sky-200: #a3dbd2; --color-sky-300: #6fc6ba;
+  --color-sky-400: #3db2a3; --color-sky-500: #159f91; --color-sky-600: #117f76; --color-sky-700: #0e6c64;
+  --color-sky-800: #0c5a53; --color-sky-900: #0a4a44; --color-sky-950: #062e2b;
+  --color-mint-50: #e9f6f4;  --color-mint-100: #d0ede8; --color-mint-200: #a3dbd2; --color-mint-300: #6fc6ba;
+  --color-mint-400: #3db2a3; --color-mint-500: #159f91; --color-mint-600: #117f76; --color-mint-700: #0e6c64;
+  --color-mint-800: #0c5a53; --color-mint-900: #0a4a44; --color-mint-950: #062e2b;
+  --color-purple-50: #e9f6f4;  --color-purple-100: #d0ede8; --color-purple-200: #a3dbd2; --color-purple-300: #6fc6ba;
+  --color-purple-400: #3db2a3; --color-purple-500: #159f91; --color-purple-600: #117f76; --color-purple-700: #0e6c64;
+  --color-purple-800: #0c5a53; --color-purple-900: #0a4a44; --color-purple-950: #062e2b;
+  --color-violet-50: #e9f6f4;  --color-violet-100: #d0ede8; --color-violet-200: #a3dbd2; --color-violet-300: #6fc6ba;
+  --color-violet-400: #3db2a3; --color-violet-500: #159f91; --color-violet-600: #117f76; --color-violet-700: #0e6c64;
+  --color-violet-800: #0c5a53; --color-violet-900: #0a4a44; --color-violet-950: #062e2b;
+
+  /* Cool neutrals (text #17212b, secondary #66717d, border #e8ecef). */
+  --color-ink-50: #fafbfc;  --color-ink-100: #f3f5f7; --color-ink-200: #e8ecef; --color-ink-300: #d3d9de;
+  --color-ink-400: #8a949e; --color-ink-500: #66717d; --color-ink-600: #4b5560; --color-ink-700: #34404b;
+  --color-ink-800: #222d38; --color-ink-900: #17212b; --color-ink-950: #0f1720;
+  --color-slate-50: #fafbfc;  --color-slate-100: #f3f5f7; --color-slate-200: #e8ecef; --color-slate-300: #d3d9de;
+  --color-slate-400: #8a949e; --color-slate-500: #66717d; --color-slate-600: #4b5560; --color-slate-700: #34404b;
+  --color-slate-800: #222d38; --color-slate-900: #17212b; --color-slate-950: #0f1720;
+  --color-navy-950: #17212b;
+
+  /* Semantic colours with on-white text variants (AA). */
+  --color-emerald-50: #e9f6ee; --color-emerald-100: #d1edda; --color-emerald-200: #a8dbb9; --color-emerald-500: #269b55;
+  --color-emerald-600: #1e7d45; --color-emerald-700: #1e7d45; --color-emerald-800: #18663a;
+  --color-amber-50: #fdf4e3;   --color-amber-100: #fbe8c4;   --color-amber-200: #f5d38f;   --color-amber-400: #e5a12b;
+  --color-amber-600: #a86b0f;  --color-amber-700: #8f5b0a;   --color-amber-800: #774b08;   --color-amber-900: #5f3c06;
+  --color-rose-50: #fceced;    --color-rose-100: #f8d7d9;    --color-rose-200: #f1b3b7;    --color-rose-600: #c23b42;
+  --color-rose-700: #c23b42;   --color-rose-800: #a8323a;
+  --color-red-50: #fceced;     --color-red-100: #f8d7d9;     --color-red-200: #f1b3b7;     --color-red-600: #c23b42;
+  --color-red-700: #a8323a;
+
+  /* Radii: cards 10px, controls 8px. */
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.5rem;
+  --radius-2xl: 0.625rem;
+  --radius-3xl: 0.75rem;
+}
+.gp-app :focus-visible { outline-color: var(--color-gp-primary); }
+.gp-app ::selection { background: var(--color-gp-primary-soft); }
+
 @layer base {
-  :root {
-    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
-  }
   body {
     font-family: var(--font-sans);
-    color: #182230;
-    background-color: #F8FAFD;
+    color: var(--color-ink-900);
+    background-color: var(--color-ink-50);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
@@ -17,6 +237,15 @@
   html {
     scroll-behavior: smooth;
     scroll-padding-top: 5rem;
+  }
+  /* Visible keyboard focus everywhere (WCAG 2.4.7 / 2.4.11); mouse clicks do not show the ring. */
+  :focus-visible {
+    outline: 2px solid var(--color-brand-600);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: var(--color-brand-100);
+    color: var(--color-ink-900);
   }
 }
 
@@ -29,11 +258,11 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--color-ink-300);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--color-ink-400);
 }
 
 /* Glassmorphism utilities */
@@ -52,23 +281,76 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
+  /* App panels: depth from a quiet border, not a shadow (design system "Shape and depth"). */
   .glass-card {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    background: #ffffff;
+    border: 1px solid var(--color-ink-200);
+    box-shadow: none;
   }
 
   .gradient-bg {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--color-brand-700) 0%, var(--color-ink-900) 100%);
   }
 
   .gradient-text {
-    background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%);
+    background: linear-gradient(135deg, var(--color-brand-600) 0%, var(--color-mint-500) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+}
+
+/*
+ * Public website: the "blueprint frame". Content sits inside a centred column bounded by hairline guide lines
+ * (GrowthPrint = growth + print/blueprint). Dark sections break out full-bleed and keep the guides.
+ */
+@layer components {
+  .gp-frame {
+    position: relative;
+    margin-inline: auto;
+    max-width: 76rem;
+    padding-inline: 1.25rem;
+  }
+  @media (min-width: 768px) {
+    .gp-frame { padding-inline: 2.5rem; }
+    .gp-frame::before,
+    .gp-frame::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: var(--gp-guide, var(--color-ink-200));
+      pointer-events: none;
+    }
+    .gp-frame::before { left: 0; }
+    .gp-frame::after { right: 0; }
+  }
+  .gp-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.025em;
+  }
+  /* Two-tone headline: a strong statement continued by a quieter clause, read as one sentence. */
+  .gp-headline-muted { color: var(--color-ink-500); }
+  .gp-on-dark { --gp-guide: rgb(255 255 255 / 0.08); }
+  .gp-on-dark .gp-headline-muted { color: var(--color-mint-300); }
+
+  /* Blueprint hero drawing: strokes draw in once on load; reduced motion shows the finished drawing. */
+  .gp-draw {
+    stroke-dasharray: var(--len, 600);
+    stroke-dashoffset: var(--len, 600);
+    animation: gpDraw 1.6s var(--ease-out-soft) forwards;
+    animation-delay: var(--delay, 0ms);
+  }
+  .gp-fade-late {
+    opacity: 0;
+    animation: fadeIn 0.6s ease-out forwards;
+    animation-delay: var(--delay, 900ms);
+  }
+  @keyframes gpDraw { to { stroke-dashoffset: 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    .gp-draw { stroke-dashoffset: 0; animation: none; }
+    .gp-fade-late { opacity: 1; animation: none; }
   }
 }
 

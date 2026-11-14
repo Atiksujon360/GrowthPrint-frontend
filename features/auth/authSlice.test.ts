@@ -393,3 +393,11 @@ test('login rejected clears logging in flag', () => {
 
   assert.equal(store.getState().auth.isLoggingIn, false);
 });
+
+test('a duplicate validateSession keeps the first validation pending (Strict Mode double effect)', () => {
+  const store = configureStore({ reducer: { auth: authReducer } });
+  store.dispatch({ type: 'auth/validateSession/pending' });
+  store.dispatch({ type: 'auth/validateSession/rejected', payload: 'Validation already in progress', error: { message: 'Rejected' } });
+  // Protected layouts must keep waiting instead of redirecting to the login page.
+  assert.equal(store.getState().auth.isSessionValidating, true);
+});

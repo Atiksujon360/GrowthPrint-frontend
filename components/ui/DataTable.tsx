@@ -18,6 +18,7 @@ import {
   type SortDirection 
 } from '../../lib/datatable-rules.ts';
 import { exportToCsv } from '../../lib/utils.ts';
+import { pageWindow } from '../../lib/pageWindow.ts';
 
 export interface ColumnDef<T> {
   id: string;
@@ -200,7 +201,7 @@ export function DataTable<T extends Record<string, any>>({
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden flex flex-col">
+    <div className="bg-white rounded-2xl border border-slate-200/90 overflow-hidden flex flex-col">
       {/* Table Toolbar */}
       <div className="p-4 sm:p-5 border-b border-slate-100 flex flex-col gap-4">
         {/* Optional Title row */}
@@ -236,16 +237,17 @@ export function DataTable<T extends Record<string, any>>({
         )}
 
         {/* Search & Filter Bar */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div className="flex flex-col gap-3 2xl:flex-row 2xl:items-center 2xl:justify-between">
           {/* Search box */}
-          <div className="relative flex-1 max-w-md">
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-3" />
+          <div className="relative w-full min-w-[14rem] 2xl:max-w-md 2xl:flex-1">
+            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-3.5" aria-hidden="true" />
             <input
               type="text"
+              aria-label={searchConfig?.placeholder || 'Search'}
               value={internalSearch}
               onChange={(e) => handleSearchChange(e.target.value)}
               placeholder={searchConfig?.placeholder || 'Search by keyword, client, or tag...'}
-              className="w-full pl-9 pr-8 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50/50 hover:bg-white focus:bg-white transition-colors"
+              className="w-full min-h-10 pl-9 pr-8 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-100 bg-slate-50/50 hover:bg-white focus:bg-white transition-colors"
             />
             {internalSearch && (
               <button
@@ -278,7 +280,7 @@ export function DataTable<T extends Record<string, any>>({
                   >
                     <span>{opt.label}</span>
                     {opt.count !== undefined && (
-                      <span className={`text-[10px] px-1.5 py-0.2 rounded-full tabular-nums ${
+                      <span className={`text-xs px-1.5 py-0.2 rounded-full tabular-nums ${
                         isActive ? 'bg-slate-100 text-slate-800' : 'bg-slate-200/70 text-slate-600'
                       }`}>
                         {opt.count}
@@ -294,9 +296,9 @@ export function DataTable<T extends Record<string, any>>({
 
       {/* Table Body Area */}
       <div className="overflow-x-auto min-h-[220px] relative">
-        <table className="w-full text-left text-xs border-collapse">
+        <table className="w-full text-left text-sm border-collapse">
           <thead>
-            <tr className="border-b border-slate-200/90 bg-slate-50/70 text-slate-500 font-semibold uppercase tracking-wider text-[11px]">
+            <tr className="border-b border-gp-border bg-gp-canvas text-gp-text-secondary font-medium text-xs">
               {columns.map((col) => {
                 const isSorted = sortKey === col.id || sortKey === col.accessorKey;
                 const canSort = col.sortable !== false;
@@ -359,7 +361,7 @@ export function DataTable<T extends Record<string, any>>({
                       <Inbox className="w-5 h-5" />
                     </div>
                     <div className="text-xs font-bold text-slate-800">{emptyMessage}</div>
-                    <p className="text-[11px] text-slate-500">{emptySubtext}</p>
+                    <p className="text-xs text-slate-500">{emptySubtext}</p>
                     {internalSearch && (
                       <button
                         onClick={() => handleSearchChange('')}
@@ -423,7 +425,7 @@ export function DataTable<T extends Record<string, any>>({
       </div>
 
       {/* Pagination Footer */}
-      <div className="p-4 border-t border-slate-100 bg-slate-50/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-500">
+      <div className="px-4 py-3 border-t border-gp-divider flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-500">
         <div className="flex items-center gap-4">
           <div>
             Showing <strong className="text-slate-800 tabular-nums">{paginationResult.startIndex}</strong> to{' '}
@@ -460,10 +462,26 @@ export function DataTable<T extends Record<string, any>>({
             <ChevronLeft className="w-3.5 h-3.5" />
           </button>
 
-          {/* Compact page pill */}
-          <span className="px-2.5 py-1 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-lg tabular-nums">
-            Page {paginationResult.currentPage} of {paginationResult.totalPages}
-          </span>
+          {/* Numbered pages (reference: 1 2 3 … n) */}
+          <span className="sr-only">Page {paginationResult.currentPage} of {paginationResult.totalPages}</span>
+          {pageWindow(paginationResult.currentPage, paginationResult.totalPages).map((token, i) => token === 'gap'
+            ? <span key={`gap-${i}`} className="px-1 text-slate-400" aria-hidden="true">…</span>
+            : (
+              <button
+                key={token}
+                type="button"
+                onClick={() => handlePageChange(token)}
+                aria-label={`Page ${token}`}
+                aria-current={token === paginationResult.currentPage ? 'page' : undefined}
+                className={`min-w-8 h-8 px-2 rounded-md text-xs font-medium tabular-nums transition-colors ${
+                  token === paginationResult.currentPage
+                    ? 'bg-gp-primary text-white'
+                    : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                }`}
+              >
+                {token}
+              </button>
+            ))}
 
           <button
             onClick={() => handlePageChange(currentPage + 1)}

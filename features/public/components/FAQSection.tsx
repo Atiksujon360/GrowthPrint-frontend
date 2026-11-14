@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useId, useState } from 'react';
+import { Plus } from 'lucide-react';
 
 const questions = [
   {
     question: 'What kind of work can GrowthPrint help with?',
-    answer: 'We help with custom web applications, client portals, website improvements, integrations, workflow automation, and carefully chosen AI features. If you are not sure what the right starting point is, we can help you work that out.'
+    answer: 'Custom web applications, client portals, website improvements and modernization, integrations, workflow automation, and carefully chosen AI features. If you are not sure what the right starting point is, we can help you work that out.'
   },
   {
     question: 'What happens after I send an inquiry?',
@@ -25,53 +26,45 @@ const questions = [
 
 export function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
-
-  const toggleQuestion = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index);
-  };
+  const baseId = useId();
 
   return (
-    <section id="faq" className="py-20 bg-slate-50 border-t border-slate-200 relative overflow-hidden overflow-x-hidden">
-      {/* Subtle gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-white to-blue-50 -z-10" />
-
-      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="max-w-2xl">
-          <div className="text-sm font-semibold uppercase tracking-wider text-blue-600">
-            Good to know
-          </div>
-          <h2 className="mt-2 text-[clamp(1.875rem,4vw,2.25rem)] font-bold text-slate-900 tracking-tight">
-            A few practical answers before we start.
+    <section id="faq" aria-labelledby="faq-title" className="border-b border-ink-200 bg-ink-50">
+      <div className="gp-frame py-20 md:py-28">
+        <div className="grid gap-12 lg:grid-cols-12">
+          <h2 id="faq-title" className="gp-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.08] text-ink-950 lg:col-span-4">
+            Practical answers before we start.
           </h2>
-          <p className="mt-4 text-[clamp(1rem,1.5vw,1.125rem)] text-slate-600 leading-relaxed">
-            Here is what clients usually want to know before starting a conversation.
-          </p>
-        </div>
-
-        <div className="mt-10 divide-y divide-slate-200 border-y border-slate-200">
-          {questions.map((item, index) => (
-            <div key={item.question} className="py-5">
-              <button
-                onClick={() => toggleQuestion(index)}
-                className="w-full flex cursor-pointer items-center justify-between gap-6 text-lg font-semibold text-slate-900 text-left py-3 px-2 min-h-[44px] hover:translate-x-1 transition-transform"
-                aria-expanded={openIndex === index}
-              >
-                <span>{item.question}</span>
-                <span
-                  className="text-2xl font-normal text-blue-600 min-w-[28px] min-h-[28px] flex items-center justify-center transition-transform"
-                  style={{ transform: openIndex === index ? 'rotate(45deg)' : 'rotate(0deg)' }}
-                >
-                  +
-                </span>
-              </button>
-
-              {openIndex === index && (
-                <p className="mt-3 max-w-3xl pr-10 text-base leading-relaxed text-slate-600">
-                  {item.answer}
-                </p>
-              )}
-            </div>
-          ))}
+          <div className="border-b border-ink-200 lg:col-span-8">
+            {questions.map((item, index) => {
+              const open = openIndex === index;
+              return (
+                <div key={item.question} className="border-t border-ink-200">
+                  <h3>
+                    <button
+                      id={`${baseId}-q-${index}`}
+                      onClick={() => setOpenIndex(open ? null : index)}
+                      aria-expanded={open}
+                      aria-controls={`${baseId}-a-${index}`}
+                      className="flex min-h-16 w-full items-center justify-between gap-6 py-5 text-left text-lg font-semibold text-ink-950"
+                    >
+                      <span>{item.question}</span>
+                      <Plus aria-hidden="true"
+                        className={`h-5 w-5 shrink-0 text-brand-600 transition-transform duration-200 ${open ? 'rotate-45' : ''}`} />
+                    </button>
+                  </h3>
+                  {/* grid-rows animates height without measuring; content stays out of the tab order when closed */}
+                  <div id={`${baseId}-a-${index}`} role="region" aria-labelledby={`${baseId}-q-${index}`}
+                    className={`grid transition-[grid-template-rows] duration-200 ease-out ${open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
+                    hidden={!open}>
+                    <div className="overflow-hidden">
+                      <p className="max-w-2xl pb-6 text-[1.02rem] leading-relaxed text-ink-600">{item.answer}</p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>

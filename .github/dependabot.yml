@@ -1,0 +1,12 @@
+# Production hardening R12: weekly dependency update PRs (free). Review each PR; nothing merges automatically.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

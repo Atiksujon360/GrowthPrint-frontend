@@ -50,7 +50,7 @@ export function PortalProposalsView() {
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+          <h2 className="text-lg font-semibold text-ink-950">
             Commercial Proposals & Scope Specifications
           </h2>
           <p className="text-xs text-slate-500">
@@ -71,7 +71,7 @@ export function PortalProposalsView() {
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+          <h2 className="text-lg font-semibold text-ink-950">
             Commercial Proposals & Scope Specifications
           </h2>
           <p className="text-xs text-slate-500">
@@ -91,7 +91,7 @@ export function PortalProposalsView() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+        <h2 className="text-lg font-semibold text-ink-950">
           Commercial Proposals & Scope Specifications
         </h2>
         <p className="text-xs text-slate-500">
@@ -103,12 +103,12 @@ export function PortalProposalsView() {
         {proposals.length === 0 ? (
           <EmptyState title="No proposals yet" message="New statements of work will appear here when GrowthPrint prepares them for review." />
         ) : proposals.map((prop) => (
-          <div key={prop.id} className="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
+          <div key={prop.id} className="bg-white rounded-2xl border border-slate-200/90 overflow-hidden">
             {/* Header */}
             <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-xs font-bold text-slate-400">{prop.proposalNumber}</span>
+                  <span className="text-xs font-bold text-slate-400">{prop.proposalNumber}</span>
                   <StatusBadge status={prop.status} />
                 </div>
                 <h3 className="text-lg font-bold text-slate-900">{prop.title}</h3>
@@ -127,7 +127,7 @@ export function PortalProposalsView() {
             {/* Scope Deliverables & Exclusions */}
             <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8 border-b border-slate-100">
               <div>
-                <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
+                <h4 className="text-xs font-semibold text-slate-500 mb-3">
                   Scope Deliverables
                 </h4>
                 <ul className="space-y-2 text-xs text-slate-700">
@@ -141,7 +141,7 @@ export function PortalProposalsView() {
               </div>
 
               <div>
-                <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
+                <h4 className="text-xs font-semibold text-slate-500 mb-3">
                   Documented Exclusions
                 </h4>
                 <ul className="space-y-2 text-xs text-slate-600">
@@ -157,7 +157,7 @@ export function PortalProposalsView() {
 
             {/* Payment Milestones */}
             <div className="p-6 bg-slate-50/40">
-              <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
+              <h4 className="text-xs font-semibold text-slate-500 mb-3">
                 Payment Milestones Breakdown
               </h4>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -193,7 +193,7 @@ export function PortalProposalsView() {
                   </button>
                   <button
                     onClick={() => handleDecision(prop.id, 'ACCEPT')}
-                    className="px-4 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-xs transition-colors flex items-center gap-1.5"
+                    className="px-4 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-colors flex items-center gap-1.5"
                   >
                     <CheckCircle2 className="w-3.5 h-3.5" />
                     <span>Accept Proposal</span>

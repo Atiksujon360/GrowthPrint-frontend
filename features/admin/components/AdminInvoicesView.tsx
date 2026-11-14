@@ -128,7 +128,7 @@ export function AdminInvoicesView() {
       sortable: true,
       cell: ({ row }) => (
         <div className="flex items-center gap-1.5">
-          <span className="font-mono font-bold text-slate-800 text-xs">
+          <span className="font-bold text-slate-800 text-xs">
             {row.invoiceNumber}
           </span>
           <CopyButton value={row.invoiceNumber} title="Copy invoice number" />
@@ -143,7 +143,7 @@ export function AdminInvoicesView() {
       cell: ({ row }) => (
         <div>
           <div className="font-bold text-slate-900">{row.clientName}</div>
-          <div className="text-[11px] text-slate-400">{row.clientEmail}</div>
+          <div className="text-xs text-slate-400">{row.clientEmail}</div>
         </div>
       )
     },
@@ -153,7 +153,7 @@ export function AdminInvoicesView() {
       accessorKey: 'issueDate',
       sortable: true,
       cell: ({ row }) => (
-        <span className="font-mono text-slate-500 text-[11px]">{row.issueDate}</span>
+        <span className="text-slate-500 text-xs">{row.issueDate}</span>
       )
     },
     {
@@ -162,7 +162,7 @@ export function AdminInvoicesView() {
       accessorKey: 'dueDate',
       sortable: true,
       cell: ({ row }) => (
-        <span className="font-mono text-slate-500 text-[11px]">{row.dueDate}</span>
+        <span className="text-slate-500 text-xs">{row.dueDate}</span>
       )
     },
     {
@@ -194,7 +194,7 @@ export function AdminInvoicesView() {
           {row.status === 'ISSUED' && (
             <button
               onClick={() => handleMarkPaid(row.id, row.invoiceNumber, row.totalAmount, row.clientName)}
-              className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-xs flex items-center gap-1 transition-colors"
+              className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors"
             >
               <CheckCircle2 className="w-3 h-3" />
               <span>Reconcile</span>
@@ -231,7 +231,7 @@ export function AdminInvoicesView() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+          <h2 className="text-lg font-semibold text-ink-950">
             Invoices & Revenue Administration
           </h2>
           <p className="text-xs text-slate-500">

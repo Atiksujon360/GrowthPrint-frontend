@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks.ts';
 import { submitPublicInquiry, createSupportRequest, addToast, addNotification } from '../../../store/index.ts';
 import { X, Sparkles, TicketCheck, CreditCard, Building, CheckCircle2, Loader2 } from 'lucide-react';
@@ -33,6 +33,14 @@ export function QuickCreateModal({ isOpen, onClose }: QuickCreateModalProps) {
   const [isCreatingLead, setIsCreatingLead] = useState(false);
   const [isCreatingTicket, setIsCreatingTicket] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Escape closes the dialog (accessibility; previously only the close button worked).
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -136,11 +144,12 @@ export function QuickCreateModal({ isOpen, onClose }: QuickCreateModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl max-w-lg w-full border border-slate-200 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      <div role="dialog" aria-modal="true" aria-label="Quick-create record"
+        className="bg-white rounded-2xl max-w-lg w-full border border-slate-200 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
         <div className="p-5 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
           <div>
-            <div className="text-xs font-semibold text-blue-600 uppercase tracking-wider">Founder Fast-Track</div>
+            <div className="text-xs font-semibold text-blue-600">Founder Fast-Track</div>
             <h3 className="text-base font-bold text-slate-900">Quick-Create Record</h3>
           </div>
           <button onClick={onClose} className="p-1 text-slate-400 hover:text-slate-600">
@@ -153,7 +162,7 @@ export function QuickCreateModal({ isOpen, onClose }: QuickCreateModalProps) {
           <button
             onClick={() => setActiveTab('LEAD')}
             className={`flex-1 py-1.5 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-colors ${
-              activeTab === 'LEAD' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+              activeTab === 'LEAD' ? 'bg-white text-slate-900' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <Sparkles className="w-3.5 h-3.5 text-blue-600" />
@@ -162,7 +171,7 @@ export function QuickCreateModal({ isOpen, onClose }: QuickCreateModalProps) {
           <button
             onClick={() => setActiveTab('TICKET')}
             className={`flex-1 py-1.5 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-colors ${
-              activeTab === 'TICKET' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+              activeTab === 'TICKET' ? 'bg-white text-slate-900' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <TicketCheck className="w-3.5 h-3.5 text-blue-600" />
@@ -263,12 +272,12 @@ export function QuickCreateModal({ isOpen, onClose }: QuickCreateModalProps) {
                   placeholder="Identified need, outdated website, missing API integration... (min 15 characters)"
                   className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg"
                 />
-                <p className="text-[10px] text-slate-400 mt-1">Minimum 15 characters required</p>
+                <p className="text-xs text-slate-400 mt-1">Minimum 15 characters required</p>
               </div>
 
               <div className="pt-2 flex justify-end gap-2">
                 <button type="button" onClick={onClose} className="px-3 py-1.5 text-xs text-slate-600">Cancel</button>
-                <button type="submit" disabled={isCreatingLead} className={`px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-xs flex items-center gap-1.5 ${isCreatingLead ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                <button type="submit" disabled={isCreatingLead} className={`px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 ${isCreatingLead ? 'opacity-50 cursor-not-allowed' : ''}`}>
                   {isCreatingLead ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
                   <span>{isCreatingLead ? 'Creating...' : 'Create Lead'}</span>
                 </button>
@@ -343,7 +352,7 @@ export function QuickCreateModal({ isOpen, onClose }: QuickCreateModalProps) {
 
               <div className="pt-2 flex justify-end gap-2">
                 <button type="button" onClick={onClose} className="px-3 py-1.5 text-xs text-slate-600">Cancel</button>
-                <button type="submit" disabled={isCreatingTicket} className={`px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-xs flex items-center gap-1.5 ${isCreatingTicket ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                <button type="submit" disabled={isCreatingTicket} className={`px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 ${isCreatingTicket ? 'opacity-50 cursor-not-allowed' : ''}`}>
                   {isCreatingTicket ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
                   <span>{isCreatingTicket ? 'Creating...' : 'Create Ticket'}</span>
                 </button>

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prototype · GrowthPrint sign in</title><link rel="stylesheet" href="gp.css">
+<style>
+  .auth { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; }
+  .auth-brand { background: var(--primary-soft); padding: 48px 56px; display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid var(--border); }
+  .auth-brand h2 { font-size: 30px; line-height: 1.2; margin: 0 0 18px; letter-spacing: -.01em; max-width: 440px; }
+  .auth-brand li { margin: 10px 0; color: #34404b; display: flex; gap: 10px; }
+  .auth-brand li::before { content: ""; width: 18px; height: 18px; flex: none; margin-top: 2px; border-radius: 50%; background: var(--primary-strong) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3'%3E%3Cpath d='m6 12 4 4 8-8'/%3E%3C/svg%3E") center/12px no-repeat; }
+  .auth-form { display: grid; place-items: center; padding: 40px; background: var(--surface); }
+  .form { width: 100%; max-width: 400px; }
+  .form h1 { font-size: 26px; margin: 6px 0 6px; }
+  .field { margin-top: 18px; }
+  .field label { display: block; font-weight: 500; font-size: 13px; margin-bottom: 6px; }
+  .input { height: 44px; border: 1px solid var(--border); border-radius: 8px; padding: 0 12px; display: flex; align-items: center; justify-content: space-between; color: var(--muted); }
+  .input.err { border-color: var(--danger); }
+  .msg { color: var(--danger-t); font-size: 12.5px; margin-top: 6px; }
+  .row2 { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; font-size: 13px; }
+</style></head>
+<body>
+<div class="proto-tag">Prototype: sign in (validation state shown)</div>
+<div class="auth">
+  <aside class="auth-brand">
+    <div class="brand" style="border:0"><span class="mark"><svg width="18" height="18" viewBox="0 0 28 28"><path d="M6 20.5 11.5 15l3.5 3.5L22 9.5" fill="none" stroke="#84d8c5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>GrowthPrint</b></div>
+    <div><h2>The studio for GrowthPrint delivery and operations</h2>
+      <ul style="list-style:none;padding:0;margin:0">
+        <li>Team members only see the modules they have been granted</li>
+        <li>Finance, AI settings and user management stay with the administrator</li>
+        <li>Changing or resetting a password signs out every other device</li>
+      </ul></div>
+    <p style="color:var(--text2);font-size:13px;margin:0">Access is by invitation from the administrator.</p>
+  </aside>
+  <main class="auth-form">
+    <div class="form">
+      <p style="color:var(--primary-strong);font-weight:600;margin:0">GrowthPrint studio</p>
+      <h1>Welcome back</h1>
+      <p style="color:var(--text2);margin:0">Sign in to the internal workspace for delivery, clients and operations.</p>
+      <div class="field"><label>Email address <span style="color:var(--danger-t)">*</span></label><div class="input">you@growthprint.dev</div></div>
+      <div class="field"><label>Password <span style="color:var(--danger-t)">*</span></label><div class="input err"><span></span><span style="font-size:13px;color:var(--text2)">Show</span></div><p class="msg">Enter your password.</p></div>
+      <div class="row2"><span></span><a class="link" href="#">Forgot password?</a></div>
+      <button class="btn btn-p" style="width:100%;justify-content:center;margin-top:20px;height:44px">Sign in</button>
+    </div>
+  </main>
+</div>
+</body></html>

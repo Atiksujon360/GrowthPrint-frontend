@@ -68,7 +68,7 @@ export function SupportTriagePanel({ requestId, onUseCategory }: SupportTriagePa
   return (
     <section aria-labelledby={`${id}-title`} className="pt-2 border-t border-slate-100 space-y-2">
       <div className="flex items-center justify-between gap-2">
-        <h4 id={`${id}-title`} className="text-xs font-bold text-slate-900 uppercase tracking-wider">AI suggestion</h4>
+        <h4 id={`${id}-title`} className="text-xs font-bold text-slate-900">AI suggestion</h4>
         <button
           type="button"
           onClick={() => void suggest()}
@@ -90,20 +90,20 @@ export function SupportTriagePanel({ requestId, onUseCategory }: SupportTriagePa
 
       {suggestion && (
         <div className="rounded-xl border border-violet-200 bg-violet-50/40 p-3 space-y-2 text-xs text-slate-800">
-          <p className="text-[11px] font-semibold text-violet-800">
+          <p className="text-xs font-semibold text-violet-800">
             AI-generated · {suggestion.provider} {suggestion.model} · review before using
           </p>
           <dl className="grid grid-cols-3 gap-2">
             <div>
-              <dt className="text-[10px] text-slate-500 uppercase">Category</dt>
+              <dt className="text-xs text-slate-500 uppercase">Category</dt>
               <dd className="font-medium">{CATEGORY_LABEL[suggestion.category]}</dd>
             </div>
             <div>
-              <dt className="text-[10px] text-slate-500 uppercase">Urgency</dt>
+              <dt className="text-xs text-slate-500 uppercase">Urgency</dt>
               <dd className="font-medium">{suggestion.urgency === 'URGENT' ? 'Urgent' : 'Normal'}</dd>
             </div>
             <div>
-              <dt className="text-[10px] text-slate-500 uppercase">Impact</dt>
+              <dt className="text-xs text-slate-500 uppercase">Impact</dt>
               <dd className="font-medium">{suggestion.businessImpact.replace('_', ' ').toLowerCase()}</dd>
             </div>
           </dl>
@@ -117,7 +117,7 @@ export function SupportTriagePanel({ requestId, onUseCategory }: SupportTriagePa
           </button>
 
           <div>
-            <label htmlFor={`${id}-draft`} className="block text-[11px] font-semibold text-slate-700 mb-1">
+            <label htmlFor={`${id}-draft`} className="block text-xs font-semibold text-slate-700 mb-1">
               Reply draft (AI-generated — edit before sending)
             </label>
             <textarea
@@ -128,7 +128,7 @@ export function SupportTriagePanel({ requestId, onUseCategory }: SupportTriagePa
               className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/30"
             />
             <div className="flex items-center justify-end gap-2 mt-1">
-              <span className="text-[11px] text-slate-500" role="status">{copied ? 'Copied' : ''}</span>
+              <span className="text-xs text-slate-500" role="status">{copied ? 'Copied' : ''}</span>
               <button
                 type="button"
                 onClick={() => void copyDraft()}

@@ -124,7 +124,7 @@ export function LiveSyncIndicator() {
               className="hidden sm:flex items-center gap-1 text-slate-500 hover:text-blue-600 font-medium transition-colors"
             >
               <Server className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" />
-              <span className="hidden lg:inline text-[11px] text-slate-400">API</span>
+              <span className="hidden lg:inline text-xs text-slate-400">API</span>
             </button>
           </>
         )}
