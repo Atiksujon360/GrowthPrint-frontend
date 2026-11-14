@@ -114,9 +114,9 @@ export function PortalDashboard({ onNavigateTab, onOpenNewRequest }: PortalDashb
           >
             Client Workspace
           </motion.div>
-          <h2 className="mt-1 gp-display text-[1.75rem] font-semibold text-ink-950">
+          <h1 className="mt-1 text-[1.625rem] font-bold tracking-tight text-ink-950">
             Welcome back, {currentUser.name}
-          </h2>
+          </h1>
           <p className="mt-1 text-xs sm:text-sm text-slate-500">
             {currentUser.clientName} · Retainer active (8.5 of 15.0 hours utilized this billing cycle)
           </p>

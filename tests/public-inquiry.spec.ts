@@ -40,7 +40,7 @@ test.describe('Public Inquiry Form', () => {
 
   // Writes a real inquiry to the backend's database, so it runs only when GP_E2E_BACKEND_WRITES=1 is set against an
   // isolated test database (never the shared Render database).
-  test('should submit inquiry and create lead (requires backend)', async ({ page }) => {
+  test('should submit inquiry and create lead (requires backend) @backend', async ({ page }) => {
     test.skip(process.env.GP_E2E_BACKEND_WRITES !== '1', 'Set GP_E2E_BACKEND_WRITES=1 with an isolated test database');
     // Generate unique test data to avoid collisions
     const timestamp = Date.now();

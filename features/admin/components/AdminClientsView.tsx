@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import type { Client } from '../../../types/agency.ts';
 import { humanizeCode } from '../../../lib/labels.ts';
+import { SummaryStrip } from '../../../components/ui/app-kit.tsx';
 
 export function AdminClientsView() {
   const dispatch = useAppDispatch();
@@ -135,6 +136,13 @@ export function AdminClientsView() {
 
   return (
     <div className="space-y-6">
+      <SummaryStrip label="Client summary" items={[
+        { label: 'Total clients', value: clients.length },
+        { label: 'Active', value: clients.filter(c => c.status === 'ACTIVE').length, tone: 'success' },
+        { label: 'On a retainer', value: clients.filter(c => c.retainerTier && c.retainerTier !== 'NONE').length },
+        { label: 'Suspended', value: clients.filter(c => c.status === 'SUSPENDED').length,
+          tone: clients.some(c => c.status === 'SUSPENDED') ? 'attention' : 'default' },
+      ]} />
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">

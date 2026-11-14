@@ -116,7 +116,7 @@ export function PublicHeader({ onOpenQuote }: { onOpenQuote: () => void }) {
           </button>
           <button
             onClick={onOpenQuote}
-            className="inline-flex min-h-10 items-center rounded-full bg-navy-950 px-4 text-[0.94rem] font-semibold text-white transition-colors hover:bg-brand-700"
+            className="inline-flex min-h-10 items-center rounded-lg bg-brand-700 px-4 text-[0.94rem] font-semibold text-white transition-colors hover:bg-brand-700"
           >
             Tell us what you need
           </button>
@@ -162,7 +162,7 @@ export function PublicHeader({ onOpenQuote }: { onOpenQuote: () => void }) {
             <div className="pt-3">
               <button
                 onClick={() => { setMobileMenuOpen(false); onOpenQuote(); }}
-                className="min-h-12 w-full rounded-full bg-navy-950 px-4 text-base font-semibold text-white"
+                className="min-h-12 w-full rounded-lg bg-brand-700 px-4 text-base font-semibold text-white"
               >
                 Tell us what you need
               </button>

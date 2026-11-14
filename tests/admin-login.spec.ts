@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Admin Login', () => {
+test.describe('Admin Login @backend', () => {
   test('should authenticate admin user and redirect to dashboard', async ({ page }) => {
     // Navigate to admin login page
     await page.goto('/studio/ops/login');

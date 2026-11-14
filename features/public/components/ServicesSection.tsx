@@ -102,7 +102,7 @@ export function ServicesSection({ onSelectService }: { onSelectService: (service
                 <p className="max-w-xl text-xl leading-relaxed text-ink-800">{s.summary}</p>
                 <ServiceIncludes items={s.includes} />
                 <button onClick={() => onSelectService(s.id)}
-                  className="mt-10 inline-flex min-h-12 items-center gap-2 rounded-full bg-navy-950 px-6 font-semibold text-white transition-colors hover:bg-brand-700">
+                  className="mt-10 inline-flex min-h-12 items-center gap-2 rounded-lg bg-brand-700 px-6 font-semibold text-white transition-colors hover:bg-brand-800">
                   {s.cta}
                 </button>
               </div>

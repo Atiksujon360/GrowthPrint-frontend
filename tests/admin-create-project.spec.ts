@@ -7,7 +7,7 @@ import { test, expect } from '@playwright/test';
  * budget and category fields. That UI never existed: Ctrl+K opens the command palette, and Quick create is a
  * lead / support-ticket form. This test now checks the real flow without submitting, so it writes no data.
  */
-test.describe('Admin Quick Create', () => {
+test.describe('Admin Quick Create @backend', () => {
   test('opens Quick create from the top bar and offers lead and ticket forms', async ({ page }) => {
     await page.goto('/studio/ops/login');
     await page.getByLabel(/email/i).fill('admin@growthprint.dev');

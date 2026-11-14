@@ -741,6 +741,47 @@ export const createMySupportRequestThunk = createAsyncThunk(
 );
 
 // Proposal thunks
+/** Backend proposal -> frontend Proposal (shared by the client and admin list thunks). */
+function mapBackendProposal(p: any): Proposal {
+  return {
+    id: p.id,
+    proposalNumber: p.proposalNumber,
+    clientId: p.clientId,
+    clientName: p.clientName,
+    title: p.title,
+    serviceCategory: p.serviceCategory as ServiceCategory,
+    scopeSummary: p.scopeSummary,
+    deliverables: p.deliverables || [],
+    exclusions: p.exclusions || [],
+    totalPrice: parseFloat(p.totalPrice),
+    currency: p.currency,
+    paymentMilestones: p.paymentMilestones || [],
+    timelineDuration: p.timelineDuration,
+    validUntil: p.validUntil,
+    status: p.status as 'DRAFT' | 'SENT_FOR_REVIEW' | 'ACCEPTED' | 'DECLINED' | 'EXPIRED',
+    acceptedAt: p.acceptedAt,
+    acceptedBy: p.acceptedBy,
+    declinedAt: p.declinedAt,
+    declinedBy: p.declinedBy
+  } as Proposal;
+}
+
+/** Admin: every proposal (GET /api/v1/proposals). Read-only; used by the studio dashboard. */
+export const fetchAllProposals = createAsyncThunk(
+  'agency/fetchAllProposals',
+  async (_, { rejectWithValue }) => {
+    if (isMockMode) {
+      return INITIAL_PROPOSALS;
+    }
+    try {
+      const response = await agencyApi.proposals.getAll();
+      return (response.data as any[]).map(mapBackendProposal);
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to fetch proposals');
+    }
+  }
+);
+
 export const fetchMyProposals = createAsyncThunk(
   'agency/fetchMyProposals',
   async (_, { rejectWithValue }) => {
@@ -2250,6 +2291,12 @@ const agencySlice = createSlice({
         state.proposals = action.payload;
       })
       .addCase(fetchMyProposals.rejected, (state, action) => {
+        console.error('Failed to fetch proposals:', action.payload);
+      })
+      .addCase(fetchAllProposals.fulfilled, (state, action) => {
+        state.proposals = action.payload;
+      })
+      .addCase(fetchAllProposals.rejected, (state, action) => {
         console.error('Failed to fetch proposals:', action.payload);
       })
       .addCase(recordProposalDecision.fulfilled, (state, action) => {

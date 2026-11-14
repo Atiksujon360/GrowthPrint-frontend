@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Client Portal Login', () => {
+test.describe('Client Portal Login @backend', () => {
   test('should authenticate client user and redirect to portal dashboard', async ({ page }) => {
     // Navigate to portal login page
     await page.goto('/client-hub/login');
@@ -29,6 +29,6 @@ test.describe('Client Portal Login', () => {
 
     // Verify the portal overview is visible. (Updated 2026-11-09, decision D5: the portal never had a
     // "dashboard" heading; its first page is titled "Overview".)
-    await expect(page.getByRole('heading', { level: 1, name: 'Overview' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: /welcome back/i })).toBeVisible();
   });
 });

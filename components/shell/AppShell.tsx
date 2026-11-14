@@ -6,9 +6,10 @@ import { ChevronDown, Menu, X } from 'lucide-react';
 import { GrowthPrintMark } from '../../features/public/components/GrowthPrintMark.tsx';
 
 /**
- * Presentational application shell (Enterprise UI Kit, reference A): navy navigation rail, white top bar, canvas.
- * Used by the studio, client hub and business workspace layouts, which keep all state and logic (permissions,
- * badges, sign-out, tabs) and pass it in. Responsive: full sidebar >= 1280px, 72px icon rail 768-1279px, drawer < 768px.
+ * Presentational application shell (COMPREO reference): white sidebar with teal icon tiles and a solid teal active
+ * item, minimal top bar (context, search and actions, account menu), page title inside the content area.
+ * Used by the studio, client hub and business workspace layouts, which keep all state and logic and pass it in.
+ * Responsive: full sidebar >= 1280px, 72px icon rail 768-1279px, drawer < 768px.
  */
 export interface ShellNavItem {
   key: string;
@@ -17,13 +18,14 @@ export interface ShellNavItem {
   active: boolean;
   href?: string;
   onSelect?: () => void;
-  badge?: { count: number; label: string };
+  /** 'attention' (red) for items that need action, otherwise teal. */
+  badge?: { count: number; label: string; tone?: 'attention' | 'default' };
 }
 export interface ShellNavGroup { label: string; items: ShellNavItem[] }
 export interface ShellMenuItem { label: string; icon?: ComponentType<{ className?: string }>; onSelect?: () => void; href?: string; danger?: boolean }
 
 export function AppShell({
-  brand, navLabel, groups, sidebarTop, user, userMenu, title, subtitle, titleAs = 'h1', topbarContext, topbarActions,
+  brand, navLabel, groups, sidebarTop, user, userMenu, title, subtitle, headerActions, topbarContext, topbarActions,
   banner, children,
 }: {
   brand: { title: string; href: string };
@@ -33,9 +35,11 @@ export function AppShell({
   sidebarTop?: ReactNode;
   user: { name: string; subtitle: string; initials: string };
   userMenu: ShellMenuItem[];
-  title: ReactNode;
+  /** Page title shown as the h1 at the top of the content. Omit when the page renders its own h1. */
+  title?: ReactNode;
   subtitle?: ReactNode;
-  titleAs?: 'h1' | 'p';
+  /** Right-aligned actions beside the page title (period filter, primary action). */
+  headerActions?: ReactNode;
   topbarContext?: ReactNode;
   topbarActions?: ReactNode;
   banner?: ReactNode;
@@ -44,7 +48,6 @@ export function AppShell({
   const [drawerOpen, setDrawerOpen] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
-  const TitleTag = titleAs;
 
   // Drawer: focus moves inside, Tab is trapped, Escape closes and returns focus to the menu button.
   useEffect(() => {
@@ -65,11 +68,13 @@ export function AppShell({
   }, [drawerOpen]);
 
   const nav = (mode: 'sidebar' | 'drawer') => (
-    <div className="space-y-5">
-      {groups.map(group => (
-        <div key={group.label}>
-          <p className={`px-3 pb-1.5 text-xs font-medium text-white/45 ${mode === 'sidebar' ? 'hidden xl:block' : ''}`}>{group.label}</p>
-          <ul className="space-y-0.5">
+    <div className="space-y-1">
+      {groups.map((group, i) => (
+        <div key={group.label} className={i > 0 ? 'pt-2' : undefined}>
+          {groups.length > 1 && (
+            <p className={`px-3 pb-1 pt-2 text-xs font-medium text-gp-text-muted ${mode === 'sidebar' ? 'hidden xl:block' : ''}`}>{group.label}</p>
+          )}
+          <ul className="space-y-1">
             {group.items.map(item => (
               <li key={item.key}>
                 <NavEntry item={item} compact={mode === 'sidebar'} onAfterSelect={mode === 'drawer' ? () => setDrawerOpen(false) : undefined} />
@@ -83,45 +88,44 @@ export function AppShell({
 
   return (
     <div className="flex min-h-screen bg-gp-canvas">
-      {/* Navigation rail (md: icons only, xl: full) */}
-      <aside className="sticky top-0 hidden h-screen w-[72px] shrink-0 flex-col bg-gp-sidebar text-white md:flex xl:w-60" aria-label={brand.title}>
-        <Link href={brand.href} className="flex h-16 shrink-0 items-center gap-2.5 px-5 xl:px-5" title={brand.title}>
-          <GrowthPrintMark className="h-8 w-8 shrink-0" tone="light" />
-          <span className="hidden truncate text-[0.98rem] font-semibold xl:inline">{brand.title}</span>
+      <aside className="sticky top-0 hidden h-screen w-[72px] shrink-0 flex-col border-r border-gp-border bg-gp-surface md:flex xl:w-60" aria-label={brand.title}>
+        <Link href={brand.href} className="flex h-[72px] shrink-0 items-center gap-2.5 border-b border-gp-divider px-5" title={brand.title}>
+          <GrowthPrintMark className="h-8 w-8 shrink-0" />
+          <span className="hidden truncate text-[1.05rem] font-bold tracking-tight text-gp-text xl:inline">{brand.title}</span>
         </Link>
-        {sidebarTop && <div className="hidden px-3 pb-2 xl:block">{sidebarTop}</div>}
+        {sidebarTop && <div className="hidden px-3 pt-3 xl:block">{sidebarTop}</div>}
         <nav aria-label={navLabel} className="flex-1 overflow-y-auto px-3 py-3">{nav('sidebar')}</nav>
-        <div className="border-t border-white/10 p-3">
-          <div className="flex items-center gap-3 px-1 py-1" title={user.name}>
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15 text-xs font-semibold" aria-hidden="true">{user.initials}</span>
-            <span className="hidden min-w-0 xl:block">
-              <span className="block truncate text-sm font-medium">{user.name}</span>
-              <span className="block truncate text-xs text-white/55">{user.subtitle}</span>
-            </span>
-          </div>
-        </div>
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-30 border-b border-gp-border bg-gp-surface">
-          <div className="flex h-16 items-center gap-2 px-4 sm:gap-3 sm:px-6">
+          <div className="flex h-[72px] items-center gap-2 px-4 sm:gap-3 sm:px-6 lg:px-8">
             <button ref={menuButtonRef} type="button" onClick={() => setDrawerOpen(true)}
               aria-label="Open navigation menu" aria-expanded={drawerOpen} aria-controls="app-drawer"
-              className="-ml-1 flex h-9 w-9 items-center justify-center rounded-gp-control text-gp-text-secondary hover:bg-gp-canvas md:hidden">
+              className="-ml-1 flex h-10 w-10 items-center justify-center rounded-gp-control text-gp-text-secondary hover:bg-gp-canvas md:hidden">
               <Menu className="h-5 w-5" aria-hidden="true" />
             </button>
-            <div className="flex min-w-0 flex-1 items-baseline gap-3">
-              <TitleTag className="truncate text-xl font-semibold text-gp-text">{title}</TitleTag>
-              {subtitle && <p className="hidden truncate text-sm text-gp-text-secondary lg:block">{subtitle}</p>}
-            </div>
             {topbarContext && <div className="hidden md:block">{topbarContext}</div>}
-            {topbarActions}
-            <UserMenu user={user} items={userMenu} />
+            <div className="ml-auto flex items-center gap-1 sm:gap-2">
+              {topbarActions}
+              <UserMenu user={user} items={userMenu} />
+            </div>
           </div>
         </header>
         {banner}
 
-        <main className="mx-auto w-full max-w-[100rem] flex-1 px-4 py-5 sm:px-6 sm:py-6 lg:px-8">{children}</main>
+        <main className="mx-auto w-full max-w-[100rem] flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-7">
+          {title && (
+            <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div className="min-w-0">
+                <h1 className="text-[1.625rem] font-bold leading-tight tracking-tight text-gp-text">{title}</h1>
+                {subtitle && <p className="mt-1 text-sm text-gp-text-secondary">{subtitle}</p>}
+              </div>
+              {headerActions && <div className="flex flex-wrap items-center gap-2">{headerActions}</div>}
+            </div>
+          )}
+          {children}
+        </main>
       </div>
 
       {drawerOpen && (
@@ -129,20 +133,20 @@ export function AppShell({
           <button type="button" tabIndex={-1} aria-label="Close navigation menu" className="absolute inset-0 bg-gp-text/40"
             onClick={() => setDrawerOpen(false)} />
           <div ref={drawerRef} id="app-drawer" role="dialog" aria-modal="true" aria-label="Navigation"
-            className="absolute inset-y-0 left-0 flex w-[min(18rem,85vw)] flex-col bg-gp-sidebar text-white">
-            <div className="flex h-16 items-center justify-between px-4">
+            className="absolute inset-y-0 left-0 flex w-[min(18rem,85vw)] flex-col bg-gp-surface shadow-gp-pop">
+            <div className="flex h-16 items-center justify-between border-b border-gp-divider px-4">
               <span className="flex items-center gap-2.5">
-                <GrowthPrintMark className="h-8 w-8" tone="light" />
-                <span className="font-semibold">{brand.title}</span>
+                <GrowthPrintMark className="h-8 w-8" />
+                <span className="font-bold text-gp-text">{brand.title}</span>
               </span>
               <button type="button" onClick={() => { setDrawerOpen(false); menuButtonRef.current?.focus(); }} aria-label="Close navigation menu"
-                className="flex h-9 w-9 items-center justify-center rounded-gp-control text-white/70 hover:bg-gp-sidebar-hover">
+                className="flex h-10 w-10 items-center justify-center rounded-gp-control text-gp-text-secondary hover:bg-gp-canvas">
                 <X className="h-5 w-5" aria-hidden="true" />
               </button>
             </div>
-            {sidebarTop && <div className="px-3 pb-2">{sidebarTop}</div>}
-            {topbarContext && <div className="px-3 pb-3">{topbarContext}</div>}
-            <nav aria-label="Mobile navigation" className="flex-1 overflow-y-auto px-3 py-2">{nav('drawer')}</nav>
+            {sidebarTop && <div className="px-3 pt-3">{sidebarTop}</div>}
+            {topbarContext && <div className="px-3 pt-3">{topbarContext}</div>}
+            <nav aria-label="Mobile navigation" className="flex-1 overflow-y-auto px-3 py-3">{nav('drawer')}</nav>
           </div>
         </div>
       )}
@@ -152,16 +156,20 @@ export function AppShell({
 
 function NavEntry({ item, compact, onAfterSelect }: { item: ShellNavItem; compact: boolean; onAfterSelect?: () => void }) {
   const Icon = item.icon;
-  const cls = `group relative flex min-h-10 w-full items-center gap-3 rounded-gp-control px-3 text-left text-[0.84rem] font-medium transition-colors ${
-    item.active ? 'bg-gp-sidebar-active text-white' : 'text-white/70 hover:bg-gp-sidebar-hover hover:text-white'
+  const cls = `group relative flex min-h-11 w-full items-center gap-3 rounded-gp-control px-2 text-left text-sm font-medium transition-colors ${
+    item.active ? 'bg-gp-primary text-white' : 'text-gp-text hover:bg-gp-canvas'
   } ${compact ? 'max-xl:justify-center max-xl:px-0' : ''}`;
   const body = (
     <>
-      <Icon className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />
+      <span className={`flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-gp-control ${
+        item.active ? 'bg-white/15 text-white' : 'bg-gp-primary-soft text-gp-primary'}`}>
+        <Icon className="h-4 w-4" aria-hidden="true" />
+      </span>
       <span className={`min-w-0 flex-1 truncate ${compact ? 'max-xl:sr-only' : ''}`}>{item.label}</span>
       {item.badge && (
-        <span className={`flex h-5 min-w-5 items-center justify-center rounded-full bg-gp-primary px-1.5 text-[0.7rem] font-semibold tabular-nums text-white ${
-          compact ? 'max-xl:absolute max-xl:right-1 max-xl:top-0.5 max-xl:h-4 max-xl:min-w-4 max-xl:px-1 max-xl:text-[0.62rem]' : ''}`}>
+        <span className={`flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[0.7rem] font-semibold tabular-nums ${
+          item.active ? 'bg-white text-gp-primary' : item.badge.tone === 'attention' ? 'bg-gp-danger text-white' : 'bg-gp-primary text-white'
+        } ${compact ? 'max-xl:absolute max-xl:right-0.5 max-xl:top-0 max-xl:h-4 max-xl:min-w-4 max-xl:px-1 max-xl:text-[0.62rem]' : ''}`}>
           {item.badge.count}<span className="sr-only"> {item.badge.label}</span>
         </span>
       )}
@@ -204,8 +212,8 @@ function UserMenu({ user, items }: { user: { name: string; subtitle: string; ini
     <div ref={ref} className="relative">
       <button ref={buttonRef} type="button" onClick={() => setOpen(o => !o)} aria-haspopup="menu" aria-expanded={open}
         aria-controls={menuId} aria-label={`Account menu for ${user.name}`}
-        className="flex h-9 items-center gap-1.5 rounded-gp-control pl-0.5 pr-1.5 hover:bg-gp-canvas">
-        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gp-primary-soft text-xs font-semibold text-gp-primary" aria-hidden="true">{user.initials}</span>
+        className="flex h-10 items-center gap-1 rounded-full pl-0.5 pr-1 hover:bg-gp-canvas">
+        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gp-primary text-sm font-semibold text-white" aria-hidden="true">{user.initials}</span>
         <ChevronDown className="hidden h-4 w-4 text-gp-text-secondary sm:block" aria-hidden="true" />
       </button>
       {open && (
@@ -231,12 +239,31 @@ function UserMenu({ user, items }: { user: { name: string; subtitle: string; ini
   );
 }
 
-/** Square icon button for the top bar (search, shortcuts). */
+/** Square icon button for the top bar (help, settings, search on small screens). */
 export function TopbarIconButton({ label, onClick, children, className = '' }: { label: string; onClick: () => void; children: ReactNode; className?: string }) {
   return (
     <button type="button" onClick={onClick} aria-label={label} title={label}
-      className={`flex h-9 w-9 items-center justify-center rounded-gp-control text-gp-text-secondary hover:bg-gp-canvas hover:text-gp-text ${className}`}>
+      className={`flex h-10 w-10 items-center justify-center rounded-gp-control text-gp-text-secondary hover:bg-gp-canvas hover:text-gp-text ${className}`}>
       {children}
     </button>
+  );
+}
+
+/** COMPREO top-bar search field: opens the command palette (search is global, not per page). */
+export function TopbarSearch({ onOpen, placeholder = 'Search anything…' }: { onOpen: () => void; placeholder?: string }) {
+  return (
+    <button type="button" onClick={onOpen}
+      className="hidden h-10 w-72 items-center gap-2 rounded-gp-control bg-ink-100 px-3 text-sm text-gp-text-muted transition-colors hover:bg-ink-200/70 lg:flex">
+      <SearchGlyph />
+      <span className="flex-1 truncate text-left">{placeholder}</span>
+      <kbd className="rounded border border-gp-border bg-gp-surface px-1.5 text-[0.7rem] font-medium text-gp-text-secondary">⌘K</kbd>
+    </button>
+  );
+}
+function SearchGlyph() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" />
+    </svg>
   );
 }

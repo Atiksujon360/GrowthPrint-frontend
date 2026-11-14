@@ -171,7 +171,7 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
               <div className="pt-4">
                 <button
                   onClick={handleReset}
-                  className="min-h-11 rounded-full bg-navy-950 px-6 text-sm font-semibold text-white hover:bg-brand-700"
+                  className="min-h-11 rounded-lg bg-brand-700 px-6 text-sm font-semibold text-white hover:bg-brand-700"
                 >
                   Done
                 </button>
@@ -432,7 +432,7 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="min-h-11 rounded-full bg-navy-950 px-6 text-sm font-semibold text-white hover:bg-brand-700 flex items-center gap-2 disabled:opacity-50"
+                  className="min-h-11 rounded-lg bg-brand-700 px-6 text-sm font-semibold text-white hover:bg-brand-700 flex items-center gap-2 disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <span>Sending your note...</span>

@@ -47,7 +47,7 @@ export function TrustSection({ onOpenQuote }: { onOpenQuote: () => void }) {
             </p>
           </div>
           <button onClick={onOpenQuote}
-            className="inline-flex min-h-12 shrink-0 items-center rounded-full bg-navy-950 px-6 font-semibold text-white transition-colors hover:bg-brand-700">
+            className="inline-flex min-h-12 shrink-0 items-center rounded-lg bg-brand-700 px-6 font-semibold text-white transition-colors hover:bg-brand-800">
             Start a conversation
           </button>
         </div>

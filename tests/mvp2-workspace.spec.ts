@@ -10,18 +10,22 @@ const SHOTS = 'docs/architecture/screenshots/mvp2-frontend';
 async function signInAsStudioUser(page: Page) {
   await page.addInitScript(() => window.sessionStorage.setItem('gp_auth_token', 'e2e-stub-token'));
   // The API base URL is another origin (localhost:8090), so the stub must answer the CORS preflight too.
-  const cors = {
-    'Access-Control-Allow-Origin': 'http://localhost:3000',
+  // Echo the page's own origin so the stub works on any test port (PW_PORT).
+  const corsFor = (origin: string | undefined) => ({
+    'Access-Control-Allow-Origin': origin ?? 'http://localhost:3000',
     'Access-Control-Allow-Credentials': 'true',
     'Access-Control-Allow-Headers': 'authorization, content-type, x-requested-with',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  };
-  await page.route('**/auth/me', route => route.request().method() === 'OPTIONS'
-    ? route.fulfill({ status: 204, headers: cors })
-    : route.fulfill({
-      status: 200, contentType: 'application/json', headers: cors,
-      body: JSON.stringify({ id: 'e2e-owner', email: 'olive.owner@example.com', role: 'ADMIN', fullName: 'Olive Owner' }),
-    }));
+  });
+  await page.route('**/auth/me', async route => {
+    const cors = corsFor(await route.request().headerValue('origin') ?? undefined);
+    return route.request().method() === 'OPTIONS'
+      ? route.fulfill({ status: 204, headers: cors })
+      : route.fulfill({
+        status: 200, contentType: 'application/json', headers: cors,
+        body: JSON.stringify({ id: 'e2e-owner', email: 'olive.owner@example.com', role: 'ADMIN', fullName: 'Olive Owner' }),
+      });
+  });
 }
 
 async function openBusiness(page: Page, name: string) {

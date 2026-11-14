@@ -131,7 +131,6 @@ export function WorkspaceShell({ businessId, children }: { businessId: string; c
     router.replace(ROUTES.admin.login);
   };
 
-  const active = nav.find(item => isActive(item.href, item.exact));
 
   return (
     <AppShell
@@ -146,10 +145,7 @@ export function WorkspaceShell({ businessId, children }: { businessId: string; c
         { label: 'Back to studio', icon: LayoutDashboard, href: ROUTES.admin.home },
         { label: 'Sign out', icon: LogOut, onSelect: () => void signOut(), danger: true },
       ]}
-      // Workspace pages render their own h1 (PageHeader), so the top bar title is not a heading.
-      titleAs="p"
-      title={active?.label ?? 'Workspace'}
-      subtitle={business ? `${business.name} · ${ROLE_LABEL[business.myRole]}` : undefined}
+      // Workspace pages render their own h1 (PageHeader), so the shell renders no title.
       topbarContext={<div className="w-64"><BusinessSwitcher current={business} /></div>}
       banner={<MockDataBanner />}
     >

@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import type { Lead, LeadPipelineStage } from '../../../types/agency.ts';
 import { humanizeCode } from '../../../lib/labels.ts';
+import { SummaryStrip } from '../../../components/ui/app-kit.tsx';
 
 export function AdminLeadsView({ onOpenOutreach }: { onOpenOutreach: (leadId: string) => void }) {
   const dispatch = useAppDispatch();
@@ -161,6 +162,12 @@ export function AdminLeadsView({ onOpenOutreach }: { onOpenOutreach: (leadId: st
 
   return (
     <div className="space-y-6">
+      <SummaryStrip label="Lead summary" items={[
+        { label: 'Total leads', value: leads.length },
+        { label: 'Qualified (score 80+)', value: leads.filter(l => l.qualificationScore >= 80).length },
+        { label: 'Ready for outreach', value: leads.filter(l => l.pipelineStage === 'READY_FOR_OUTREACH').length },
+        { label: 'Won', value: leads.filter(l => l.pipelineStage === 'WON').length, tone: 'success' },
+      ]} />
       {/* View Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>

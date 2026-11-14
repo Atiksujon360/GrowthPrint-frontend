@@ -58,11 +58,11 @@ export function PortalLayout({ currentTab, onTabChange, onOpenNewRequest, childr
     i => i.clientId === currentUser.clientId && i.status === 'ISSUED'
   ).length;
 
-  const navItems: Array<{ id: PortalTab; label: string; icon: React.ComponentType<{ className?: string }>; badge?: { count: number; label: string } }> = [
+  const navItems: Array<{ id: PortalTab; label: string; icon: React.ComponentType<{ className?: string }>; badge?: { count: number; label: string; tone?: 'attention' | 'default' } }> = [
     { id: 'DASHBOARD', label: 'Overview', icon: LayoutDashboard },
     { id: 'PROJECTS', label: 'Projects', icon: FolderKanban },
     { id: 'REQUESTS', label: 'Requests', icon: TicketCheck,
-      badge: pendingApprovals > 0 ? { count: pendingApprovals, label: 'to approve' } : undefined },
+      badge: pendingApprovals > 0 ? { count: pendingApprovals, label: 'to approve', tone: 'attention' } : undefined },
     { id: 'PROPOSALS', label: 'Proposals', icon: FileText },
     { id: 'INVOICES', label: 'Billing', icon: CreditCard,
       badge: unpaidInvoices > 0 ? { count: unpaidInvoices, label: 'due' } : undefined },
@@ -84,9 +84,9 @@ export function PortalLayout({ currentTab, onTabChange, onOpenNewRequest, childr
       groups={groups}
       sidebarTop={(
         <div className="space-y-3">
-          <div className="rounded-gp-control bg-white/8 px-3 py-2.5">
-            <p className="text-xs text-white/55">Client organization</p>
-            <p className="mt-0.5 truncate text-sm font-semibold text-white">{currentUser.clientName || 'Client Portal'}</p>
+          <div className="rounded-gp-control border border-gp-border bg-gp-canvas px-3 py-2.5">
+            <p className="text-xs text-gp-text-secondary">Client organization</p>
+            <p className="mt-0.5 truncate text-sm font-semibold text-gp-text">{currentUser.clientName || 'Client Portal'}</p>
           </div>
           <button type="button" onClick={onOpenNewRequest}
             className="flex h-9 w-full items-center justify-center gap-2 rounded-gp-control bg-gp-primary text-sm font-semibold text-white transition-colors hover:bg-gp-primary-hover">
@@ -99,7 +99,8 @@ export function PortalLayout({ currentTab, onTabChange, onOpenNewRequest, childr
         { label: 'Account settings', icon: Settings, onSelect: () => onTabChange('SETTINGS') },
         { label: 'Sign out', icon: LogOut, onSelect: () => void handleSignOut(), danger: true },
       ]}
-      title={meta.title}
+      // The overview renders its own "Welcome back" heading (COMPREO); other tabs use the module title.
+      title={currentTab === 'DASHBOARD' ? undefined : meta.title}
       subtitle={meta.subtitle}
       topbarActions={(
         <>

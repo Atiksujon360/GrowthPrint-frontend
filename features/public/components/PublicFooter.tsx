@@ -29,7 +29,7 @@ export function PublicFooter({ onOpenQuote }: { onOpenQuote: () => void }) {
             <span className="gp-headline-muted">We will reply with a useful next step.</span>
           </p>
           <button onClick={onOpenQuote}
-            className="inline-flex min-h-12 shrink-0 items-center rounded-full bg-brand-500 px-6 font-semibold text-navy-950 transition-colors hover:bg-brand-400">
+            className="inline-flex min-h-12 shrink-0 items-center rounded-lg bg-white px-6 font-semibold text-ink-950 transition-colors hover:bg-brand-50">
             Tell us what you need
           </button>
         </div>

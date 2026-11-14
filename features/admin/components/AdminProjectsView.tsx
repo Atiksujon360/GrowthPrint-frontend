@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import type { Project } from '../../../types/agency.ts';
 import { humanizeCode } from '../../../lib/labels.ts';
+import { SummaryStrip } from '../../../components/ui/app-kit.tsx';
 
 export function AdminProjectsView() {
   const dispatch = useAppDispatch();
@@ -153,6 +154,13 @@ export function AdminProjectsView() {
 
   return (
     <div className="space-y-6">
+      <SummaryStrip label="Project summary" items={[
+        { label: 'In progress', value: projects.filter(p => p.status === 'IN_PROGRESS').length },
+        { label: 'Waiting for client', value: projects.filter(p => p.status === 'WAITING_FOR_CLIENT').length,
+          tone: projects.some(p => p.status === 'WAITING_FOR_CLIENT') ? 'attention' : 'default' },
+        { label: 'In review', value: projects.filter(p => p.status === 'IN_REVIEW').length },
+        { label: 'Completed', value: projects.filter(p => p.status === 'COMPLETED').length, tone: 'success' },
+      ]} />
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-lg font-semibold text-ink-950">
