@@ -66,11 +66,8 @@ export function QuoteInquiryModal({ isOpen, onClose, defaultService }: QuoteInqu
     setSubmitError(null);
     try {
       // Only what the visitor actually entered is sent; blank optional fields stay blank.
-      const acknowledgement = await dispatch(submitPublicInquiry({
-        ...formData,
-        // The backend contact methods are EMAIL | PHONE | VIDEO_CALL; a discovery call is a video call.
-        preferredContactMethod: formData.preferredContactMethod === 'DISCOVERY_CALL' ? 'VIDEO_CALL' as const : formData.preferredContactMethod
-      })).unwrap();
+      // The backend accepts EMAIL | PHONE | DISCOVERY_CALL (LeadEnums.PreferredContactMethod), the same values as the form.
+      const acknowledgement = await dispatch(submitPublicInquiry(formData)).unwrap();
 
       // Success is shown only after the backend accepted the inquiry, with its own reference number.
       setReferenceNumber(acknowledgement.referenceNumber);

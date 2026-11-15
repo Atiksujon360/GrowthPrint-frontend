@@ -1,0 +1,246 @@
+<!doctype html>
+<!--
+  GrowthPrint explainer film (1920x1080). Every frame is a pure function of time: window.renderAt(seconds) lays out
+  the scene, and render-explainer.mjs captures frames one by one, so the output is identical on every run.
+  Scenes follow the approved storyboard: problem, introduction, websites, integration, automation, engineering, close.
+  No people, logos, clients, statistics or results are shown. All visuals are drawn here or rendered by sculpture.html.
+-->
+<html><head><meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=block" rel="stylesheet">
+<style>
+  :root { --bg:#07050D; --surface:#100B1D; --soft:#171025; --text:#fff; --muted:#C4BECE; --purple:#7426C9; --blue:#3826B7; --violet:#9B5CFF; --line:rgba(255,255,255,.12); }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); font-family: Poppins, 'Segoe UI', sans-serif; color: var(--text); }
+  .stage { position: absolute; inset: 0; overflow: hidden; }
+  .glow { position: absolute; border-radius: 50%; filter: blur(120px); opacity: .55; }
+  .scene { position: absolute; inset: 0; opacity: 0; }
+  .head { position: absolute; left: 150px; top: 150px; width: 760px; }
+  .head h2 { font-size: 72px; line-height: 1.08; font-weight: 600; letter-spacing: -0.02em; }
+  .head h2 em { font-style: italic; font-weight: 300; }
+  .head p { margin-top: 26px; font-size: 30px; line-height: 1.45; color: var(--muted); font-weight: 300; }
+  .panel { position: absolute; background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.025)); border: 1px solid var(--line); border-radius: 18px; }
+  .bar { height: 14px; border-radius: 7px; background: rgba(255,255,255,.14); }
+  .chip { position: absolute; padding: 12px 22px; border-radius: 999px; border: 1px solid rgba(155,92,255,.55); background: rgba(116,38,201,.18); font-size: 24px; color: #E9DDFF; white-space: nowrap; }
+  .node { position: absolute; width: 230px; padding: 22px 24px; border-radius: 18px; border: 1px solid rgba(155,92,255,.45); background: rgba(23,16,37,.92); font-size: 24px; text-align: center; }
+  .label { font-size: 20px; color: var(--muted); }
+  svg { position: absolute; inset: 0; overflow: visible; }
+  .mark { display: inline-flex; align-items: center; gap: 22px; }
+</style></head>
+<body><div class="stage" id="stage">
+  <div class="glow" id="g1" style="width:900px;height:900px;background:#3826B7;left:900px;top:-200px"></div>
+  <div class="glow" id="g2" style="width:800px;height:800px;background:#7426C9;left:-200px;top:500px"></div>
+
+  <!-- 01 problem -->
+  <section class="scene" id="s1">
+    <div id="s1-windows"></div>
+    <svg id="s1-svg" width="1920" height="1080"></svg>
+    <div class="head" id="s1-head" style="left:0;width:1920px;top:820px;text-align:center"><h2>Your business deserves <em>better technology.</em></h2></div>
+  </section>
+
+  <!-- 02 introduction -->
+  <section class="scene" id="s2">
+    <img id="s2-art" src="out/sculpture-0.png" style="position:absolute;width:820px;left:1000px;top:120px">
+    <div class="head" style="top:300px">
+      <div class="mark" id="s2-mark"></div>
+      <h2 id="s2-h" style="margin-top:44px;font-size:96px">Meet <em>GrowthPrint.</em></h2>
+      <p id="s2-p">Your technology partner for digital growth.</p>
+    </div>
+  </section>
+
+  <!-- 03 websites -->
+  <section class="scene" id="s3">
+    <div class="head" id="s3-head" style="top:330px;width:640px"><h2>Build better <em>digital experiences.</em></h2><p>Modern websites. Powerful applications. Better experiences.</p></div>
+    <div class="panel" id="s3-browser" style="left:860px;top:180px;width:900px;height:600px;overflow:hidden"></div>
+    <div class="panel" id="s3-phone" style="left:1620px;top:420px;width:230px;height:460px;border-radius:34px;overflow:hidden;background:#120c20"></div>
+  </section>
+
+  <!-- 04 integration -->
+  <section class="scene" id="s4">
+    <div class="head" id="s4-head" style="top:120px;left:0;width:1920px;text-align:center"><h2>Connect <em>your technology.</em></h2><p>Custom software. Seamless integrations. Scalable systems.</p></div>
+    <svg id="s4-svg" width="1920" height="1080"></svg>
+    <div id="s4-nodes"></div>
+  </section>
+
+  <!-- 05 automation -->
+  <section class="scene" id="s5">
+    <div class="head" id="s5-head" style="top:120px;left:0;width:1920px;text-align:center"><h2>Make work <em>smarter.</em></h2><p>AI-powered automation. Less repetitive work.</p></div>
+    <svg id="s5-svg" width="1920" height="1080"></svg>
+    <div id="s5-nodes"></div>
+    <div id="s5-doc" class="panel" style="width:120px;height:150px;border-radius:12px;background:#efe9ff;border:none"></div>
+  </section>
+
+  <!-- 06 engineering -->
+  <section class="scene" id="s6">
+    <div class="head" id="s6-head" style="top:330px;width:640px"><h2>Built to evolve <em>with your business.</em></h2><p>Reliable engineering. Continuous improvement.</p></div>
+    <div class="panel" id="s6-dash" style="left:860px;top:170px;width:920px;height:640px"></div>
+  </section>
+
+  <!-- 07 close -->
+  <section class="scene" id="s7">
+    <img id="s7-art" src="out/sculpture-0.png" style="position:absolute;width:760px;left:580px;top:-40px">
+    <div style="position:absolute;left:0;width:1920px;top:610px;text-align:center" id="s7-text">
+      <h2 style="font-size:92px;line-height:1.05;font-weight:600;letter-spacing:-0.02em">Build <em style="font-weight:300">Smarter.</em><br>Scale Without <em style="font-weight:300">Limits.</em></h2>
+      <p style="margin-top:26px;font-size:30px;color:var(--muted);font-weight:300">Let's build something meaningful together.</p>
+      <div id="s7-cta" style="display:inline-flex;margin-top:38px;padding:20px 44px;border-radius:14px;font-size:28px;font-weight:500;background:linear-gradient(90deg,#7426C9,#3826B7)">Start Your Project</div>
+    </div>
+    <div id="s7-mark" style="position:absolute;left:0;width:1920px;bottom:56px;text-align:center"></div>
+  </section>
+</div>
+
+<script>
+const MARK = (size) => `<svg viewBox="0 0 28 28" width="${size}" height="${size}" style="position:static"><defs><linearGradient id="gm${size}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7426C9"/><stop offset="1" stop-color="#3826B7"/></linearGradient></defs><rect width="28" height="28" rx="7" fill="url(#gm${size})"/><path d="M6 20.5 11.5 15l3.5 3.5L22 9.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="22" cy="9.5" r="2" fill="#fff"/></svg>`;
+const WORD = (px) => `<span style="font-size:${px}px;font-weight:600;letter-spacing:-0.01em">GrowthPrint</span>`;
+document.getElementById('s2-mark').innerHTML = MARK(92) + WORD(64);
+document.getElementById('s7-mark').innerHTML = `<span class="mark">${MARK(44)}${WORD(32)}</span>`;
+
+// ---- timing helpers ---------------------------------------------------------------------------
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const ease = (x) => { x = clamp(x); return x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3) / 2; };
+const prog = (t, a, b) => ease((t - a) / (b - a));
+const $ = (id) => document.getElementById(id);
+const SCENES = [['s1', 0, 7], ['s2', 7, 14], ['s3', 14, 22], ['s4', 22, 30], ['s5', 30, 39], ['s6', 39, 47], ['s7', 47, 58]];
+const FADE = 0.6;
+function sceneOpacity(t, a, b, first, last) {
+  const inn = first ? 1 : clamp((t - a + FADE/2) / FADE);
+  const out = last ? 1 : clamp((b + FADE/2 - t) / FADE);
+  return Math.min(inn, out);
+}
+
+// ---- scene 1: disconnected tools --------------------------------------------------------------
+const S1 = [['Old website', 220, 170], ['Spreadsheet', 760, 120], ['Email inbox', 1320, 190], ['Invoices', 300, 520], ['Customer list', 1380, 520], ['Copy and paste', 830, 440]];
+$('s1-windows').innerHTML = S1.map(([name], i) => `<div class="panel" id="w${i}" style="width:300px;height:190px;padding:22px">
+  <div style="display:flex;gap:8px;margin-bottom:22px"><i style="width:12px;height:12px;border-radius:50%;background:#ff6b8a;display:block"></i><i style="width:12px;height:12px;border-radius:50%;background:#ffc861;display:block"></i><i style="width:12px;height:12px;border-radius:50%;background:#5bd49a;display:block"></i></div>
+  <div style="font-size:24px;margin-bottom:18px">${name}</div><div class="bar" style="width:80%;margin-bottom:12px"></div><div class="bar" style="width:55%"></div></div>`).join('');
+const S1LINKS = [[0,1],[1,2],[0,3],[2,4],[3,5],[5,4],[1,5]];
+
+// ---- scene 3: website mockups ----------------------------------------------------------------
+$('s3-browser').innerHTML = `<div style="height:56px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:0 22px">
+  <i style="width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.25);display:block"></i><i style="width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.25);display:block"></i><i style="width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.25);display:block"></i>
+  <div style="margin-left:24px;height:28px;width:420px;border-radius:14px;background:rgba(255,255,255,.07)"></div></div>
+  <div id="s3-page" style="padding:44px 48px">
+    <div style="display:flex;justify-content:space-between;align-items:center"><div class="bar" style="width:140px;height:18px;background:rgba(155,92,255,.6)"></div><div style="display:flex;gap:18px"><div class="bar" style="width:70px"></div><div class="bar" style="width:70px"></div><div class="bar" style="width:70px"></div></div></div>
+    <div id="s3-hero" style="margin-top:60px;display:flex;gap:40px;align-items:center">
+      <div style="flex:1"><div class="bar" style="height:34px;width:90%;background:rgba(255,255,255,.85)"></div><div class="bar" style="height:34px;width:70%;margin-top:16px;background:rgba(255,255,255,.85)"></div><div class="bar" style="width:85%;margin-top:30px"></div><div class="bar" style="width:65%;margin-top:12px"></div>
+        <div style="margin-top:34px;width:180px;height:50px;border-radius:12px;background:linear-gradient(90deg,#7426C9,#3826B7)"></div></div>
+      <div style="width:280px;height:220px;border-radius:20px;background:radial-gradient(circle at 35% 35%,#9B5CFF,#3826B7 60%,#100B1D)"></div></div>
+    <div id="s3-cards" style="margin-top:50px;display:flex;gap:22px">${[0,1,2].map(() => `<div style="flex:1;height:110px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.03);padding:20px"><div class="bar" style="width:60%"></div><div class="bar" style="width:85%;margin-top:14px;height:10px"></div></div>`).join('')}</div>
+  </div>`;
+$('s3-phone').innerHTML = `<div style="padding:44px 22px 0"><div class="bar" style="width:60%;height:12px;background:rgba(155,92,255,.6)"></div>
+  <div class="bar" style="margin-top:34px;height:22px;background:rgba(255,255,255,.85)"></div><div class="bar" style="margin-top:10px;height:22px;width:75%;background:rgba(255,255,255,.85)"></div>
+  <div class="bar" style="margin-top:22px;height:10px"></div><div class="bar" style="margin-top:8px;height:10px;width:70%"></div>
+  <div style="margin-top:24px;height:40px;width:120px;border-radius:10px;background:linear-gradient(90deg,#7426C9,#3826B7)"></div>
+  <div style="margin-top:26px;height:150px;border-radius:16px;background:radial-gradient(circle at 35% 35%,#9B5CFF,#3826B7 60%,#100B1D)"></div></div>`;
+
+// ---- scene 4: connected systems --------------------------------------------------------------
+const HUB = [960, 640];
+const S4 = [['Website', 470, 470], ['CRM', 470, 820], ['Payments', 960, 950], ['Inventory', 1450, 820], ['Email', 1450, 470], ['Reports', 960, 360]];
+$('s4-nodes').innerHTML = `<div class="node" id="hub" style="left:${HUB[0]-150}px;top:${HUB[1]-50}px;width:300px;border-color:#9B5CFF;background:linear-gradient(135deg,rgba(116,38,201,.55),rgba(56,38,183,.55))">Your platform</div>`
+  + S4.map(([n, x, y], i) => `<div class="node" id="n4-${i}" style="left:${x-115}px;top:${y-38}px">${n}</div>`).join('');
+
+// ---- scene 5: workflow -----------------------------------------------------------------------
+const S5 = [['Document received', 300], ['AI reads the details', 760], ['Person approves', 1220], ['Team is notified', 1680]];
+$('s5-nodes').innerHTML = S5.map(([n, x], i) => `<div class="node" id="n5-${i}" style="left:${x-140}px;top:560px;width:280px">${n}<div class="label" id="n5c-${i}" style="margin-top:10px;color:#8EF0C8">&#10003; Done</div></div>`).join('');
+$('s5-doc').innerHTML = `<div style="padding:18px"><div class="bar" style="background:#7426C9;width:70%"></div>${[0,1,2,3].map(() => `<div class="bar" style="background:#c9b8f5;margin-top:12px;height:8px"></div>`).join('')}</div>`;
+
+// ---- scene 6: engineering dashboard (illustrative, no figures) ---------------------------------
+$('s6-dash').innerHTML = `<div style="padding:34px 40px">
+  <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:26px">System health</div>
+    <div class="chip" style="position:static;font-size:20px;border-color:rgba(91,212,154,.6);background:rgba(91,212,154,.12);color:#9FF2C9" id="s6-ok">&#9679; All services healthy</div></div>
+  <div style="display:flex;gap:24px;margin-top:30px">${['API', 'Website', 'Database', 'Automations'].map((n, i) => `<div style="flex:1;border:1px solid var(--line);border-radius:14px;padding:18px"><div class="label">${n}</div><div style="margin-top:14px;display:flex;gap:4px;align-items:flex-end;height:60px" id="s6-bars-${i}"></div></div>`).join('')}</div>
+  <div style="margin-top:30px;border:1px solid var(--line);border-radius:14px;padding:18px;height:300px;position:relative"><div class="label">Response time</div><svg id="s6-svg" width="840" height="240" style="position:absolute;left:18px;top:52px"></svg></div></div>`;
+for (let i = 0; i < 4; i++) $('s6-bars-' + i).innerHTML = Array.from({ length: 18 }, (_, k) => `<i data-k="${k}" style="flex:1;display:block;border-radius:3px;background:linear-gradient(180deg,#9B5CFF,#3826B7)"></i>`).join('');
+const linePts = Array.from({ length: 30 }, (_, k) => [k * 28.5, 150 - 40*Math.sin(k*0.55) * Math.exp(-k*0.06) - k*1.6]);
+
+// ---- render ----------------------------------------------------------------------------------
+function svgLine(x1, y1, x2, y2, p, color, w, dash) {
+  const x = x1 + (x2 - x1)*p, y = y1 + (y2 - y1)*p;
+  return `<line x1="${x1}" y1="${y1}" x2="${x}" y2="${y}" stroke="${color}" stroke-width="${w}" stroke-linecap="round" ${dash ? 'stroke-dasharray="10 14"' : ''}/>`;
+}
+
+window.renderAt = function (t) {
+  $('g1').style.transform = `translate(${Math.sin(t*0.13)*120}px, ${Math.cos(t*0.11)*80}px)`;
+  $('g2').style.transform = `translate(${Math.cos(t*0.09)*140}px, ${Math.sin(t*0.12)*60}px)`;
+  SCENES.forEach(([id, a, b], i) => { $(id).style.opacity = sceneOpacity(t, a, b, i === 0, i === SCENES.length - 1); });
+
+  // 1: windows drift apart and jitter, broken dashed links, then light trails connect them (5.2s -> 7s)
+  { const lt = t; const chaos = prog(lt, 0.3, 4.5), connect = prog(lt, 5.0, 6.8);
+    let svg = '';
+    S1.forEach(([, x, y], i) => {
+      const dx = Math.sin(i*1.7 + lt*0.9) * 22 * chaos, dy = Math.cos(i*2.3 + lt*1.1) * 16 * chaos;
+      const rot = Math.sin(i + lt*0.7) * 2.5 * chaos * (1 - connect);
+      const el = $('w' + i); el.style.left = (x + dx) + 'px'; el.style.top = (y + dy) + 'px';
+      el.style.transform = `rotate(${rot}deg)`; el.style.opacity = clamp((lt - i*0.25) / 0.6);
+    });
+    S1LINKS.forEach(([a, b], k) => {
+      const [, ax, ay] = S1[a], [, bx, by] = S1[b];
+      const p1 = [ax + 150, ay + 95], p2 = [bx + 150, by + 95];
+      svg += svgLine(p1[0], p1[1], p2[0], p2[1], 1, 'rgba(255,107,138,' + (0.35*chaos*(1 - connect)) + ')', 2, true);
+      svg += svgLine(p1[0], p1[1], p2[0], p2[1], clamp(connect*1.4 - k*0.06), '#9B5CFF', 3, false);
+    });
+    $('s1-svg').innerHTML = svg;
+    $('s1-head').style.opacity = prog(lt, 1.2, 2.2); $('s1-head').style.transform = `translateY(${(1 - prog(lt, 1.2, 2.2))*24}px)`; }
+
+  // 2: mark, headline, sculpture reveal with a slow turn
+  { const lt = t - 7;
+    $('s2-mark').style.opacity = prog(lt, 0.2, 1.0);
+    $('s2-h').style.opacity = prog(lt, 0.8, 1.8); $('s2-h').style.transform = `translateY(${(1 - prog(lt, 0.8, 1.8))*30}px)`;
+    $('s2-p').style.opacity = prog(lt, 1.5, 2.5);
+    $('s2-art').style.opacity = prog(lt, 0.0, 1.6);
+    $('s2-art').style.transform = `translateY(${Math.sin(lt*0.6)*14}px) rotate(${-6 + lt*1.4}deg) scale(${0.92 + prog(lt, 0, 3)*0.08})`; }
+
+  // 3: browser and phone slide in, page content builds
+  { const lt = t - 14;
+    $('s3-head').style.opacity = prog(lt, 0.3, 1.2);
+    $('s3-browser').style.opacity = prog(lt, 0.2, 1.2); $('s3-browser').style.transform = `translateY(${(1 - prog(lt, 0.2, 1.4))*60}px)`;
+    $('s3-phone').style.opacity = prog(lt, 1.4, 2.4); $('s3-phone').style.transform = `translateY(${(1 - prog(lt, 1.4, 2.6))*80}px)`;
+    $('s3-hero').style.opacity = prog(lt, 1.0, 2.0); $('s3-cards').style.opacity = prog(lt, 2.0, 3.0);
+    $('s3-cards').style.transform = `translateY(${(1 - prog(lt, 2.0, 3.0))*20}px)`; }
+
+  // 4: nodes appear, links draw, data pulses travel to and from the hub
+  { const lt = t - 22; let svg = '';
+    $('s4-head').style.opacity = prog(lt, 0.2, 1.0); $('hub').style.opacity = prog(lt, 0.4, 1.2);
+    S4.forEach(([, x, y], i) => {
+      const appear = prog(lt, 0.8 + i*0.25, 1.6 + i*0.25); $('n4-' + i).style.opacity = appear;
+      const draw = prog(lt, 1.4 + i*0.25, 2.6 + i*0.25);
+      svg += svgLine(HUB[0], HUB[1], x, y, draw, 'rgba(155,92,255,.55)', 2.5, false);
+      if (draw >= 1) { for (let k = 0; k < 2; k++) { const ph = ((lt*0.55 + i*0.17 + k*0.5) % 1); const out = (i + k) % 2 === 0;
+        const f = out ? ph : 1 - ph; const px = HUB[0] + (x - HUB[0])*f, py = HUB[1] + (y - HUB[1])*f;
+        svg += `<circle cx="${px}" cy="${py}" r="7" fill="${out ? '#9B5CFF' : '#5ED6FF'}"/><circle cx="${px}" cy="${py}" r="16" fill="${out ? '#9B5CFF' : '#5ED6FF'}" opacity=".18"/>`; } }
+    });
+    $('s4-svg').innerHTML = svg; }
+
+  // 5: a document travels the workflow, each step completes in turn
+  { const lt = t - 30; let svg = '';
+    $('s5-head').style.opacity = prog(lt, 0.2, 1.0);
+    S5.forEach(([, x], i) => { $('n5-' + i).style.opacity = prog(lt, 0.6 + i*0.3, 1.3 + i*0.3);
+      if (i < S5.length - 1) svg += svgLine(x + 140, 620, S5[i + 1][1] - 140, 620, prog(lt, 1.2 + i*0.3, 2.0 + i*0.3), 'rgba(155,92,255,.6)', 3, false); });
+    const travel = clamp((lt - 2.6) / 5.0), seg = travel * (S5.length - 1), idx = Math.min(Math.floor(seg), S5.length - 2), f = ease(seg - idx);
+    const dx = S5[idx][1] + (S5[idx + 1][1] - S5[idx][1]) * f;
+    $('s5-doc').style.left = (dx - 60) + 'px'; $('s5-doc').style.top = (380 + Math.sin(lt*2)*6) + 'px';
+    $('s5-doc').style.opacity = prog(lt, 2.2, 2.8) * (1 - prog(lt, 8.0, 8.6));
+    S5.forEach((_, i) => { $('n5c-' + i).style.opacity = travel * (S5.length - 1) >= i - 0.02 && lt > 2.8 ? 1 : 0; });
+    $('s5-svg').innerHTML = svg; }
+
+  // 6: dashboard bars rise, the response-time line draws
+  { const lt = t - 39;
+    $('s6-head').style.opacity = prog(lt, 0.2, 1.0);
+    $('s6-dash').style.opacity = prog(lt, 0.3, 1.2); $('s6-dash').style.transform = `translateY(${(1 - prog(lt, 0.3, 1.4))*50}px)`;
+    for (let i = 0; i < 4; i++) document.querySelectorAll('#s6-bars-' + i + ' i').forEach((el) => { const k = Number(el.dataset.k);
+      el.style.height = (prog(lt, 1.0 + k*0.04, 2.0 + k*0.04) * (55 + 35*Math.abs(Math.sin(k*1.3 + i))) ) + '%'; });
+    const n = Math.max(2, Math.floor(prog(lt, 1.6, 5.0) * linePts.length));
+    const pts = linePts.slice(0, n).map(([x, y]) => `${x},${y}`).join(' ');
+    $('s6-svg').innerHTML = `<polyline points="${pts}" fill="none" stroke="#5ED6FF" stroke-width="3.5" stroke-linejoin="round"/>`;
+    $('s6-ok').style.opacity = prog(lt, 4.0, 4.8); }
+
+  // 7: sculpture, headline, call to action, wordmark
+  { const lt = t - 47;
+    $('s7-art').style.opacity = prog(lt, 0.0, 1.4);
+    $('s7-art').style.transform = `translateY(${Math.sin(lt*0.5)*12 - prog(lt, 0, 2)*10}px) rotate(${lt*1.2}deg) scale(${0.56 + prog(lt, 0, 2.5)*0.05})`;
+    $('s7-text').style.opacity = prog(lt, 1.0, 2.2); $('s7-text').style.transform = `translateY(${(1 - prog(lt, 1.0, 2.4))*30}px)`;
+    $('s7-cta').style.opacity = prog(lt, 3.0, 3.8);
+    $('s7-mark').style.opacity = prog(lt, 4.0, 5.0); }
+};
+window.DURATION = 58;
+document.fonts.ready.then(() => { window.renderAt(0); window.__ready = true; });
+</script></body></html>

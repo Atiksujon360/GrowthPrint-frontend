@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
-import { Hanken_Grotesk, Inter, Schibsted_Grotesk } from 'next/font/google';
+import { Hanken_Grotesk, Inter, Poppins, Schibsted_Grotesk } from 'next/font/google';
 import { AppProviders } from './providers';
 import './globals.css';
 
@@ -10,6 +10,8 @@ const uiFont = Hanken_Grotesk({ subsets: ['latin'], variable: '--font-ui', displ
 const displayFont = Schibsted_Grotesk({ subsets: ['latin'], variable: '--font-display-face', display: 'swap' });
 // Inter: the application typeface (Enterprise UI Kit, decision D2), applied inside `.gp-app` only.
 const appFont = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
+// Poppins: the public marketing site (geometric display with true italics for the hero headline).
+const marketingFont = Poppins({ subsets: ['latin'], weight: ['300', '400', '500', '600'], style: ['normal', 'italic'], variable: '--font-poppins', display: 'swap' });
 
 export const metadata: Metadata = {
   title: 'GrowthPrint — Practical software for growing teams',
@@ -28,7 +30,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="en" className={`${uiFont.variable} ${displayFont.variable} ${appFont.variable}`}>
+    <html lang="en" className={`${uiFont.variable} ${displayFont.variable} ${appFont.variable} ${marketingFont.variable}`}>
       <body suppressHydrationWarning>
         <AppProviders>{children}</AppProviders>
       </body>

@@ -1,66 +1,64 @@
-'use client';
-
-import { useState } from 'react';
-import { useAppSelector } from '../../store/hooks.ts';
-import type { ServiceCategory } from '../../types/agency.ts';
-
-// Public Marketing Components
-import {
-  PublicHeader,
-  HeroSection,
-  ServicesSection,
-  HowWeWorkSection,
-  CaseStudiesSection,
-  TrustSection,
-  FAQSection,
-  PublicFooter,
-  QuoteInquiryModal
-} from '../../features/public/index.ts';
-
-// Common Components
+import type { Metadata } from 'next';
 import { RoleSwitcherBar } from '../../components/ui/RoleSwitcherBar.tsx';
-import { ToastContainer } from '../../components/ui/ToastContainer.tsx';
+import { MarketingNav } from '../../components/marketing/navbar/MarketingNav.tsx';
+import { Hero } from '../../components/marketing/hero/Hero.tsx';
+import { BrandIntro } from '../../components/marketing/brand-intro/BrandIntro.tsx';
+import { Services } from '../../components/marketing/services/Services.tsx';
+import { WhyGrowthPrint } from '../../components/marketing/why-growthprint/WhyGrowthPrint.tsx';
+import { OurWork } from '../../components/marketing/case-studies/OurWork.tsx';
+import { Engagement, Process, Technology } from '../../components/marketing/process/Process.tsx';
+import { Faq } from '../../components/marketing/faq/Faq.tsx';
+import { FinalCta } from '../../components/marketing/final-cta/FinalCta.tsx';
+import { ContactSection } from '../../components/marketing/contact/ContactSection.tsx';
+import { MarketingFooter } from '../../components/marketing/footer/MarketingFooter.tsx';
+import { FAQS } from '../../components/marketing/content.ts';
+
+const TITLE = 'GrowthPrint | Build Smarter. Scale Without Limits.';
+const DESCRIPTION = 'GrowthPrint brings software engineering and intelligent automation together: websites and applications, '
+  + 'custom software, AI and business automation, API integration and ongoing technical support.';
+
+export const metadata: Metadata = {
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: '/' },
+  openGraph: {
+    title: TITLE, description: DESCRIPTION, type: 'website', siteName: 'GrowthPrint',
+    images: [{ url: '/images/growthprint-og.jpg', width: 1200, height: 630, alt: 'GrowthPrint: Build Smarter. Scale Without Limits.' }],
+  },
+  twitter: { card: 'summary_large_image', title: TITLE, description: DESCRIPTION, images: ['/images/growthprint-og.jpg'] },
+};
+
+/** FAQ structured data for search engines, generated from the same answers shown on the page. */
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: FAQS.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+};
 
 export default function HomePage() {
-  // Public View Modal States
-  const [isQuoteOpen, setIsQuoteOpen] = useState(false);
-  const [selectedService, setSelectedService] = useState<ServiceCategory | undefined>(undefined);
-
-  const handleOpenQuote = (service?: ServiceCategory) => {
-    setSelectedService(service);
-    setIsQuoteOpen(true);
-  };
-
   return (
-    <div className="min-h-screen flex flex-col bg-white text-ink-950 overflow-x-hidden">
-      {/* Universal Top Switcher Bar allowing instant testing between Agency Public, Client Portal, and Admin Workspace */}
+    <div className="gp-marketing min-h-screen overflow-x-clip">
+      {/* Demo-mode only: lets testers switch between the public site, client hub and studio. Renders nothing otherwise. */}
       <RoleSwitcherBar />
-
-      {/* Global Toast Notifications Stack */}
-      <ToastContainer onNavigateTab={(tab: string) => {
-        // Toast navigation is handled by toast component
-      }} />
-
-      {/* Public Agency Experience */}
-      <div className="flex-1 flex flex-col">
-        <PublicHeader onOpenQuote={() => handleOpenQuote()} />
-        <main className="flex-1">
-          <HeroSection onOpenQuote={() => handleOpenQuote()} />
-          <ServicesSection onSelectService={(s: ServiceCategory) => handleOpenQuote(s)} />
-          {/* Order follows the header navigation: Services, Work, Process, Why GrowthPrint, FAQ. */}
-          <CaseStudiesSection />
-          <HowWeWorkSection />
-          <TrustSection onOpenQuote={() => handleOpenQuote()} />
-          <FAQSection />
-        </main>
-        <PublicFooter onOpenQuote={() => handleOpenQuote()} />
-
-        <QuoteInquiryModal
-          isOpen={isQuoteOpen}
-          onClose={() => setIsQuoteOpen(false)}
-          defaultService={selectedService}
-        />
-      </div>
+      <a href="#main" className="sr-only z-50 rounded-lg bg-white px-4 py-2 text-mk-bg focus:not-sr-only focus:fixed focus:left-4 focus:top-4">
+        Skip to content
+      </a>
+      <MarketingNav />
+      <main id="main">
+        <Hero />
+        <BrandIntro />
+        <Services />
+        <WhyGrowthPrint />
+        <OurWork />
+        <Technology />
+        <Process />
+        <Engagement />
+        <Faq />
+        <FinalCta />
+        <ContactSection />
+      </main>
+      <MarketingFooter />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
     </div>
   );
 }

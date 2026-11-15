@@ -159,6 +159,37 @@
   --radius-gp-badge: 6px;
   --shadow-gp-card: 0 1px 2px rgb(23 33 43 / 0.04), 0 1px 3px rgb(23 33 43 / 0.04);
   --shadow-gp-pop: 0 12px 32px -12px rgb(23 33 43 / 0.2);
+
+  /* Marketing site (public homepage): dark violet, from the approved brief. Used only inside .gp-marketing. */
+  --color-mk-bg: #07050d;
+  --color-mk-surface: #100b1d;
+  --color-mk-soft: #171025;
+  --color-mk-text: #ffffff;
+  --color-mk-muted: #c4bece;
+  --color-mk-dim: #8f87a0;
+  --color-mk-purple: #7426c9;
+  --color-mk-blue: #3826b7;
+  --color-mk-violet: #9b5cff;
+  --color-mk-cyan: #5ed6ff;
+  --color-mk-line: rgb(255 255 255 / 0.12);
+  --font-marketing: var(--font-poppins), "Segoe UI", system-ui, sans-serif;
+}
+
+/* Public marketing site scope: dark canvas, violet focus ring and selection. */
+.gp-marketing {
+  background: var(--color-mk-bg);
+  color: var(--color-mk-text);
+  font-family: var(--font-marketing);
+  color-scheme: dark;
+}
+.gp-marketing :focus-visible { outline: 2px solid var(--color-mk-violet); outline-offset: 3px; }
+.gp-marketing ::selection { background: rgb(155 92 255 / 0.4); }
+@keyframes mk-float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-14px) rotate(1.5deg); } }
+@keyframes mk-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+.mk-float { animation: mk-float 9s ease-in-out infinite; }
+.mk-rise { animation: mk-rise 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@media (prefers-reduced-motion: reduce) {
+  .mk-float, .mk-rise { animation: none; }
 }
 
 /*
