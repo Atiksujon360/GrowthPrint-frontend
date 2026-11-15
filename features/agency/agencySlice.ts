@@ -607,7 +607,8 @@ export const submitPublicInquiryThunk = createAsyncThunk(
     budgetRange?: string;
     preferredTimeline?: string;
     projectDescription: string;
-    preferredContactMethod: 'EMAIL' | 'PHONE' | 'VIDEO_CALL';
+    /** Must match LeadEnums.PreferredContactMethod on the backend. */
+    preferredContactMethod: 'EMAIL' | 'PHONE' | 'DISCOVERY_CALL';
     consent: boolean;
   }, { rejectWithValue }): Promise<InquiryAcknowledgement | ReturnType<typeof rejectWithValue>> => {
     if (isMockMode) {
