@@ -20,6 +20,8 @@ import {
 import type { Project } from '../../../types/agency.ts';
 import { humanizeCode } from '../../../lib/labels.ts';
 import { SummaryStrip } from '../../../components/ui/app-kit.tsx';
+import { budgetUsage } from '../../../lib/projectSummary.ts';
+import { ProjectDetailDrawer } from './ProjectDetailDrawer.tsx';
 
 export function AdminProjectsView() {
   const dispatch = useAppDispatch();
@@ -29,6 +31,8 @@ export function AdminProjectsView() {
   const [viewMode, setViewMode] = useState<'CARDS' | 'TABLE'>('TABLE');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const selectedProject = projects.find(p => p.id === selectedProjectId) ?? null;
 
   useEffect(() => {
     dispatch(fetchProjects());
@@ -107,7 +111,7 @@ export function AdminProjectsView() {
             ${row.budgetSpent.toLocaleString()} / ${row.budgetTotal.toLocaleString()} USD
           </div>
           <div className="text-xs text-slate-400">
-            {Math.round((row.budgetSpent / row.budgetTotal) * 100)}% consumed
+            {budgetUsage(row) ? `${budgetUsage(row)!.percent}% consumed` : 'No budget set'}
           </div>
         </div>
       )
@@ -266,6 +270,7 @@ export function AdminProjectsView() {
           defaultSortKey="reference"
           defaultSortDirection="asc"
           exportFilename="growthprint-projects"
+          onRowClick={(row) => setSelectedProjectId(row.id)}
         />
       ) : (
         <div className="space-y-6">
@@ -277,7 +282,12 @@ export function AdminProjectsView() {
                     <span className="text-xs font-bold text-slate-400">{p.reference}</span>
                     <StatusBadge status={p.status} />
                   </div>
-                  <h3 className="text-lg font-bold text-slate-900">{p.name}</h3>
+                  <h3 className="text-lg font-bold text-slate-900">
+                    <button type="button" onClick={() => setSelectedProjectId(p.id)}
+                      className="rounded-sm text-left hover:text-gp-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gp-primary">
+                      {p.name}
+                    </button>
+                  </h3>
                   <div className="text-xs text-slate-500">
                     Client: <strong className="text-slate-800">{p.clientName}</strong> · Service: <strong>{humanizeCode(p.serviceCategory)}</strong>
                   </div>
@@ -347,6 +357,8 @@ export function AdminProjectsView() {
       )}
         </>
       )}
+
+      <ProjectDetailDrawer project={selectedProject} onClose={() => setSelectedProjectId(null)} />
     </div>
   );
 }

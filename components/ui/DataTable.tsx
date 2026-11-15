@@ -383,8 +383,14 @@ export function DataTable<T extends Record<string, any>>({
                   <tr
                     key={rowKey}
                     onClick={() => onRowClick && onRowClick(row)}
+                    // Clickable rows are reachable and operable from the keyboard too.
+                    tabIndex={isClickable ? 0 : undefined}
+                    onKeyDown={isClickable ? (e) => {
+                      if (e.target !== e.currentTarget) return;
+                      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onRowClick?.(row); }
+                    } : undefined}
                     className={`transition-colors ${
-                      isClickable ? 'cursor-pointer hover:bg-blue-50/40' : 'hover:bg-slate-50/60'
+                      isClickable ? 'cursor-pointer hover:bg-gp-primary-soft/50 focus-visible:bg-gp-primary-soft/60 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-gp-primary' : 'hover:bg-slate-50/60'
                     }`}
                   >
                     {columns.map((col) => {

@@ -128,7 +128,7 @@ export function ProtectedRoute({ children, requiredRole }: Props) {
 
 **Required Environment Variables:**
 - `NEXT_PUBLIC_API_URL` - Backend API URL
-- `NEXT_PUBLIC_USE_MOCK_API` - Enable/disable mock mode (default: true)
+- `NEXT_PUBLIC_USE_MOCK_API` - Enable/disable mock mode (default: off; `scripts/check-prod-env.mjs` fails a production build if it is `true`)
 
 **Optional Environment Variables:**
 - `NEXT_PUBLIC_ANALYTICS_ID` - Analytics tracking ID

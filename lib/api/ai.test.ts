@@ -19,7 +19,7 @@ const view = {
   enabled: false, provider: 'GEMINI', providerDisplayName: 'Google Gemini', model: 'gemini-test', baseUrl: null,
   timeoutSeconds: 30, maxOutputTokens: 800, dailyRequestLimitPerUser: 50, apiKeyConfigured: true,
   apiKeyMasked: '••••9876', encryptionConfigured: true, status: 'NOT_TESTED', lastTestAt: null,
-  lastTestMessage: null, updatedAt: '2026-11-01T12:00:00Z'
+  lastTestMessage: null, updatedAt: '2026-11-01T12:00:00Z', keyUnreadable: false
 };
 
 test('the API key is sent once, to the write-only endpoint, and only the masked value comes back', async () => {
@@ -84,8 +84,21 @@ test('AI error codes are read from the RFC 9457 type of the error body', () => {
 });
 
 test('every connection status has human-readable text', () => {
-  for (const status of ['AI_DISABLED', 'NOT_CONFIGURED', 'KEY_MISSING', 'NOT_TESTED', 'CONNECTED', 'INVALID_CREDENTIALS',
+  for (const status of ['AI_DISABLED', 'NOT_CONFIGURED', 'KEY_MISSING', 'KEY_UNREADABLE', 'NOT_TESTED', 'CONNECTED', 'INVALID_CREDENTIALS',
     'UNSUPPORTED_MODEL', 'RATE_LIMITED', 'TIMEOUT', 'PROVIDER_UNAVAILABLE', 'PROVIDER_ERROR'] as const) {
     assert.ok(AI_STATUS_TEXT[status].label.length > 0, status);
+  }
+});
+
+test('discarding the saved key is only ever sent when the admin confirmed it', async () => {
+  const { calls, restore } = stubFetch(200, view);
+  try {
+    const base = { enabled: false, provider: 'OPENAI' as const, model: 'm', baseUrl: '', timeoutSeconds: 30, maxOutputTokens: 800, dailyRequestLimitPerUser: 50 };
+    await aiApi.updateSettings(base);
+    await aiApi.updateSettings({ ...base, confirmKeyReset: true });
+    assert.equal((calls[0]!.body as { confirmKeyReset: boolean }).confirmKeyReset, false);
+    assert.equal((calls[1]!.body as { confirmKeyReset: boolean }).confirmKeyReset, true);
+  } finally {
+    restore();
   }
 });

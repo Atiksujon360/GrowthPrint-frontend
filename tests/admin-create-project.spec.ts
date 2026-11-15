@@ -1,5 +1,9 @@
 import { test, expect } from '@playwright/test';
 
+// Seeded-account credentials come from the environment (the backend's git-ignored .dev-credentials file), never from source.
+const ADMIN_EMAIL = process.env.GP_E2E_ADMIN_EMAIL ?? '';
+const ADMIN_PASSWORD = process.env.GP_E2E_ADMIN_PASSWORD ?? '';
+
 /**
  * Quick create from the studio (requires backend for sign-in).
  *
@@ -8,10 +12,12 @@ import { test, expect } from '@playwright/test';
  * lead / support-ticket form. This test now checks the real flow without submitting, so it writes no data.
  */
 test.describe('Admin Quick Create @backend', () => {
+  test.skip(!ADMIN_EMAIL || !ADMIN_PASSWORD, 'Set GP_E2E_ADMIN_EMAIL and GP_E2E_ADMIN_PASSWORD (see the backend .dev-credentials file).');
+
   test('opens Quick create from the top bar and offers lead and ticket forms', async ({ page }) => {
     await page.goto('/studio/ops/login');
-    await page.getByLabel(/email/i).fill('admin@growthprint.dev');
-    await page.getByLabel(/^Password/).fill('Admin123!');
+    await page.getByLabel(/email/i).fill(ADMIN_EMAIL);
+    await page.getByLabel(/^Password/).fill(ADMIN_PASSWORD);
 
     const loginResponsePromise = page.waitForResponse(
       response => response.url().includes('/auth/login') && response.status() === 200

@@ -10,12 +10,14 @@ import {
   type AiSettings,
   type UpdateAiSettingsInput
 } from '../../../lib/api/ai.ts';
+import { MODEL_HINT, nextStep, setupState } from '../../../lib/aiSetup.ts';
+import { ConfirmDialog } from '../../../components/ui/ConfirmDialog.tsx';
 
 const TONE_CLASS = {
-  neutral: 'bg-slate-100 text-slate-700 border-slate-200',
-  good: 'bg-emerald-50 text-emerald-800 border-emerald-200',
-  warning: 'bg-amber-50 text-amber-800 border-amber-200',
-  bad: 'bg-rose-50 text-rose-800 border-rose-200'
+  neutral: 'bg-gp-canvas text-gp-text-secondary border-gp-border',
+  good: 'bg-gp-success-soft text-gp-success border-gp-success/30',
+  warning: 'bg-gp-warning-soft text-gp-warning border-gp-warning/30',
+  bad: 'bg-gp-danger-soft text-gp-danger border-gp-danger/30'
 } as const;
 
 function toForm(settings: AiSettings): UpdateAiSettingsInput {
@@ -30,9 +32,22 @@ function toForm(settings: AiSettings): UpdateAiSettingsInput {
   };
 }
 
+function StepHeading({ id, number, title, done }: { id: string; number: number; title: string; done: boolean }) {
+  return (
+    <div className="flex items-center gap-3">
+      <span aria-hidden="true"
+        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${done ? 'bg-gp-primary text-white' : 'border border-gp-border bg-gp-canvas text-gp-text-secondary'}`}>
+        {done ? '✓' : number}
+      </span>
+      <h3 id={id} className="text-base font-semibold text-gp-text">{title}</h3>
+    </div>
+  );
+}
+
 /**
  * Settings → AI providers (admin only). AI is optional: everything else in GrowthPrint works without it.
- * The API key is typed here once and sent straight to the backend; it is never kept in app state.
+ * Three steps in order: set up the provider and key, test the connection, turn AI on. The key is typed here once and
+ * sent straight to the backend; it is never kept in app state.
  */
 export function AdminAiSettingsView() {
   const dispatch = useAppDispatch();
@@ -44,7 +59,8 @@ export function AdminAiSettingsView() {
   const [models, setModels] = useState<string[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
-  const [busy, setBusy] = useState<null | 'save' | 'key' | 'removeKey' | 'test' | 'models'>(null);
+  const [confirmDiscard, setConfirmDiscard] = useState(false);
+  const [busy, setBusy] = useState<null | 'save' | 'removeKey' | 'test' | 'toggle' | 'models'>(null);
 
   const load = useCallback(async () => {
     setLoadError(null);
@@ -62,6 +78,7 @@ export function AdminAiSettingsView() {
     void load();
   }, [load]);
 
+  /** Runs one action, shows its outcome, and refreshes the form from the server's answer. */
   const run = async (action: NonNullable<typeof busy>, task: () => Promise<AiSettings>, success: string) => {
     setBusy(action);
     setActionError(null);
@@ -81,9 +98,9 @@ export function AdminAiSettingsView() {
 
   if (loadError) {
     return (
-      <div role="alert" className="p-4 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-sm flex items-center gap-3">
+      <div role="alert" className="flex items-center gap-3 rounded-gp-card border border-gp-danger/30 bg-gp-danger-soft p-4 text-sm text-gp-danger">
         <span>{loadError}</span>
-        <button type="button" onClick={() => void load()} className="ml-auto px-3 py-1.5 bg-rose-100 hover:bg-rose-200 rounded-lg text-xs font-semibold">
+        <button type="button" onClick={() => void load()} className="ml-auto rounded-gp-control bg-gp-surface px-3 py-1.5 text-xs font-semibold hover:bg-gp-canvas">
           Try again
         </button>
       </div>
@@ -91,25 +108,50 @@ export function AdminAiSettingsView() {
   }
 
   if (!settings || !form) {
-    return <p role="status" className="text-sm text-slate-500">Loading AI settings…</p>;
+    return <p role="status" className="text-sm text-gp-text-secondary">Loading AI settings…</p>;
   }
 
   const selected = providers.find(p => p.id === form.provider) ?? null;
-  const providerChanged = form.provider !== settings.provider;
+  const state = setupState(settings, form, providers, apiKey);
+  const step = nextStep(settings, state);
   const status = AI_STATUS_TEXT[settings.status];
-  const inputClass = 'w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 disabled:bg-slate-50';
-  const canEnable = Boolean(settings.provider && settings.model && settings.apiKeyConfigured) && !providerChanged;
+  const inputClass = 'h-10 w-full rounded-gp-control border border-gp-border bg-gp-surface px-3 text-sm text-gp-text placeholder:text-gp-text-muted focus:border-gp-primary focus:outline-none focus:ring-2 focus:ring-gp-primary/20 disabled:bg-gp-canvas disabled:text-gp-text-muted';
+  const primaryButton = 'inline-flex h-10 items-center justify-center rounded-gp-control bg-gp-primary px-4 text-sm font-semibold text-white hover:bg-gp-primary-hover disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gp-primary';
+  const secondaryButton = 'inline-flex h-10 items-center justify-center rounded-gp-control border border-gp-border bg-gp-surface px-4 text-sm font-semibold text-gp-text hover:bg-gp-canvas disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gp-primary';
+  const setupDone = settings.apiKeyConfigured && !settings.keyUnreadable && !state.hasUnsavedChanges && Boolean(settings.provider && settings.model);
+  const testDone = setupDone && settings.status === 'CONNECTED';
+
+  const doSave = async (confirmKeyReset: boolean) => {
+    const ok = await run('save', async () => {
+      // A changed connection switches AI off until it has been tested again; the server enforces this too.
+      let updated = await aiApi.updateSettings({
+        ...form,
+        enabled: state.connectionChanged ? false : settings.enabled,
+        confirmKeyReset
+      });
+      if (apiKey.trim()) {
+        try {
+          updated = await aiApi.setApiKey(apiKey.trim());
+        } catch (error) {
+          // The settings were saved even though the key was not: show the real state, then report the problem.
+          const current = await aiApi.getSettings().catch(() => updated);
+          setSettings(current);
+          setForm(toForm(current));
+          throw error;
+        }
+      }
+      return updated;
+    }, state.hasUnsavedKey ? 'Settings and API key saved.' : 'Your AI settings have been saved.');
+    if (ok) setApiKey('');
+  };
 
   const save = (event: React.FormEvent) => {
     event.preventDefault();
-    void run('save', () => aiApi.updateSettings(form), 'Your AI settings have been saved.');
-  };
-
-  const saveKey = async (event: React.FormEvent) => {
-    event.preventDefault();
-    if (!apiKey.trim()) return;
-    const ok = await run('key', () => aiApi.setApiKey(apiKey.trim()), 'The API key has been saved securely.');
-    if (ok) setApiKey('');
+    if (state.keyWouldBeDiscarded) {
+      setConfirmDiscard(true); // the saved key would be removed: ask first
+      return;
+    }
+    void doSave(false);
   };
 
   const loadModels = async () => {
@@ -124,62 +166,70 @@ export function AdminAiSettingsView() {
     }
   };
 
-  return (
-    <div className="space-y-6 max-w-3xl">
-      <div>
-        <h2 className="text-lg font-semibold text-ink-950">AI providers</h2>
-        <p className="text-sm text-slate-600 mt-1">
-          Choose which AI service GrowthPrint uses for suggestions. AI is optional — everything else keeps working when it’s off.
-        </p>
-      </div>
+  const keyPlaceholder = !form.provider ? 'Choose a provider first'
+    : settings.apiKeyConfigured && !state.keyWouldBeDiscarded ? 'Paste a new key to replace the saved one'
+    : 'Paste the API key';
 
-      <section aria-labelledby={`${id}-status`} className="bg-white rounded-2xl border border-slate-200 p-5 space-y-2">
+  return (
+    <div className="max-w-3xl space-y-6">
+      <p className="text-sm text-gp-text-secondary">
+        Choose which AI service GrowthPrint uses for suggestions. AI is optional. Everything else keeps working when it’s off.
+      </p>
+
+      <section aria-label="Current status" className="space-y-2 rounded-gp-card border border-gp-border bg-gp-surface p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h3 id={`${id}-status`} className="text-sm font-semibold text-slate-900">Status</h3>
-          <span className={`px-2.5 py-1 rounded-lg border text-xs font-semibold ${TONE_CLASS[status.tone]}`} role="status">
+          <p className="text-sm font-semibold text-gp-text">
+            {settings.enabled ? 'AI suggestions are on' : 'AI suggestions are off'}
+          </p>
+          <span className={`rounded-gp-control border px-2.5 py-1 text-xs font-semibold ${TONE_CLASS[status.tone]}`} role="status">
             {status.label}
           </span>
         </div>
-        <p className="text-xs text-slate-600">
-          {settings.enabled ? 'AI suggestions are switched on.' : 'AI suggestions are switched off.'}
-          {settings.lastTestAt && ` Last connection test: ${new Date(settings.lastTestAt).toLocaleString()}.`}
-          {settings.lastTestMessage && ` ${settings.lastTestMessage}`}
-        </p>
+        {(settings.lastTestAt || settings.lastTestMessage) && (
+          <p className="text-xs text-gp-text-secondary">
+            {settings.lastTestAt && `Last connection test: ${new Date(settings.lastTestAt).toLocaleString()}. `}
+            {settings.lastTestMessage}
+          </p>
+        )}
         {!settings.encryptionConfigured && (
-          <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-            API keys can’t be saved yet: the server needs the AI_CREDENTIALS_ENCRYPTION_KEY setting first.
+          <p className="rounded-gp-control border border-gp-warning/30 bg-gp-warning-soft px-3 py-2 text-xs text-gp-warning">
+            API keys can’t be saved yet. The server needs the AI_CREDENTIALS_ENCRYPTION_KEY setting first (a base64 value of 32 random bytes).
+          </p>
+        )}
+        {settings.keyUnreadable && settings.encryptionConfigured && (
+          <p className="rounded-gp-control border border-gp-danger/30 bg-gp-danger-soft px-3 py-2 text-xs text-gp-danger">
+            The saved API key can’t be read with this server’s encryption key. It may have been changed. Enter the API key again in step 1.
           </p>
         )}
       </section>
 
-      <form onSubmit={save} className="bg-white rounded-2xl border border-slate-200 p-5 space-y-4" aria-labelledby={`${id}-provider`}>
-        <h3 id={`${id}-provider`} className="text-sm font-semibold text-slate-900">Provider and model</h3>
+      {/* Step 1 */}
+      <form onSubmit={save} aria-labelledby={`${id}-s1`} className="space-y-4 rounded-gp-card border border-gp-border bg-gp-surface p-5">
+        <StepHeading id={`${id}-s1`} number={1} title="Set up the provider" done={setupDone} />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label htmlFor={`${id}-provider-select`} className="block text-xs font-medium text-slate-700 mb-1">Provider</label>
+            <label htmlFor={`${id}-provider-select`} className="mb-1 block text-xs font-medium text-gp-text">Provider</label>
             <select id={`${id}-provider-select`} className={inputClass} value={form.provider ?? ''}
-              onChange={e => setForm({ ...form, provider: (e.target.value || null) as AiProvider | null, enabled: false })}>
+              onChange={e => setForm({ ...form, provider: (e.target.value || null) as AiProvider | null })}>
               <option value="">Choose a provider…</option>
               {providers.map(p => <option key={p.id} value={p.id}>{p.displayName}</option>)}
             </select>
-            {providerChanged && settings.apiKeyConfigured && (
-              <p className="mt-1 text-xs text-amber-800">Saving a different provider removes the current API key.</p>
-            )}
           </div>
           <div>
-            <label htmlFor={`${id}-model`} className="block text-xs font-medium text-slate-700 mb-1">Model ID</label>
+            <label htmlFor={`${id}-model`} className="mb-1 block text-xs font-medium text-gp-text">Model ID</label>
             <input id={`${id}-model`} className={inputClass} value={form.model} list={models ? `${id}-models` : undefined}
-              placeholder="e.g. the model name from your provider" autoComplete="off" spellCheck={false}
+              placeholder="Model name" autoComplete="off" spellCheck={false}
               onChange={e => setForm({ ...form, model: e.target.value })} />
             {models && (
               <datalist id={`${id}-models`}>
                 {models.map(m => <option key={m} value={m} />)}
               </datalist>
             )}
-            {settings.apiKeyConfigured && !providerChanged && selected?.supportsModelListing && (
+            {form.provider && <p className="mt-1 text-xs text-gp-text-muted">{MODEL_HINT[form.provider]}</p>}
+            {settings.apiKeyConfigured && !settings.keyUnreadable && !state.hasUnsavedChanges && selected?.supportsModelListing && (
               <button type="button" onClick={() => void loadModels()} disabled={busy !== null}
-                className="mt-1 text-xs font-semibold text-blue-700 hover:underline disabled:opacity-50">
+                className="mt-1 text-xs font-semibold text-gp-primary hover:underline disabled:opacity-50">
                 {busy === 'models' ? 'Loading models…' : 'Show models available to this key'}
               </button>
             )}
@@ -188,103 +238,137 @@ export function AdminAiSettingsView() {
 
         {selected?.requiresBaseUrl && (
           <div>
-            <label htmlFor={`${id}-base-url`} className="block text-xs font-medium text-slate-700 mb-1">Base URL</label>
+            <label htmlFor={`${id}-base-url`} className="mb-1 block text-xs font-medium text-gp-text">Base URL</label>
             <input id={`${id}-base-url`} className={inputClass} value={form.baseUrl} placeholder="https://your-endpoint.example.com/v1"
               inputMode="url" autoComplete="off" onChange={e => setForm({ ...form, baseUrl: e.target.value })} />
-            <p className="mt-1 text-xs text-slate-500">Must use https:// (plain http is only allowed for localhost).</p>
+            <p className="mt-1 text-xs text-gp-text-muted">Must be a public https:// address. Private and local addresses are blocked.</p>
           </div>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div>
+          <label htmlFor={`${id}-key-input`} className="mb-1 block text-xs font-medium text-gp-text">API key</label>
+          <input id={`${id}-key-input`} type="password" autoComplete="off" spellCheck={false} className={inputClass}
+            value={apiKey} placeholder={keyPlaceholder}
+            disabled={!form.provider || !settings.encryptionConfigured}
+            onChange={e => setApiKey(e.target.value)} />
+          <p className="mt-1 text-xs text-gp-text-muted">
+            {settings.apiKeyConfigured && !state.keyWouldBeDiscarded
+              ? `A key is saved (${settings.apiKeyMasked}). It’s stored encrypted and never shown again.`
+              : 'Stored encrypted and never shown again.'}
+          </p>
+          {state.keyWouldBeDiscarded && (
+            <p className="mt-1 text-xs text-gp-warning">
+              Saving this change removes the current API key. Paste the new one here to save both at once.
+            </p>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div>
-            <label htmlFor={`${id}-timeout`} className="block text-xs font-medium text-slate-700 mb-1">Timeout (seconds)</label>
+            <label htmlFor={`${id}-timeout`} className="mb-1 block text-xs font-medium text-gp-text">Timeout (seconds)</label>
             <input id={`${id}-timeout`} type="number" min={5} max={120} className={inputClass} value={form.timeoutSeconds}
               onChange={e => setForm({ ...form, timeoutSeconds: Number(e.target.value) })} />
           </div>
           <div>
-            <label htmlFor={`${id}-tokens`} className="block text-xs font-medium text-slate-700 mb-1">Max output tokens</label>
+            <label htmlFor={`${id}-tokens`} className="mb-1 block text-xs font-medium text-gp-text">Max output tokens</label>
             <input id={`${id}-tokens`} type="number" min={64} max={8000} className={inputClass} value={form.maxOutputTokens}
               onChange={e => setForm({ ...form, maxOutputTokens: Number(e.target.value) })} />
           </div>
           <div>
-            <label htmlFor={`${id}-limit`} className="block text-xs font-medium text-slate-700 mb-1">Requests per person per day</label>
+            <label htmlFor={`${id}-limit`} className="mb-1 block text-xs font-medium text-gp-text">Requests per person per day</label>
             <input id={`${id}-limit`} type="number" min={1} max={10000} className={inputClass} value={form.dailyRequestLimitPerUser}
               onChange={e => setForm({ ...form, dailyRequestLimitPerUser: Number(e.target.value) })} />
           </div>
         </div>
 
-        <label className="flex items-start gap-2 text-sm text-slate-800">
-          <input type="checkbox" className="mt-1" checked={form.enabled} disabled={!canEnable && !form.enabled}
-            onChange={e => setForm({ ...form, enabled: e.target.checked })} />
-          <span>
-            Turn on AI suggestions
-            {!canEnable && !form.enabled && (
-              <span className="block text-xs text-slate-500">Save a provider, model and API key first.</span>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-xs text-gp-text-secondary">
+            {state.connectionChanged && settings.enabled ? 'Saving these changes turns AI off until you test the connection again.' : ''}
+          </p>
+          <div className="flex gap-2">
+            {settings.apiKeyConfigured && (
+              <button type="button" disabled={busy !== null}
+                onClick={() => void run('removeKey', () => aiApi.removeApiKey(), 'The API key was removed and AI is now off.')}
+                className="inline-flex h-10 items-center rounded-gp-control border border-gp-danger/30 px-4 text-sm font-semibold text-gp-danger hover:bg-gp-danger-soft disabled:opacity-50">
+                {busy === 'removeKey' ? 'Removing…' : 'Remove key'}
+              </button>
             )}
-          </span>
-        </label>
-
-        <div className="flex justify-end">
-          <button type="submit" disabled={busy !== null}
-            className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg disabled:opacity-50 min-h-[40px]">
-            {busy === 'save' ? 'Saving…' : 'Save settings'}
-          </button>
-        </div>
-      </form>
-
-      <form onSubmit={saveKey} className="bg-white rounded-2xl border border-slate-200 p-5 space-y-3" aria-labelledby={`${id}-key`}>
-        <h3 id={`${id}-key`} className="text-sm font-semibold text-slate-900">API key</h3>
-        <p className="text-xs text-slate-600">
-          {settings.apiKeyConfigured
-            ? `A key is saved (${settings.apiKeyMasked}). It’s stored encrypted and never shown again — paste a new one to replace it.`
-            : 'Paste the API key from your provider’s dashboard. It’s stored encrypted and never shown again.'}
-        </p>
-        <label htmlFor={`${id}-key-input`} className="sr-only">API key</label>
-        <input id={`${id}-key-input`} type="password" autoComplete="off" spellCheck={false} className={inputClass}
-          value={apiKey} placeholder={settings.provider ? 'Paste the API key' : 'Choose and save a provider first'}
-          disabled={!settings.provider || providerChanged || !settings.encryptionConfigured}
-          onChange={e => setApiKey(e.target.value)} />
-        <div className="flex flex-wrap justify-end gap-2">
-          {settings.apiKeyConfigured && (
-            <button type="button" disabled={busy !== null}
-              onClick={() => void run('removeKey', () => aiApi.removeApiKey(), 'The API key was removed and AI is now off.')}
-              className="px-3 py-2 text-sm font-semibold text-rose-700 border border-rose-200 hover:bg-rose-50 rounded-lg disabled:opacity-50 min-h-[40px]">
-              {busy === 'removeKey' ? 'Removing…' : 'Remove key'}
+            <button type="submit" disabled={busy !== null || !form.provider || !state.hasUnsavedChanges && !formLimitsChanged(settings, form)} className={primaryButton}>
+              {busy === 'save' ? 'Saving…' : state.hasUnsavedKey ? 'Save settings and key' : 'Save settings'}
             </button>
-          )}
-          <button type="submit" disabled={busy !== null || !apiKey.trim()}
-            className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg disabled:opacity-50 min-h-[40px]">
-            {busy === 'key' ? 'Saving…' : settings.apiKeyConfigured ? 'Replace key' : 'Save key'}
-          </button>
+          </div>
         </div>
       </form>
 
-      <section aria-labelledby={`${id}-test`} className="bg-white rounded-2xl border border-slate-200 p-5 space-y-3">
-        <h3 id={`${id}-test`} className="text-sm font-semibold text-slate-900">Connection test</h3>
-        <p className="text-xs text-slate-600">
+      {/* Step 2 */}
+      <section aria-labelledby={`${id}-s2`} className="space-y-3 rounded-gp-card border border-gp-border bg-gp-surface p-5">
+        <StepHeading id={`${id}-s2`} number={2} title="Test the connection" done={testDone} />
+        <p className="text-xs text-gp-text-secondary">
           Sends one very small request to the provider to check the key and model. Providers may count it towards your usage.
         </p>
-        <div className="flex justify-end">
-          <button type="button" disabled={busy !== null || !settings.apiKeyConfigured || providerChanged}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-xs text-gp-text-secondary">{!step.canTest ? step.hint : ''}</p>
+          <button type="button" disabled={busy !== null || !step.canTest}
             onClick={() => void run('test', () => aiApi.testConnection(), 'Connection test finished.')}
-            className="px-4 py-2 text-sm font-semibold text-blue-700 border border-blue-200 hover:bg-blue-50 rounded-lg disabled:opacity-50 min-h-[40px]">
+            className={secondaryButton}>
             {busy === 'test' ? 'Testing…' : 'Test connection'}
           </button>
         </div>
       </section>
 
+      {/* Step 3 */}
+      <section aria-labelledby={`${id}-s3`} className="space-y-3 rounded-gp-card border border-gp-border bg-gp-surface p-5">
+        <StepHeading id={`${id}-s3`} number={3} title="Turn on AI suggestions" done={settings.enabled} />
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-xs text-gp-text-secondary">
+            {settings.enabled
+              ? 'Suggestions appear for support requests. A person reviews every one before anything changes.'
+              : step.canTurnOn ? 'The connection works. You can turn AI on.' : step.hint}
+          </p>
+          {settings.enabled ? (
+            <button type="button" disabled={busy !== null} className={secondaryButton}
+              onClick={() => void run('toggle', () => aiApi.updateSettings({ ...toForm(settings), enabled: false }), 'AI suggestions are now off.')}>
+              {busy === 'toggle' ? 'Turning off…' : 'Turn off'}
+            </button>
+          ) : (
+            <button type="button" disabled={busy !== null || !step.canTurnOn} className={primaryButton}
+              onClick={() => void run('toggle', () => aiApi.updateSettings({ ...toForm(settings), enabled: true }), 'AI suggestions are now on.')}>
+              {busy === 'toggle' ? 'Turning on…' : 'Turn on'}
+            </button>
+          )}
+        </div>
+      </section>
+
       {actionError && (
-        <p role="alert" className="text-sm text-rose-800 bg-rose-50 border border-rose-200 rounded-lg px-3 py-2">{actionError}</p>
+        <p role="alert" className="rounded-gp-control border border-gp-danger/30 bg-gp-danger-soft px-3 py-2 text-sm text-gp-danger">{actionError}</p>
       )}
 
-      <section className="text-xs text-slate-600 bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-1">
-        <h3 className="text-sm font-semibold text-slate-900">What gets sent to the AI provider</h3>
+      <section className="space-y-1 rounded-gp-card border border-gp-border bg-gp-canvas p-4 text-xs text-gp-text-secondary">
+        <h3 className="text-sm font-semibold text-gp-text">What gets sent to the AI provider</h3>
         <p>
-          Only what a feature needs. Support suggestions send the request’s title, description, category, impact and urgency —
+          Only what a feature needs. Support suggestions send the request’s title, description, category, impact and urgency,
           never client names, internal notes, invoices or payments. Suggestions are always shown to you first; nothing is changed
           or sent to a client automatically.
         </p>
       </section>
+
+      <ConfirmDialog
+        isOpen={confirmDiscard}
+        title="Remove the saved API key?"
+        description="Changing the provider or endpoint removes the API key that is saved now, because a key only works with the service it came from. Paste the new key in the same step to replace it."
+        confirmLabel="Remove key and save"
+        variant="warning"
+        isLoading={busy === 'save'}
+        onCancel={() => setConfirmDiscard(false)}
+        onConfirm={() => { setConfirmDiscard(false); void doSave(true); }}
+      />
     </div>
   );
+}
+
+/** True when only the limits (timeout, tokens, daily limit) differ from what is saved. */
+function formLimitsChanged(saved: AiSettings, form: UpdateAiSettingsInput): boolean {
+  return saved.timeoutSeconds !== form.timeoutSeconds
+    || saved.maxOutputTokens !== form.maxOutputTokens
+    || saved.dailyRequestLimitPerUser !== form.dailyRequestLimitPerUser;
 }

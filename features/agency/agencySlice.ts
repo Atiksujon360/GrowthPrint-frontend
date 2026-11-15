@@ -78,16 +78,11 @@ const initialAgencyState: AgencyState = {
 // Async thunks for Clients API
 export const fetchClients = createAsyncThunk(
   'agency/fetchClients',
-  async (_, { rejectWithValue, getState, requestId }) => {
+  async (_, { rejectWithValue }) => {
     if (isMockMode) {
       return INITIAL_CLIENTS;
     }
 
-    // Request deduplication: skip if already loading
-    const state = getState() as { agency: AgencyState };
-    if (state.agency.isLoadingClients && state.agency.clientsRequestId === requestId) {
-      return INITIAL_CLIENTS; // Return current state, skip duplicate request
-    }
 
     try {
       const response = await agencyApi.clients.getAll();
@@ -159,16 +154,11 @@ export const updateClient = createAsyncThunk(
 // Async thunks for CRM Leads API
 export const fetchCrmLeads = createAsyncThunk(
   'agency/fetchCrmLeads',
-  async (_, { rejectWithValue, getState, requestId }) => {
+  async (_, { rejectWithValue }) => {
     if (isMockMode) {
       return INITIAL_LEADS;
     }
 
-    // Request deduplication: skip if already loading
-    const state = getState() as { agency: AgencyState };
-    if (state.agency.isLoadingLeads && state.agency.leadsRequestId === requestId) {
-      return INITIAL_LEADS; // Return current state, skip duplicate request
-    }
 
     try {
       const response = await agencyApi.crmLeads.getAll();
@@ -372,16 +362,11 @@ export const deleteCrmLead = createAsyncThunk(
 // Async thunks for Projects API
 export const fetchProjects = createAsyncThunk(
   'agency/fetchProjects',
-  async (_, { rejectWithValue, getState, requestId }) => {
+  async (_, { rejectWithValue }) => {
     if (isMockMode) {
       return INITIAL_PROJECTS;
     }
 
-    // Request deduplication: skip if already loading
-    const state = getState() as { agency: AgencyState };
-    if (state.agency.isLoadingProjects && state.agency.projectsRequestId === requestId) {
-      return INITIAL_PROJECTS; // Return current state, skip duplicate request
-    }
 
     try {
       const response = await agencyApi.projects.getAll();

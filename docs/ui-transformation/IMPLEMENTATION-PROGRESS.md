@@ -42,6 +42,18 @@ KPI unification, chart lazy-loading, label humanizing and the accessibility fixe
 - Portal and workspace screens.
 - Homepage on reference C.
 
+## 2026-11-15: details drawer (Phase 6, part)
+- `components/ui/DetailDrawer.tsx`: right-hand sheet with `DrawerSection` and `FactList`. It is a modal dialog: focus moves in, Tab is trapped, Escape and the backdrop close it, and focus returns to the opener. Full width on phones; the slide-in only runs when motion is allowed.
+- Clients: a table row (or the name in card view) opens `ClientDetailDrawer`, which shows:
+  - retainer hours left this month as a meter (red when over the allowance);
+  - contact details and contract facts;
+  - the client's own projects and invoices, with the outstanding total per currency.
+  Projects and invoices load only when the account may open those modules.
+- `DataTable`: clickable rows are now focusable and open with Enter or Space.
+- `lib/clientSummary.ts`, with 3 tests.
+- Checked in the browser at 1440 and 375 wide, by mouse and keyboard.
+- **Next:** drawers for Projects (milestones) and Leads (evidence); then Phase 7 (Finance, Outreach, Analytics).
+
 ## Decisions (approved 2026-11-10 as recommended)
 | # | Decision | Recommendation |
 |---|---|---|

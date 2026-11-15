@@ -13,7 +13,7 @@ This document covers environment configuration, deployment, monitoring, and roll
 **Configuration:**
 - Port: 3000
 - Backend API: http://localhost:8090
-- Mock Mode: Enabled (default)
+- Mock Mode: Off by default (set NEXT_PUBLIC_USE_MOCK_API=true only for a local demo)
 - HTTPS: Not required
 
 **Environment Variables:**

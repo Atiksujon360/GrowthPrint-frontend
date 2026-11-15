@@ -12,6 +12,7 @@ export type AiConnectionStatus =
   | 'AI_DISABLED'
   | 'NOT_CONFIGURED'
   | 'KEY_MISSING'
+  | 'KEY_UNREADABLE'
   | 'NOT_TESTED'
   | 'CONNECTED'
   | 'INVALID_CREDENTIALS'
@@ -44,6 +45,8 @@ export interface AiSettings {
   lastTestAt: string | null;
   lastTestMessage: string | null;
   updatedAt: string;
+  /** A key is saved but this server's encryption key can't decrypt it: the key must be entered again. */
+  keyUnreadable: boolean;
 }
 
 export interface UpdateAiSettingsInput {
@@ -54,6 +57,8 @@ export interface UpdateAiSettingsInput {
   timeoutSeconds: number;
   maxOutputTokens: number;
   dailyRequestLimitPerUser: number;
+  /** Set only after the admin agreed to discard the saved key (provider or endpoint changed). */
+  confirmKeyReset?: boolean;
 }
 
 export interface SupportTriageSuggestion {
@@ -75,6 +80,7 @@ export const AI_STATUS_TEXT: Record<AiConnectionStatus, { label: string; tone: '
   AI_DISABLED: { label: 'AI is turned off', tone: 'neutral' },
   NOT_CONFIGURED: { label: 'Choose a provider and model', tone: 'warning' },
   KEY_MISSING: { label: 'API key missing', tone: 'warning' },
+  KEY_UNREADABLE: { label: 'Saved key can’t be read. Enter it again', tone: 'bad' },
   NOT_TESTED: { label: 'Not tested yet', tone: 'warning' },
   CONNECTED: { label: 'Connected', tone: 'good' },
   INVALID_CREDENTIALS: { label: 'API key rejected', tone: 'bad' },
@@ -109,7 +115,8 @@ export const aiApi = {
       baseUrl: input.baseUrl.trim() || null,
       timeoutSeconds: input.timeoutSeconds,
       maxOutputTokens: input.maxOutputTokens,
-      dailyRequestLimitPerUser: input.dailyRequestLimitPerUser
+      dailyRequestLimitPerUser: input.dailyRequestLimitPerUser,
+      confirmKeyReset: input.confirmKeyReset === true
     })).data;
   },
   async setApiKey(apiKey: string): Promise<AiSettings> {

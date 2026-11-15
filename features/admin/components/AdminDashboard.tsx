@@ -174,7 +174,7 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
 
       {/* Analytics row 1 */}
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-3">
-        <Panel title="Projects by target month" description="Delivery load (completion trend after backend B3)">
+        <Panel title="Projects by target month" description="Delivery load by target completion month">
           <div className="h-60">{projects.length ? <AreaTrend data={targetTrend} valueLabel="Projects" /> : empty('No projects yet.')}</div>
         </Panel>
         <Panel title="Revenue by service" description="Accepted proposal value">
@@ -190,11 +190,11 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
         <Panel title="Project status" description="All projects">
           {projectStatus.length ? <DonutBreakdown data={projectStatus} centerLabel="Projects" /> : <div className="h-40">{empty('No projects yet.')}</div>}
         </Panel>
-        <Panel title="Milestone performance" description="Done vs open by due month (tasks after backend B2)"
+        <Panel title="Milestone performance" description="Done vs open milestones by due month"
           action={<span className="flex gap-3 text-xs text-gp-text-secondary"><span className="flex items-center gap-1"><i className="h-2 w-2 rounded-sm bg-gp-accent" />Done</span><span className="flex items-center gap-1"><i className="h-2 w-2 rounded-sm bg-ink-300" />Open</span></span>}>
           <div className="h-60">{milestones.total ? <GroupedBars data={milestoneTrend} aLabel="Done" bLabel="Open" /> : empty('No milestones yet.')}</div>
         </Panel>
-        <Panel title="Collected vs invoiced" description="USD by month (expenses after backend B5)"
+        <Panel title="Collected vs invoiced" description="USD by month"
           action={<span className="flex gap-3 text-xs text-gp-text-secondary"><span className="flex items-center gap-1"><i className="h-2 w-2 rounded-sm bg-gp-primary-soft ring-1 ring-brand-200" />Invoiced</span><span className="flex items-center gap-1"><i className="h-0.5 w-3 bg-gp-primary" />Collected</span></span>}>
           <div className="h-60"><ComboBarLine data={collectedVsInvoiced} barLabel="Invoiced" lineLabel="Collected" /></div>
           <p className="mt-2 text-xs text-gp-text-secondary">Collected to date: <strong className="tabular-nums text-gp-text">{money(cashCollected)}</strong></p>

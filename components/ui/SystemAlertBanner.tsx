@@ -2,6 +2,7 @@ import React from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks.ts';
 import { dismissSystemAlert } from '../../store/index.ts';
 import { AlertCircle, AlertTriangle, CheckCircle2, ArrowRight, X } from 'lucide-react';
+import { useAttention } from '../../hooks/useAttention.ts';
 
 interface SystemAlertBannerProps {
   onNavigateTab?: (tab: string) => void;
@@ -9,10 +10,13 @@ interface SystemAlertBannerProps {
 
 export function SystemAlertBanner({ onNavigateTab }: SystemAlertBannerProps) {
   const dispatch = useAppDispatch();
-  const alert = useAppSelector(state => state.ui.systemAlert);
+  const storedAlert = useAppSelector(state => state.ui.systemAlert);
   const isDismissed = useAppSelector(state => state.ui.isSystemAlertDismissed);
+  const { retainerAlert } = useAttention();
 
-  if (!alert || isDismissed) return null;
+  // A banner computed from real data wins; the stored one only exists in demo mode.
+  const alert = retainerAlert ?? (storedAlert && !isDismissed ? storedAlert : null);
+  if (!alert) return null;
 
   const styles = {
     info: {
@@ -60,7 +64,7 @@ export function SystemAlertBanner({ onNavigateTab }: SystemAlertBannerProps) {
         )}
 
         <button
-          onClick={() => dispatch(dismissSystemAlert())}
+          onClick={() => dispatch(dismissSystemAlert(alert === retainerAlert ? alert.id : undefined))}
           aria-label="Dismiss banner"
           className="p-1 rounded-md hover:bg-black/5 transition-colors opacity-70 hover:opacity-100"
         >

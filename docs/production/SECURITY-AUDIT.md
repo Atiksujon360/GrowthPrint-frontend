@@ -37,5 +37,5 @@ or printed. Configuration values were redacted when inspected.
 | S8 | Medium | Security and business audit events are only written to logs | `SecurityAudit` | Persistent `audit_events` table (backend proposal B6), at least for financial and permission changes |
 | S9 | Medium | Demo mode must never reach production | `NEXT_PUBLIC_USE_MOCK_API=true` switches to demo data, including the demo role-switcher | A build-time guard in CI that fails a production build if it is `true`; production checklist item |
 | S10 | Low | Backend dependencies are not scanned automatically | No OWASP dependency-check, Dependabot or Renovate | Enable Dependabot for Maven and npm (free) |
-| S11 | Low | An unused `GEMINI_API_KEY` entry exists in the frontend `.env`/`.env.example` (AI keys live encrypted in the backend) | `grep`: no code uses it | Remove the entry so no one puts a live key in a frontend env file |
+| S11 | Low (**fixed 2026-11-10**) | An unused `GEMINI_API_KEY` entry exists in the frontend `.env`/`.env.example` (AI keys live encrypted in the backend) | `grep`: no code uses it | Remove the entry so no one puts a live key in a frontend env file |
 | S12 | Low | Wide CORS allowed headers (`*`) with credentials | `SecurityConfig` | Restrict to `Authorization`, `Content-Type`, `X-Correlation-ID` |

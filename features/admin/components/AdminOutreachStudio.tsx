@@ -250,10 +250,6 @@ export function AdminOutreachStudio({ preselectedLeadId }: { preselectedLeadId?:
               <strong className="text-slate-800">Verified details: </strong>
               {activeDraft.personalizationEvidence}
             </p>
-            <div className="text-xs text-emerald-700 flex items-center gap-1 pt-1 font-medium">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>Referenced case study matches our actual work with Nexus Logistics.</span>
-            </div>
           </div>
 
           {/* Email Preview & Editor */}
