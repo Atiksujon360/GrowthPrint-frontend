@@ -19,6 +19,7 @@ import {
 import type { Lead, LeadPipelineStage } from '../../../types/agency.ts';
 import { humanizeCode } from '../../../lib/labels.ts';
 import { SummaryStrip } from '../../../components/ui/app-kit.tsx';
+import { LeadDetailDrawer, LeadInspectorPanel } from './LeadDossier.tsx';
 
 export function AdminLeadsView({ onOpenOutreach }: { onOpenOutreach: (leadId: string) => void }) {
   const dispatch = useAppDispatch();
@@ -29,6 +30,8 @@ export function AdminLeadsView({ onOpenOutreach }: { onOpenOutreach: (leadId: st
   const [selectedLeadId, setSelectedLeadId] = useState<string>(leads[0]?.id || '');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [viewMode, setViewMode] = useState<'SPLIT' | 'FULL_TABLE'>('SPLIT');
+  const [drawerLeadId, setDrawerLeadId] = useState<string | null>(null);
+  const drawerLead = leads.find(l => l.id === drawerLeadId) ?? null;
 
   // Fetch leads on mount
   useEffect(() => {
@@ -271,131 +274,30 @@ export function AdminLeadsView({ onOpenOutreach }: { onOpenOutreach: (leadId: st
             }}
             pageSize={6}
             pageSizeOptions={[5, 6, 10, 20]}
-            onRowClick={(lead) => setSelectedLeadId(lead.id)}
+            onRowClick={(lead) => {
+              setSelectedLeadId(lead.id);
+              if (viewMode === 'FULL_TABLE') setDrawerLeadId(lead.id);
+            }}
             defaultSortKey="qualificationScore"
             defaultSortDirection="desc"
             exportFilename="growthprint-leads"
             title="CRM Leads Directory"
-            subtitle="Click row to inspect AI research dossier"
+            subtitle={viewMode === 'SPLIT' ? 'Select a lead to see its research and evidence' : 'Open a lead to see its research and evidence'}
           />
         </div>
 
-        {/* Lead Inspector (Right Column in Split View) */}
-        {activeLead && (
-          <div className={viewMode === 'SPLIT' ? 'lg:col-span-5' : 'w-full'}>
-            <div className="bg-white rounded-2xl border border-slate-200/90 p-6 space-y-5 sticky top-20">
-              {/* Header */}
-              <div className="flex items-start justify-between gap-4 pb-4 border-b border-slate-100">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-base font-bold text-slate-900">{activeLead.companyName}</h3>
-                    <a
-                      href={activeLead.website}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-slate-400 hover:text-blue-600"
-                    >
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-                  </div>
-                  <div className="text-xs text-slate-500">
-                    {activeLead.industry} · {activeLead.location}
-                  </div>
-                </div>
-
-                <div className="text-right">
-                  <StatusBadge status={activeLead.pipelineStage} />
-                </div>
-              </div>
-
-              {/* Stage Selector */}
-              <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1">
-                  Pipeline Stage
-                </label>
-                <select
-                  value={activeLead.pipelineStage}
-                  onChange={(e) => {
-                    const newStage = e.target.value as LeadPipelineStage;
-                    handleStageChange(activeLead.id, newStage);
-                  }}
-                  className="w-full px-3 py-1.5 text-xs font-semibold border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-white"
-                >
-                  <option value="DISCOVERED">Discovered</option>
-                  <option value="RESEARCHING">Researching</option>
-                  <option value="QUALIFIED">Qualified</option>
-                  <option value="READY_FOR_OUTREACH">Ready for Outreach</option>
-                  <option value="OUTREACH_APPROVED">Outreach Approved</option>
-                  <option value="CONTACTED">Contacted</option>
-                  <option value="MEETING_SCHEDULED">Meeting Scheduled</option>
-                  <option value="WON">Won Deal</option>
-                </select>
-              </div>
-
-              {/* Opportunity Match Scorecard */}
-              <div className="bg-slate-50 rounded-xl p-4 border border-slate-200/80 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5">
-                    <Sparkles className="w-4 h-4 text-blue-600" />
-                    <span className="text-xs font-bold text-slate-900">Fit & Feasibility Breakdown</span>
-                  </div>
-                  <span className="text-sm font-extrabold text-blue-700 tabular-nums">
-                    {activeLead.qualificationScore}/100
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="bg-white p-2 rounded-lg border border-slate-200/60">
-                    <div className="text-xs text-slate-400">Agency Fit</div>
-                    <div className="font-bold text-slate-800 tabular-nums">{activeLead.qualificationBreakdown.businessFit}/25</div>
-                  </div>
-                  <div className="bg-white p-2 rounded-lg border border-slate-200/60">
-                    <div className="text-xs text-slate-400">Clear Operational Need</div>
-                    <div className="font-bold text-slate-800 tabular-nums">{activeLead.qualificationBreakdown.evidenceOfNeed}/25</div>
-                  </div>
-                  <div className="bg-white p-2 rounded-lg border border-slate-200/60">
-                    <div className="text-xs text-slate-400">Direct Decision Maker</div>
-                    <div className="font-bold text-slate-800 tabular-nums">{activeLead.qualificationBreakdown.contactability}/25</div>
-                  </div>
-                  <div className="bg-white p-2 rounded-lg border border-slate-200/60">
-                    <div className="text-xs text-slate-400">Service Track Match</div>
-                    <div className="font-bold text-slate-800 tabular-nums">{activeLead.qualificationBreakdown.serviceRelevance}/25</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Technical Challenge */}
-              <div className="space-y-2 text-xs">
-                <div>
-                  <div className="font-semibold text-slate-700">Identified Operational Bottleneck:</div>
-                  <p className="text-slate-600 bg-slate-50 p-2.5 rounded-lg border border-slate-200/70 mt-1 leading-relaxed">
-                    {activeLead.identifiedProblem}
-                  </p>
-                </div>
-
-                <div>
-                  <div className="font-semibold text-slate-700">Research Notes & Clues:</div>
-                  <p className="text-slate-500 leading-relaxed mt-1">
-                    {activeLead.researchSummary}
-                  </p>
-                </div>
-              </div>
-
-              {/* CTA */}
-              <div className="pt-2 border-t border-slate-100 flex justify-end">
-                <button
-                  onClick={() => onOpenOutreach(activeLead.id)}
-                  className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
-                >
-                  <Mail className="w-3.5 h-3.5" />
-                  <span>Draft Personalized Outreach</span>
-                </button>
-              </div>
-            </div>
+        {/* Lead inspector: inline beside the table in the split view; the full table opens a drawer instead. */}
+        {activeLead && viewMode === 'SPLIT' && (
+          <div className="lg:col-span-5">
+            <LeadInspectorPanel lead={activeLead} onStageChange={(stage) => handleStageChange(activeLead.id, stage)}
+              onOpenOutreach={onOpenOutreach} />
           </div>
         )}
       </div>
       )}
+
+      <LeadDetailDrawer lead={drawerLead} onClose={() => setDrawerLeadId(null)}
+        onStageChange={(stage) => drawerLead && handleStageChange(drawerLead.id, stage)} onOpenOutreach={onOpenOutreach} />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks.ts';
 import { 
   markNotificationAsRead, 
@@ -7,6 +7,8 @@ import {
 } from '../../store/index.ts';
 import type { AppNotification } from '../../types/ui.ts';
 import { formatRelativeTime } from '../../lib/utils.ts';
+import { ATTENTION_PREFIX } from '../../lib/attention.ts';
+import { useAttention } from '../../hooks/useAttention.ts';
 import { 
   Bell, 
   CheckCheck, 
@@ -25,7 +27,10 @@ interface NotificationDropdownProps {
 
 export function NotificationDropdown({ onNavigateTab }: NotificationDropdownProps) {
   const dispatch = useAppDispatch();
-  const notifications = useAppSelector(state => state.ui.notifications);
+  const stored = useAppSelector(state => state.ui.notifications);
+  // Real "needs attention" items computed from the loaded data, then anything raised during this session.
+  const { notifications: attention } = useAttention();
+  const notifications = useMemo(() => [...attention, ...stored], [attention, stored]);
   const [isOpen, setIsOpen] = useState(false);
   const [filter, setFilter] = useState<'ALL' | 'UNREAD'>('ALL');
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -110,7 +115,7 @@ export function NotificationDropdown({ onNavigateTab }: NotificationDropdownProp
             <div className="flex items-center gap-2">
               {unreadCount > 0 && (
                 <button
-                  onClick={() => dispatch(markAllNotificationsAsRead())}
+                  onClick={() => dispatch(markAllNotificationsAsRead(attention.map(n => n.id)))}
                   className="text-xs text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-1 transition-colors"
                   title="Mark all as read"
                 >
@@ -155,7 +160,7 @@ export function NotificationDropdown({ onNavigateTab }: NotificationDropdownProp
           <div className="max-h-80 overflow-y-auto divide-y divide-slate-100">
             {filteredNotifications.length === 0 ? (
               <div className="p-8 text-center text-xs text-slate-400">
-                {filter === 'UNREAD' ? 'No unread notifications' : 'No notifications'}
+                {filter === 'UNREAD' ? 'No unread notifications' : 'Nothing needs your attention right now.'}
               </div>
             ) : (
               filteredNotifications.map((notif) => (
@@ -175,9 +180,11 @@ export function NotificationDropdown({ onNavigateTab }: NotificationDropdownProp
                       <h4 className={`text-xs ${!notif.isRead ? 'font-bold text-slate-900' : 'font-medium text-slate-700'}`}>
                         {notif.title}
                       </h4>
-                      <span className="text-xs text-slate-400 whitespace-nowrap">
-                        {formatRelativeTime(notif.timestamp)}
-                      </span>
+                      {notif.timestamp && (
+                        <span className="text-xs text-slate-400 whitespace-nowrap">
+                          {formatRelativeTime(notif.timestamp)}
+                        </span>
+                      )}
                     </div>
 
                     <p className="text-xs text-slate-500 leading-relaxed mt-0.5 line-clamp-2">
@@ -192,7 +199,7 @@ export function NotificationDropdown({ onNavigateTab }: NotificationDropdownProp
                         </span>
                       ) : <span />}
 
-                      <button
+                      {!notif.id.startsWith(ATTENTION_PREFIX) && <button
                         onClick={(e) => {
                           e.stopPropagation();
                           dispatch(clearNotification(notif.id));
@@ -201,7 +208,7 @@ export function NotificationDropdown({ onNavigateTab }: NotificationDropdownProp
                         title="Remove notification"
                       >
                         <Trash2 className="w-3 h-3" />
-                      </button>
+                      </button>}
                     </div>
                   </div>
                 </div>

@@ -237,7 +237,7 @@ npm run lint
 
 **Solutions:**
 1. Check NEXT_PUBLIC_USE_MOCK_API=true
-2. Check mock data in store/initialData.ts
+2. Check mock data in features/agency/initialData.ts (only used when NEXT_PUBLIC_USE_MOCK_API=true)
 3. Check Redux store configuration
 4. Check console for Redux errors
 

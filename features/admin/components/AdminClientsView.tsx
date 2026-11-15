@@ -20,6 +20,7 @@ import {
 import type { Client } from '../../../types/agency.ts';
 import { humanizeCode } from '../../../lib/labels.ts';
 import { SummaryStrip } from '../../../components/ui/app-kit.tsx';
+import { ClientDetailDrawer } from './ClientDetailDrawer.tsx';
 
 export function AdminClientsView() {
   const dispatch = useAppDispatch();
@@ -28,6 +29,8 @@ export function AdminClientsView() {
   const clientsError = useAppSelector(state => state.agency.clientsError);
   const [viewMode, setViewMode] = useState<'CARDS' | 'TABLE'>('TABLE');
   const [statusFilter, setStatusFilter] = useState('ALL');
+  const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
+  const selectedClient = clients.find(c => c.id === selectedClientId) ?? null;
 
   // Fetch clients on mount
   useEffect(() => {
@@ -250,6 +253,7 @@ export function AdminClientsView() {
               defaultSortKey="name"
               defaultSortDirection="asc"
               exportFilename="growthprint-clients"
+              onRowClick={(row) => setSelectedClientId(row.id)}
             />
           ) : (
             <div className="bg-white rounded-2xl border border-slate-200/90 overflow-hidden">
@@ -259,7 +263,12 @@ export function AdminClientsView() {
                     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                       <div className="space-y-1.5 max-w-xl">
                         <div className="flex items-center gap-2">
-                          <h3 className="text-base font-bold text-slate-900">{c.name}</h3>
+                          <h3 className="text-base font-bold text-slate-900">
+                            <button type="button" onClick={() => setSelectedClientId(c.id)}
+                              className="rounded-sm text-left hover:text-gp-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gp-primary">
+                              {c.name}
+                            </button>
+                          </h3>
                           <StatusBadge status={c.status} />
                         </div>
                         <div className="text-xs text-slate-500">
@@ -334,6 +343,8 @@ export function AdminClientsView() {
           )}
         </>
       )}
+
+      <ClientDetailDrawer client={selectedClient} onClose={() => setSelectedClientId(null)} />
     </div>
   );
 }

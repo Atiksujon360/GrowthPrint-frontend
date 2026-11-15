@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { configureStore } from '@reduxjs/toolkit';
 import { ApiClient, ApiError } from '../../lib/api/client.ts';
 import { store } from '../../store/index.ts';
-import agencyReducer, { submitPublicInquiry } from './agencySlice.ts';
+import agencyReducer, { submitPublicInquiry, fetchClients, fetchCrmLeads, fetchProjects } from './agencySlice.ts';
 import authReducer from '../auth/authSlice.ts';
 import type { AgencyState } from '../../types/agency.ts';
 
@@ -169,6 +169,42 @@ test('public inquiry returns the backend reference number and does not fabricate
 
     assert.equal((result as { referenceNumber?: string }).referenceNumber, 'GP-INQ-2026-ABCD1234');
     assert.equal(s.getState().agency.leads.length, before, 'no invented lead in the CRM list');
+  } finally {
+    restore();
+  }
+});
+
+// ---- Lists must come from the API, never from built-in sample data ------------------------
+
+test('clients, leads and projects are requested from the API and never replaced by sample data', async () => {
+  const { calls, restore } = stubFetch([{ status: 200, body: [] }]);
+  try {
+    const testStore = configureStore({ reducer: { agency: agencyReducer, auth: authReducer } });
+    await Promise.all([
+      testStore.dispatch(fetchClients()),
+      testStore.dispatch(fetchCrmLeads()),
+      testStore.dispatch(fetchProjects()),
+    ]);
+    const urls = calls.map(c => c.url);
+    assert.ok(urls.some(u => /\/clients(\?|$)/.test(u)), `GET /clients was not called: ${urls.join(', ')}`);
+    assert.ok(urls.some(u => /\/crm-leads(\?|$)/.test(u)), 'GET /crm-leads was not called');
+    assert.ok(urls.some(u => /\/projects(\?|$)/.test(u)), 'GET /projects was not called');
+
+    const agency = testStore.getState().agency as AgencyState;
+    assert.equal(agency.clients.length, 0, 'an empty API answer must stay empty');
+    assert.equal(agency.leads.length, 0);
+    assert.equal(agency.projects.length, 0);
+  } finally {
+    restore();
+  }
+});
+
+test('two lists loading at once both reach the API (no request is silently skipped)', async () => {
+  const { calls, restore } = stubFetch([{ status: 200, body: [] }]);
+  try {
+    const testStore = configureStore({ reducer: { agency: agencyReducer, auth: authReducer } });
+    await Promise.all([testStore.dispatch(fetchProjects()), testStore.dispatch(fetchProjects())]);
+    assert.equal(calls.filter(c => /\/projects(\?|$)/.test(c.url)).length, 2);
   } finally {
     restore();
   }

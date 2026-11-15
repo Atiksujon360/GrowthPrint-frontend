@@ -1,7 +1,11 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { AppNotification, SystemAlert, ToastMessage, UiState } from '../../types/ui.ts';
+import { isMockModeEnv } from '../../lib/api/client.ts';
 
-const INITIAL_NOTIFICATIONS: AppNotification[] = [
+/** Sample notifications and banner exist for the demo (mock) mode only. A real deployment starts empty. */
+const isMockMode = isMockModeEnv();
+
+const DEMO_NOTIFICATIONS: AppNotification[] = [
   {
     id: 'notif-1',
     category: 'ACTION_REQUIRED',
@@ -47,18 +51,21 @@ const INITIAL_NOTIFICATIONS: AppNotification[] = [
   }
 ];
 
-const initialUiState: UiState = {
-  toasts: [],
-  notifications: INITIAL_NOTIFICATIONS,
-  systemAlert: {
+const DEMO_SYSTEM_ALERT: SystemAlert = {
     id: 'alert-retainer-status',
     type: 'info',
     title: 'October Retainer Notice',
     message: 'Meridian Retail Group has utilized 8.5 of 15 retainer hours (57%). 11 days remaining in current billing cycle.',
     actionLabel: 'View Retainers',
     actionTab: 'CLIENTS'
-  },
+};
+
+const initialUiState: UiState = {
+  toasts: [],
+  notifications: isMockMode ? DEMO_NOTIFICATIONS : [],
+  systemAlert: isMockMode ? DEMO_SYSTEM_ALERT : null,
   isSystemAlertDismissed: false,
+  acknowledgedIds: [],
   isLiveSyncing: false,
   lastSyncTimestamp: null,
   isShortcutsModalOpen: false
@@ -97,17 +104,27 @@ export const uiSlice = createSlice({
     markNotificationAsRead: (state, action: PayloadAction<string>) => {
       const notif = state.notifications.find(n => n.id === action.payload);
       if (notif) notif.isRead = true;
+      else if (!state.acknowledgedIds.includes(action.payload)) state.acknowledgedIds.push(action.payload);
     },
-    markAllNotificationsAsRead: (state) => {
+    /** Optionally also acknowledges the computed items that are currently listed (by id). */
+    markAllNotificationsAsRead: (state, action: PayloadAction<string[] | undefined>) => {
       state.notifications.forEach(n => { n.isRead = true; });
+      for (const id of action.payload ?? []) {
+        if (!state.acknowledgedIds.includes(id)) state.acknowledgedIds.push(id);
+      }
     },
     clearNotification: (state, action: PayloadAction<string>) => {
       state.notifications = state.notifications.filter(n => n.id !== action.payload);
     },
 
     // System Alert
-    dismissSystemAlert: (state) => {
-      state.isSystemAlertDismissed = true;
+    /** With an id: dismisses that computed banner. Without: the stored (demo) banner. */
+    dismissSystemAlert: (state, action: PayloadAction<string | undefined>) => {
+      if (action.payload) {
+        if (!state.acknowledgedIds.includes(action.payload)) state.acknowledgedIds.push(action.payload);
+      } else {
+        state.isSystemAlertDismissed = true;
+      }
     },
     setSystemAlert: (state, action: PayloadAction<SystemAlert>) => {
       state.systemAlert = action.payload;

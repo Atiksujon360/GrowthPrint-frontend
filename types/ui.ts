@@ -47,4 +47,6 @@ export interface UiState {
   isLiveSyncing: boolean;
   lastSyncTimestamp: string | null;
   isShortcutsModalOpen: boolean;
+  /** Ids of computed "needs attention" items the person has read or dismissed (see lib/attention.ts). */
+  acknowledgedIds: string[];
 }
