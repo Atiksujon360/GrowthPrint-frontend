@@ -6,7 +6,6 @@ import { BrandIntro } from '../../components/marketing/brand-intro/BrandIntro.ts
 import { Services } from '../../components/marketing/services/Services.tsx';
 import { WhyGrowthPrint } from '../../components/marketing/why-growthprint/WhyGrowthPrint.tsx';
 import { OurWork } from '../../components/marketing/case-studies/OurWork.tsx';
-import { Engagement, Process, Technology } from '../../components/marketing/process/Process.tsx';
 import { Faq } from '../../components/marketing/faq/Faq.tsx';
 import { FinalCta } from '../../components/marketing/final-cta/FinalCta.tsx';
 import { ContactSection } from '../../components/marketing/contact/ContactSection.tsx';
@@ -50,9 +49,6 @@ export default function HomePage() {
         <Services />
         <WhyGrowthPrint />
         <OurWork />
-        <Technology />
-        <Process />
-        <Engagement />
         <Faq />
         <FinalCta />
         <ContactSection />
