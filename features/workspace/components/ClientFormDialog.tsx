@@ -94,7 +94,7 @@ export function ClientFormDialog({ open, onClose, client, defaultCurrency, onSub
       )}>
       <form id="client-form" noValidate onSubmit={submit} className="space-y-5">
         {formError && <Notice tone="error">{formError}</Notice>}
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <TextField label="Client name" required value={form.name} maxLength={120} onChange={e => set('name', e.target.value)} error={errors.name} />
           <TextField label="Legal name" value={form.legalName} maxLength={160} onChange={e => set('legalName', e.target.value)}
             help="Defaults to the client name." />

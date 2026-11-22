@@ -11,6 +11,7 @@ export function AdminActivityView() {
         <EmptyState
           title="Activity log is not connected yet"
           message="There is no activity/audit API in MVP-1, so no events can be shown. Entries shown in demo (mock) mode are sample data."
+          illustration="/illustrations/empty/empty-activity.webp"
         />
       </div>
     );
@@ -24,39 +25,39 @@ function AdminActivityViewDemo() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold text-ink-950">
-          System-Wide Audit Trail & Event Log
+        <h2 className="text-xl font-semibold tracking-tight text-gp-text">
+          Activity
         </h2>
-        <p className="text-xs text-slate-500">
-          Immutable event log of client requests, founder approvals, proposal acceptance, and financial settlements.
+        <p className="mt-1 text-sm text-gp-text-muted">
+          Immutable event log of client requests, approvals, proposals, and settlements.
         </p>
       </div>
 
-      <div className="bg-white rounded-2xl border border-slate-200/90 overflow-hidden">
-        <div className="p-4 border-b border-slate-100 flex items-center justify-between text-xs text-slate-500 font-medium">
+      <div className="bg-gp-surface rounded-2xl border border-gp-border/90 overflow-hidden">
+        <div className="p-4 border-b border-gp-divider flex items-center justify-between text-xs text-gp-text-muted font-medium">
           <span>Recorded Events ({activities.length})</span>
           <span>Role-attributed timestamps</span>
         </div>
 
-        <div className="divide-y divide-slate-100">
+        <div className="divide-y divide-gp-divider">
           {activities.map((act) => (
-            <div key={act.id} className="p-4 hover:bg-slate-50/50 transition-colors flex items-start gap-4">
-              <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 mt-0.5">
+            <div key={act.id} className="p-4 hover:bg-gp-surface-secondary/50 transition-colors flex items-start gap-4">
+              <div className="w-8 h-8 rounded-lg bg-gp-primary-soft text-gp-primary-strong flex items-center justify-center shrink-0 mt-0.5">
                 <History className="w-4 h-4" />
               </div>
 
               <div className="space-y-1 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-xs font-bold text-slate-900">{act.action}</span>
-                  <span className="text-xs text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
+                  <span className="text-xs font-bold text-gp-text">{act.action}</span>
+                  <span className="text-xs text-gp-text-muted bg-gp-surface-secondary px-1.5 py-0.5 rounded">
                     {act.entityType}: {act.entityId}
                   </span>
                 </div>
-                <p className="text-xs text-slate-600">
+                <p className="text-xs text-gp-text-secondary">
                   {act.details}
                 </p>
-                <div className="text-xs text-slate-400">
-                  Actor: <strong className="text-slate-700">{act.actor}</strong> ({act.role}) · {new Date(act.timestamp).toLocaleString()}
+                <div className="text-xs text-gp-text-muted">
+                  Actor: <strong className="text-gp-text">{act.actor}</strong> ({act.role}) · {new Date(act.timestamp).toLocaleString()}
                 </div>
               </div>
             </div>

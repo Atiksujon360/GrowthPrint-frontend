@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState, type ComponentType, type ReactNode 
 import Link from 'next/link';
 import { ChevronDown, Menu, X } from 'lucide-react';
 import { GrowthPrintMark } from '../../features/public/components/GrowthPrintMark.tsx';
+import { ThemeSwitcher } from '../ui/ThemeSwitcher.tsx';
 
 /**
  * Presentational application shell (COMPREO reference): white sidebar with teal icon tiles and a solid teal active
@@ -108,6 +109,7 @@ export function AppShell({
             {topbarContext && <div className="hidden md:block">{topbarContext}</div>}
             <div className="ml-auto flex items-center gap-1 sm:gap-2">
               {topbarActions}
+              <div className="hidden sm:block"><ThemeSwitcher /></div>
               <UserMenu user={user} items={userMenu} />
             </div>
           </div>
@@ -147,6 +149,10 @@ export function AppShell({
             {sidebarTop && <div className="px-3 pt-3">{sidebarTop}</div>}
             {topbarContext && <div className="px-3 pt-3">{topbarContext}</div>}
             <nav aria-label="Mobile navigation" className="flex-1 overflow-y-auto px-3 py-3">{nav('drawer')}</nav>
+            <div className="border-t border-gp-divider p-3">
+              <p className="mb-2 text-xs font-medium text-gp-text-muted">Theme</p>
+              <ThemeSwitcher />
+            </div>
           </div>
         </div>
       )}
@@ -157,18 +163,18 @@ export function AppShell({
 function NavEntry({ item, compact, onAfterSelect }: { item: ShellNavItem; compact: boolean; onAfterSelect?: () => void }) {
   const Icon = item.icon;
   const cls = `group relative flex min-h-11 w-full items-center gap-3 rounded-gp-control px-2 text-left text-sm font-medium transition-colors ${
-    item.active ? 'bg-gp-primary text-white' : 'text-gp-text hover:bg-gp-canvas'
+    item.active ? 'bg-gp-primary text-gp-primary-foreground' : 'text-gp-text hover:bg-gp-canvas'
   } ${compact ? 'max-xl:justify-center max-xl:px-0' : ''}`;
   const body = (
     <>
       <span className={`flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-gp-control ${
-        item.active ? 'bg-white/15 text-white' : 'bg-gp-primary-soft text-gp-primary'}`}>
+        item.active ? 'bg-white/15 text-gp-primary-foreground' : 'bg-gp-primary-soft text-gp-primary-strong'}`}>
         <Icon className="h-4 w-4" aria-hidden="true" />
       </span>
       <span className={`min-w-0 flex-1 truncate ${compact ? 'max-xl:sr-only' : ''}`}>{item.label}</span>
       {item.badge && (
         <span className={`flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[0.7rem] font-semibold tabular-nums ${
-          item.active ? 'bg-white text-gp-primary' : item.badge.tone === 'attention' ? 'bg-gp-danger text-white' : 'bg-gp-primary text-white'
+          item.active ? 'bg-gp-primary-foreground text-gp-primary' : item.badge.tone === 'attention' ? 'bg-gp-danger text-gp-danger-foreground' : 'bg-gp-primary text-gp-primary-foreground'
         } ${compact ? 'max-xl:absolute max-xl:right-0.5 max-xl:top-0 max-xl:h-4 max-xl:min-w-4 max-xl:px-1 max-xl:text-[0.62rem]' : ''}`}>
           {item.badge.count}<span className="sr-only"> {item.badge.label}</span>
         </span>
@@ -213,7 +219,7 @@ function UserMenu({ user, items }: { user: { name: string; subtitle: string; ini
       <button ref={buttonRef} type="button" onClick={() => setOpen(o => !o)} aria-haspopup="menu" aria-expanded={open}
         aria-controls={menuId} aria-label={`Account menu for ${user.name}`}
         className="flex h-10 items-center gap-1 rounded-full pl-0.5 pr-1 hover:bg-gp-canvas">
-        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gp-primary text-sm font-semibold text-white" aria-hidden="true">{user.initials}</span>
+        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gp-primary text-sm font-semibold text-gp-primary-foreground" aria-hidden="true">{user.initials}</span>
         <ChevronDown className="hidden h-4 w-4 text-gp-text-secondary sm:block" aria-hidden="true" />
       </button>
       {open && (
@@ -253,7 +259,7 @@ export function TopbarIconButton({ label, onClick, children, className = '' }: {
 export function TopbarSearch({ onOpen, placeholder = 'Search anything…' }: { onOpen: () => void; placeholder?: string }) {
   return (
     <button type="button" onClick={onOpen}
-      className="hidden h-10 w-72 items-center gap-2 rounded-gp-control bg-ink-100 px-3 text-sm text-gp-text-muted transition-colors hover:bg-ink-200/70 lg:flex">
+      className="hidden h-10 w-72 items-center gap-2 rounded-gp-control bg-gp-surface-secondary px-3 text-sm text-gp-text-muted transition-colors hover:bg-gp-border lg:flex">
       <SearchGlyph />
       <span className="flex-1 truncate text-left">{placeholder}</span>
       <kbd className="rounded border border-gp-border bg-gp-surface px-1.5 text-[0.7rem] font-medium text-gp-text-secondary">⌘K</kbd>

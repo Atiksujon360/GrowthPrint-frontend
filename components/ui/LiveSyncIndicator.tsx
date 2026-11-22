@@ -82,24 +82,24 @@ export function LiveSyncIndicator() {
 
   return (
     <>
-      <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-slate-200/80 bg-white text-xs text-slate-600 shadow-2xs">
+      <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-gp-border bg-gp-surface text-xs text-gp-text-secondary shadow-2xs">
         {/* Connection status (browser network state) */}
         <span className="flex items-center gap-1.5" role="status" aria-live="polite">
           {isOnline ? (
             <span className="relative flex h-2 w-2" aria-hidden="true">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-gp-success opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-gp-success" />
             </span>
           ) : (
-            <span className="h-2 w-2 rounded-full bg-amber-500" aria-hidden="true" />
+            <span className="h-2 w-2 rounded-full bg-gp-warning" aria-hidden="true" />
           )}
-          <span className="font-semibold text-slate-800 hidden sm:inline">
+          <span className="font-semibold text-gp-text hidden sm:inline">
             {isOnline ? 'Online' : 'Offline'}
           </span>
           <span className="sr-only sm:hidden">{isOnline ? 'Online' : 'Offline'}</span>
         </span>
 
-        <span className="text-slate-300" aria-hidden="true">|</span>
+        <span className="text-gp-divider" aria-hidden="true">|</span>
 
         <button
           type="button"
@@ -107,24 +107,24 @@ export function LiveSyncIndicator() {
           disabled={isSyncing || !isOnline}
           title="Reload the latest data"
           aria-label={isSyncing ? 'Refreshing data' : 'Refresh data'}
-          className="flex items-center gap-1 text-slate-500 hover:text-blue-600 font-medium transition-colors disabled:opacity-50"
+          className="flex items-center gap-1 text-gp-text-secondary hover:text-gp-primary-strong font-medium transition-colors disabled:opacity-50"
         >
-          <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin text-blue-600' : ''}`} aria-hidden="true" />
+          <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin text-gp-primary-strong' : ''}`} aria-hidden="true" />
           <span className="hidden md:inline">{isSyncing ? 'Refreshing...' : 'Refresh'}</span>
         </button>
 
         {SHOW_DEV_TOOLS && (
           <>
-            <span className="text-slate-300 hidden sm:inline" aria-hidden="true">|</span>
+            <span className="text-gp-divider hidden sm:inline" aria-hidden="true">|</span>
             <button
               type="button"
               onClick={() => setIsApiModalOpen(true)}
               title="API console (mock mode only)"
               aria-label="Open API console (mock mode only)"
-              className="hidden sm:flex items-center gap-1 text-slate-500 hover:text-blue-600 font-medium transition-colors"
+              className="hidden sm:flex items-center gap-1 text-gp-text-secondary hover:text-gp-primary-strong font-medium transition-colors"
             >
-              <Server className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" />
-              <span className="hidden lg:inline text-xs text-slate-400">API</span>
+              <Server className="w-3.5 h-3.5 text-gp-text-muted" aria-hidden="true" />
+              <span className="hidden lg:inline text-xs text-gp-text-muted">API</span>
             </button>
           </>
         )}

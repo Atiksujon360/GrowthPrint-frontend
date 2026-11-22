@@ -63,23 +63,23 @@ export function KeyboardShortcutsModal({ onNavigateTab, onOpenQuickCreate }: Key
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-in fade-in duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gp-text/40 backdrop-blur-xs animate-in fade-in duration-150">
       <div 
-        className="bg-white rounded-2xl max-w-lg w-full border border-slate-200/90 shadow-2xl overflow-hidden p-6 space-y-5 animate-in zoom-in-95 duration-150"
+        className="bg-gp-surface rounded-lg max-w-lg w-full border border-gp-border shadow-gp-pop overflow-hidden p-6 space-y-5 animate-in zoom-in-95 duration-150"
         role="dialog"
         aria-modal="true"
         aria-labelledby="shortcuts-modal-title"
       >
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div className="flex items-center justify-between pb-3 border-b border-gp-divider">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-gp-primary-soft text-gp-primary-strong flex items-center justify-center">
               <Keyboard className="w-4 h-4" />
             </div>
             <div>
-              <h3 id="shortcuts-modal-title" className="text-sm font-bold text-slate-900 tracking-tight">
+              <h3 id="shortcuts-modal-title" className="text-sm font-bold text-gp-text tracking-tight">
                 Keyboard Shortcuts
               </h3>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-gp-text-secondary">
                 Speed through your agency operations with hotkeys.
               </p>
             </div>
@@ -88,7 +88,7 @@ export function KeyboardShortcutsModal({ onNavigateTab, onOpenQuickCreate }: Key
           <button
             onClick={() => dispatch(setShortcutsModalOpen(false))}
             aria-label="Close shortcuts modal"
-            className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+            className="text-gp-text-muted hover:text-gp-text p-1.5 rounded-lg hover:bg-gp-surface-secondary transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -97,18 +97,18 @@ export function KeyboardShortcutsModal({ onNavigateTab, onOpenQuickCreate }: Key
         <div className="space-y-4">
           {shortcutGroups.map((group) => (
             <div key={group.group} className="space-y-2">
-              <h4 className="text-xs font-bold text-slate-400">
+              <h4 className="text-xs font-bold text-gp-text-muted">
                 {group.group}
               </h4>
-              <div className="bg-slate-50 rounded-xl p-2.5 border border-slate-200/70 divide-y divide-slate-200/50">
+              <div className="bg-gp-surface-secondary/60 rounded-lg p-2.5 border border-gp-border divide-y divide-gp-divider">
                 {group.items.map((item, idx) => (
                   <div key={idx} className="flex items-center justify-between py-2 px-1 text-xs">
-                    <span className="text-slate-700 font-medium">{item.label}</span>
+                    <span className="text-gp-text font-medium">{item.label}</span>
                     <div className="flex items-center gap-1">
                       {item.keys.map((k, kIdx) => (
                         <kbd
                           key={kIdx}
-                          className="px-2 py-0.5 bg-white border border-slate-300 rounded shadow-2xs font-mono text-xs font-semibold text-slate-800"
+                          className="px-2 py-0.5 bg-gp-surface border border-gp-border rounded shadow-2xs font-mono text-xs font-semibold text-gp-text"
                         >
                           {k}
                         </kbd>
@@ -121,11 +121,11 @@ export function KeyboardShortcutsModal({ onNavigateTab, onOpenQuickCreate }: Key
           ))}
         </div>
 
-        <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
-          <span>Tip: Press <kbd className="px-1.5 py-0.5 bg-slate-100 rounded border border-slate-200 font-mono font-bold text-slate-700">?</kbd> anytime to open this sheet</span>
+        <div className="pt-2 border-t border-gp-divider flex items-center justify-between text-xs text-gp-text-muted">
+          <span>Tip: Press <kbd className="px-1.5 py-0.5 bg-gp-surface-secondary rounded border border-gp-border font-mono font-bold text-gp-text">?</kbd> anytime to open this sheet</span>
           <button
             onClick={() => dispatch(setShortcutsModalOpen(false))}
-            className="px-3 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold"
+            className="px-3 py-1 bg-gp-primary hover:bg-gp-primary-hover text-gp-primary-foreground rounded-lg text-xs font-semibold"
           >
             Got it
           </button>

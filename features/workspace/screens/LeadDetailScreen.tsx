@@ -108,7 +108,7 @@ export function LeadDetailScreen() {
         <Notice tone="warning" className="mb-6">{CONVERSION_BLOCKER_TEXT[blocker]}</Notice>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <Card title="Details" className="lg:col-span-2">
           <DefinitionList items={[
             { label: 'Contact', value: lead.contactName },
@@ -175,11 +175,11 @@ export function LeadDetailScreen() {
         )}>
         <div className="space-y-5">
           {convertError && <Notice tone="error">{errorMessage(convertError)}</Notice>}
-          <dl className="grid gap-3 rounded-xl bg-ink-50 p-4 text-sm sm:grid-cols-2">
+          <dl className="grid grid-cols-1 gap-3 rounded-xl bg-ink-50 p-4 text-sm sm:grid-cols-2">
             <div><dt className="text-xs text-ink-500">Client name</dt><dd className="font-medium text-ink-900">{lead.companyName}</dd></div>
             <div><dt className="text-xs text-ink-500">Contact email</dt><dd className="font-medium text-ink-900">{lead.contactEmail}</dd></div>
           </dl>
-          <div className="grid gap-5 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <TextField label="Legal name" value={convertForm.legalName} maxLength={160}
               onChange={e => setConvertForm(f => ({ ...f, legalName: e.target.value }))} />
             <SelectField label="Billing currency" value={convertForm.billingCurrency}

@@ -180,7 +180,7 @@ export function TeamScreen() {
       )}
 
       <Card title="Roles" className="mt-6">
-        <dl className="grid gap-4 sm:grid-cols-2">
+        <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {(['OWNER', 'ADMIN', 'MANAGER', 'MEMBER'] as BusinessRole[]).map(r2 => (
             <div key={r2}>
               <dt className="text-sm font-medium text-ink-900">{ROLE_LABEL[r2]}</dt>

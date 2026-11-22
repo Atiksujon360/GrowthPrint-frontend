@@ -1,5 +1,5 @@
 /**
- * Colour theme. Dark is the default; the visitor can choose light or follow the system setting.
+ * Colour theme. Light is the default; the visitor can choose dark or follow the system setting.
  * The choice is stored in localStorage and applied as html[data-theme] before first paint (THEME_INIT_SCRIPT in
  * app/layout.tsx), so there is no flash of the wrong theme. One implementation for every route group.
  */
@@ -7,7 +7,7 @@ export type ThemePreference = 'dark' | 'light' | 'system';
 export type ResolvedTheme = 'dark' | 'light';
 
 export const THEME_STORAGE_KEY = 'gp-theme';
-export const DEFAULT_THEME: ThemePreference = 'dark';
+export const DEFAULT_THEME: ThemePreference = 'light';
 
 export function parsePreference(value: string | null | undefined): ThemePreference {
   return value === 'light' || value === 'dark' || value === 'system' ? value : DEFAULT_THEME;

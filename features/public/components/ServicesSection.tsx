@@ -91,7 +91,7 @@ export function ServicesSection({ onSelectService }: { onSelectService: (service
               >
                 <span aria-hidden="true" className={`absolute left-0 top-0 h-full w-[3px] origin-top bg-brand-500 transition-transform duration-300 ${active === i ? 'scale-y-100' : 'scale-y-0'}`} />
                 <span className="gp-display text-[1.35rem] font-semibold leading-snug">{s.title}</span>
-                <ArrowRight className={`h-5 w-5 shrink-0 transition-all ${active === i ? 'translate-x-0 opacity-100 text-brand-600' : '-translate-x-2 opacity-0'}`} aria-hidden="true" />
+                <ArrowRight className={`h-5 w-5 shrink-0 transition-colors ${active === i ? 'translate-x-0 opacity-100 text-brand-600' : '-translate-x-2 opacity-0'}`} aria-hidden="true" />
               </button>
             ))}
           </div>

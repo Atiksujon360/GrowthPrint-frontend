@@ -223,36 +223,36 @@ export function ApiIntegrationModal({ isOpen, onClose }: ApiIntegrationModalProp
   const mockJwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmb3VuZGVyQGdyb3d0aHByaW50LmNvbSIsIm5hbWUiOiJBbGV4IFZhbmNlIiwicm9sZXMiOlsicm9sZV9hZG1pbiIsInJvbGVfZm91bmRlciJdLCJ0ZW5hbnQiOiJncm93dGhwcmludCIsImlhdCI6MTc2MDk4MjAwMCwiZXhwIjoxNzYxNTg2ODAwfQ.K9X4oZ_placeholder_signature';
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 bg-gp-text/40 backdrop-blur-xs flex items-center justify-center p-4">
       <div 
-        className="bg-white rounded-2xl max-w-3xl w-full border border-slate-200/90 shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in fade-in zoom-in-95 duration-150"
+        className="bg-gp-surface rounded-2xl max-w-3xl w-full border border-gp-border shadow-gp-pop flex flex-col max-h-[90vh] overflow-hidden animate-in fade-in zoom-in-95 duration-150"
         role="dialog"
         aria-labelledby="api-modal-title"
       >
         {/* Modal Header */}
-        <div className="p-5 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+        <div className="p-5 border-b border-gp-divider bg-gp-surface-secondary flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-gp-primary text-gp-primary-foreground flex items-center justify-center">
               <Server className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 id="api-modal-title" className="text-base font-bold text-slate-900">
+                <h3 id="api-modal-title" className="text-base font-bold text-gp-text">
                   Backend API & Microservice Integration
                 </h3>
-                <span className="text-xs font-semibold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full flex items-center gap-1">
+                <span className="text-xs font-semibold bg-gp-success-soft text-gp-success px-2 py-0.5 rounded-full flex items-center gap-1">
                   <CheckCircle2 className="w-3 h-3" />
                   Spring Boot Ready
                 </span>
               </div>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-xs text-gp-text-muted mt-0.5">
                 Inspect OpenAPI contracts, test service endpoints, and configure microservice base URLs.
               </p>
             </div>
           </div>
           <button 
             onClick={onClose} 
-            className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-200/60 transition-colors"
+            className="p-1.5 text-gp-text-muted hover:text-gp-text rounded-lg hover:bg-gp-surface-secondary transition-colors"
             aria-label="Close API modal"
           >
             <X className="w-5 h-5" />
@@ -260,11 +260,11 @@ export function ApiIntegrationModal({ isOpen, onClose }: ApiIntegrationModalProp
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex border-b border-slate-200 bg-slate-100/60 p-2 gap-1.5 overflow-x-auto">
+        <div className="flex border-b border-gp-divider bg-gp-surface-secondary/60 p-2 gap-1.5 overflow-x-auto">
           <button
             onClick={() => setActiveTab('ENDPOINTS')}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-all shrink-0 ${
-              activeTab === 'ENDPOINTS' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors shrink-0 ${
+              activeTab === 'ENDPOINTS' ? 'bg-gp-surface text-gp-text shadow-2xs' : 'text-gp-text-secondary hover:text-gp-text'
             }`}
           >
             <Layers className="w-3.5 h-3.5" />
@@ -273,8 +273,8 @@ export function ApiIntegrationModal({ isOpen, onClose }: ApiIntegrationModalProp
 
           <button
             onClick={() => setActiveTab('TESTER')}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-all shrink-0 ${
-              activeTab === 'TESTER' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors shrink-0 ${
+              activeTab === 'TESTER' ? 'bg-gp-surface text-gp-text shadow-2xs' : 'text-gp-text-secondary hover:text-gp-text'
             }`}
           >
             <Terminal className="w-3.5 h-3.5" />
@@ -283,8 +283,8 @@ export function ApiIntegrationModal({ isOpen, onClose }: ApiIntegrationModalProp
 
           <button
             onClick={() => setActiveTab('AUTH')}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-all shrink-0 ${
-              activeTab === 'AUTH' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors shrink-0 ${
+              activeTab === 'AUTH' ? 'bg-gp-surface text-gp-text shadow-2xs' : 'text-gp-text-secondary hover:text-gp-text'
             }`}
           >
             <Key className="w-3.5 h-3.5" />
@@ -293,8 +293,8 @@ export function ApiIntegrationModal({ isOpen, onClose }: ApiIntegrationModalProp
 
           <button
             onClick={() => setActiveTab('CONFIG')}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-all shrink-0 ${
-              activeTab === 'CONFIG' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors shrink-0 ${
+              activeTab === 'CONFIG' ? 'bg-gp-surface text-gp-text shadow-2xs' : 'text-gp-text-secondary hover:text-gp-text'
             }`}
           >
             <Database className="w-3.5 h-3.5" />
@@ -307,11 +307,11 @@ export function ApiIntegrationModal({ isOpen, onClose }: ApiIntegrationModalProp
           {/* TAB 1: ENDPOINTS LIST */}
           {activeTab === 'ENDPOINTS' && (
             <div className="space-y-4">
-              <div className="p-3.5 bg-blue-50/70 border border-blue-200/80 rounded-xl text-xs text-blue-900 flex items-start gap-2.5">
-                <Sparkles className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+              <div className="p-3.5 bg-gp-info-soft border border-gp-info/30 rounded-xl text-xs text-gp-text flex items-start gap-2.5">
+                <Sparkles className="w-4 h-4 text-gp-info shrink-0 mt-0.5" />
                 <div className="space-y-1">
                   <strong>Spring Boot & PostgreSQL Target Architecture:</strong>
-                  <p className="text-xs leading-relaxed text-blue-800">
+                  <p className="text-xs leading-relaxed text-gp-text-secondary">
                     All agency actions in this workspace map 1-to-1 to standard REST controllers. When the backend microservices run, toggle &ldquo;Live Microservice&rdquo; in Gateway Settings to connect seamlessly.
                   </p>
                 </div>
@@ -320,32 +320,32 @@ export function ApiIntegrationModal({ isOpen, onClose }: ApiIntegrationModalProp
               <div className="space-y-2.5">
                 {SERVICES_REGISTRY.map((ep, idx) => {
                   const methodColors = {
-                    GET: 'bg-blue-100 text-blue-800 border-blue-200',
-                    POST: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-                    PATCH: 'bg-purple-100 text-purple-800 border-purple-200',
-                    PUT: 'bg-amber-100 text-amber-800 border-amber-200',
-                    DELETE: 'bg-rose-100 text-rose-800 border-rose-200'
+                    GET: 'bg-gp-info-soft text-gp-info border-gp-info/30',
+                    POST: 'bg-gp-success-soft text-gp-success border-gp-success/30',
+                    PATCH: 'bg-gp-primary-soft text-gp-primary-strong border-gp-primary/30',
+                    PUT: 'bg-gp-warning-soft text-gp-warning border-gp-warning/30',
+                    DELETE: 'bg-gp-danger-soft text-gp-danger border-gp-danger/30'
                   }[ep.method];
 
                   return (
                     <div 
                       key={idx}
-                      className="p-3.5 rounded-xl border border-slate-200/80 hover:border-slate-300 bg-white hover:bg-slate-50/50 transition-all flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-2xs"
+                      className="p-3.5 rounded-xl border border-gp-border hover:border-gp-text-muted/40 bg-gp-surface hover:bg-gp-surface-secondary/50 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-2xs"
                     >
                       <div className="space-y-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className={`px-2 py-0.5 text-xs font-bold rounded border ${methodColors}`}>
                             {ep.method}
                           </span>
-                          <span className="font-mono text-xs font-bold text-slate-800">
+                          <span className="font-mono text-xs font-bold text-gp-text">
                             {ep.path}
                           </span>
-                          <span className="text-xs text-slate-400">· {ep.service}</span>
+                          <span className="text-xs text-gp-text-muted">· {ep.service}</span>
                         </div>
-                        <p className="text-xs text-slate-600">
+                        <p className="text-xs text-gp-text-secondary">
                           {ep.description}
                         </p>
-                        <div className="text-xs font-mono text-slate-400">
+                        <div className="text-xs font-mono text-gp-text-muted">
                           Spring: {ep.springBootController}
                         </div>
                       </div>
@@ -355,7 +355,7 @@ export function ApiIntegrationModal({ isOpen, onClose }: ApiIntegrationModalProp
                           setSelectedEndpoint(ep);
                           setActiveTab('TESTER');
                         }}
-                        className="px-2.5 py-1 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 border border-slate-200 rounded-lg transition-colors flex items-center gap-1 self-start md:self-center shrink-0"
+                        className="px-2.5 py-1 text-xs font-semibold text-gp-text-secondary bg-gp-surface-secondary hover:bg-gp-primary-soft hover:text-gp-primary-strong border border-gp-border rounded-lg transition-colors flex items-center gap-1 self-start md:self-center shrink-0"
                       >
                         <Play className="w-3 h-3" />
                         <span>Test in Console</span>
@@ -370,13 +370,13 @@ export function ApiIntegrationModal({ isOpen, onClose }: ApiIntegrationModalProp
           {/* TAB 2: TESTER CONSOLE */}
           {activeTab === 'TESTER' && (
             <div className="space-y-5">
-              <div className="bg-slate-900 text-slate-100 rounded-xl p-4 space-y-3">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+              <div className="bg-gp-plum text-white/90 rounded-xl p-4 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-3">
                   <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded text-xs font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                    <span className="px-2 py-0.5 rounded text-xs font-bold bg-gp-primary/20 text-gp-accent border border-gp-primary/30">
                       {selectedEndpoint.method}
                     </span>
-                    <span className="font-mono text-xs text-slate-200 font-bold">
+                    <span className="font-mono text-xs text-white font-bold">
                       {selectedEndpoint.path}
                     </span>
                   </div>
@@ -385,21 +385,21 @@ export function ApiIntegrationModal({ isOpen, onClose }: ApiIntegrationModalProp
                     onClick={handleExecuteTest}
                     loading={isTesting}
                     loadingLabel="Calling API..."
-                    className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                    className="px-3 py-1.5 bg-gp-primary hover:bg-gp-primary-hover text-gp-primary-foreground rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors disabled:opacity-50"
                   >
                     <Play className="w-3.5 h-3.5" />
                     <span>Send Request</span>
                   </LoadingButton>
                 </div>
 
-                <div className="text-xs text-slate-400">
-                  Target Service: <span className="text-slate-200">{selectedEndpoint.service}</span>
+                <div className="text-xs text-white/60">
+                  Target Service: <span className="text-white">{selectedEndpoint.service}</span>
                 </div>
 
                 {selectedEndpoint.samplePayload && (
                   <div>
-                    <div className="text-xs font-mono text-slate-400 mb-1">Request Payload (JSON):</div>
-                    <pre className="bg-slate-950 p-2.5 rounded-lg text-xs font-mono text-emerald-400 overflow-x-auto border border-slate-800">
+                    <div className="text-xs font-mono text-white/60 mb-1">Request Payload (JSON):</div>
+                    <pre className="bg-gp-canvas p-2.5 rounded-lg text-xs font-mono text-gp-success overflow-x-auto border border-gp-border">
                       {JSON.stringify(selectedEndpoint.samplePayload, null, 2)}
                     </pre>
                   </div>
@@ -408,15 +408,15 @@ export function ApiIntegrationModal({ isOpen, onClose }: ApiIntegrationModalProp
 
               {/* Response Section */}
               {testResponse && (
-                <div className="border border-slate-200 rounded-xl p-4 bg-slate-50 space-y-3 animate-in fade-in">
+                <div className="border border-gp-border rounded-xl p-4 bg-gp-surface-secondary/50 space-y-3 animate-in fade-in">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-xs text-slate-900">HTTP Response:</span>
-                      <span className="px-2 py-0.5 rounded text-xs font-bold bg-emerald-100 text-emerald-800">
+                      <span className="font-bold text-xs text-gp-text">HTTP Response:</span>
+                      <span className="px-2 py-0.5 rounded text-xs font-bold bg-gp-success-soft text-gp-success">
                         {testStatus} OK
                       </span>
                       {testLatency !== null && (
-                        <span className="text-xs text-slate-500 flex items-center gap-1">
+                        <span className="text-xs text-gp-text-muted flex items-center gap-1">
                           <Clock className="w-3 h-3" /> {testLatency} ms
                         </span>
                       )}
@@ -424,7 +424,7 @@ export function ApiIntegrationModal({ isOpen, onClose }: ApiIntegrationModalProp
                     <CopyButton value={JSON.stringify(testResponse, null, 2)} title="Copy JSON Response" />
                   </div>
 
-                  <pre className="bg-white p-3.5 rounded-lg border border-slate-200 text-xs font-mono text-slate-800 overflow-x-auto max-h-56">
+                  <pre className="bg-gp-surface p-3.5 rounded-lg border border-gp-border text-xs font-mono text-gp-text overflow-x-auto max-h-56">
                     {JSON.stringify(testResponse, null, 2)}
                   </pre>
                 </div>
@@ -435,11 +435,11 @@ export function ApiIntegrationModal({ isOpen, onClose }: ApiIntegrationModalProp
           {/* TAB 3: AUTH & HEADERS */}
           {activeTab === 'AUTH' && (
             <div className="space-y-4">
-              <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+              <div className="p-4 bg-gp-surface-secondary/50 border border-gp-border rounded-xl space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Shield className="w-4 h-4 text-blue-600" />
-                    <span className="font-bold text-xs text-slate-900">Standard Request Headers</span>
+                    <Shield className="w-4 h-4 text-gp-primary-strong" />
+                    <span className="font-bold text-xs text-gp-text">Standard Request Headers</span>
                   </div>
                   <CopyButton 
                     value={`Authorization: Bearer ${mockJwt}\nContent-Type: application/json\nAccept: application/json\nX-Agency-Tenant: growthprint`}
@@ -447,20 +447,20 @@ export function ApiIntegrationModal({ isOpen, onClose }: ApiIntegrationModalProp
                   />
                 </div>
 
-                <div className="font-mono text-xs bg-white p-3 rounded-lg border border-slate-200 text-slate-700 space-y-1">
-                  <div><strong className="text-slate-900">Authorization:</strong> Bearer {mockJwt.slice(0, 32)}...</div>
-                  <div><strong className="text-slate-900">Content-Type:</strong> application/json</div>
-                  <div><strong className="text-slate-900">Accept:</strong> application/json</div>
-                  <div><strong className="text-slate-900">X-Agency-Tenant:</strong> growthprint</div>
+                <div className="font-mono text-xs bg-gp-surface p-3 rounded-lg border border-gp-border text-gp-text-secondary space-y-1">
+                  <div><strong className="text-gp-text">Authorization:</strong> Bearer {mockJwt.slice(0, 32)}...</div>
+                  <div><strong className="text-gp-text">Content-Type:</strong> application/json</div>
+                  <div><strong className="text-gp-text">Accept:</strong> application/json</div>
+                  <div><strong className="text-gp-text">X-Agency-Tenant:</strong> growthprint</div>
                 </div>
               </div>
 
-              <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+              <div className="p-4 bg-gp-surface-secondary/50 border border-gp-border rounded-xl space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-xs text-slate-900">Founder Simulated JWT Payload</span>
+                  <span className="font-bold text-xs text-gp-text">Founder Simulated JWT Payload</span>
                   <CopyButton value={mockJwt} title="Copy JWT Token" />
                 </div>
-                <pre className="bg-white p-3 rounded-lg border border-slate-200 text-xs font-mono text-slate-800">
+                <pre className="bg-gp-surface p-3 rounded-lg border border-gp-border text-xs font-mono text-gp-text">
 {`{
   "sub": "founder@growthprint.com",
   "name": "Alex Vance",
@@ -478,7 +478,7 @@ export function ApiIntegrationModal({ isOpen, onClose }: ApiIntegrationModalProp
           {activeTab === 'CONFIG' && (
             <div className="space-y-5">
               <div className="space-y-2">
-                <label className="block text-xs font-bold text-slate-900">
+                <label className="block text-xs font-bold text-gp-text">
                   API Gateway Base URL
                 </label>
                 <input
@@ -486,28 +486,28 @@ export function ApiIntegrationModal({ isOpen, onClose }: ApiIntegrationModalProp
                   value={apiUrl}
                   onChange={(e) => setApiUrl(e.target.value)}
                   placeholder="/api/v1 or http://localhost:8080/api/v1"
-                  className="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50/50"
+                  className="w-full px-3.5 py-2 text-xs border border-gp-border rounded-xl font-mono focus:outline-none focus:ring-2 focus:ring-gp-primary/20 bg-gp-surface-secondary/50"
                 />
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-gp-text-muted">
                   During local Spring Boot development, point this to your local backend (e.g., http://localhost:8080/api/v1).
                 </p>
               </div>
 
-              <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+              <div className="p-4 bg-gp-surface-secondary/50 border border-gp-border rounded-xl space-y-3">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="text-xs font-bold text-slate-900">Adapter Operating Mode</h4>
-                    <p className="text-xs text-slate-500">
+                    <h4 className="text-xs font-bold text-gp-text">Adapter Operating Mode</h4>
+                    <p className="text-xs text-gp-text-muted">
                       Toggle between transparent in-memory mock responses and real network calls.
                     </p>
                   </div>
                   <button
                     type="button"
                     onClick={() => setIsMockMode(!isMockMode)}
-                    className={`px-3 py-1 text-xs font-bold rounded-lg border transition-all ${
+                    className={`px-3 py-1 text-xs font-bold rounded-lg border transition-colors ${
                       isMockMode 
-                        ? 'bg-amber-100 text-amber-900 border-amber-300' 
-                        : 'bg-emerald-100 text-emerald-900 border-emerald-300'
+                        ? 'bg-gp-warning-soft text-gp-warning border-gp-warning/40' 
+                        : 'bg-gp-success-soft text-gp-success border-gp-success/40'
                     }`}
                   >
                     {isMockMode ? 'Development Demo Mode' : 'Live Microservice REST'}
@@ -519,14 +519,14 @@ export function ApiIntegrationModal({ isOpen, onClose }: ApiIntegrationModalProp
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl"
+                  className="px-4 py-2 text-xs font-semibold text-gp-text-secondary bg-gp-surface hover:bg-gp-surface-secondary border border-gp-border rounded-xl"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
                   onClick={handleSaveConfig}
-                  className="px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl"
+                  className="px-4 py-2 text-xs font-semibold text-gp-primary-foreground bg-gp-primary hover:bg-gp-primary-hover rounded-xl"
                 >
                   Save Gateway Settings
                 </button>

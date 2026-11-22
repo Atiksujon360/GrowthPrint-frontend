@@ -5,8 +5,8 @@ import { Monitor, Moon, Sun } from 'lucide-react';
 import { THEME_STORAGE_KEY, parsePreference, resolveTheme, type ThemePreference } from '../../lib/theme.ts';
 
 const OPTIONS: Array<{ value: ThemePreference; label: string; Icon: typeof Moon }> = [
-  { value: 'dark', label: 'Dark theme', Icon: Moon },
   { value: 'light', label: 'Light theme', Icon: Sun },
+  { value: 'dark', label: 'Dark theme', Icon: Moon },
   { value: 'system', label: 'Use system theme', Icon: Monitor },
 ];
 
@@ -16,11 +16,12 @@ function apply(preference: ThemePreference) {
 }
 
 /**
- * Dark / light / system choice as a radio group: Tab reaches the group, arrow keys move between options.
+ * Light / dark / system choice as a radio group: Tab reaches the group, arrow keys move between options.
  * The choice persists in localStorage; "system" follows operating-system changes while the page is open.
+ * Updated for Phase 1: Light is now the default, component uses neutral styling for broad application.
  */
 export function ThemeSwitcher({ className = '' }: { className?: string }) {
-  const [preference, setPreference] = useState<ThemePreference>('dark');
+  const [preference, setPreference] = useState<ThemePreference>('light');
   const refs = useRef<Array<HTMLButtonElement | null>>([]);
 
   useEffect(() => {
@@ -54,13 +55,13 @@ export function ThemeSwitcher({ className = '' }: { className?: string }) {
 
   return (
     <div role="radiogroup" aria-label="Colour theme"
-      className={`inline-flex items-center gap-0.5 rounded-xl border border-mk-line p-1 ${className}`}>
+      className={`inline-flex items-center gap-0.5 rounded-lg border border-gp-border bg-gp-surface p-1 ${className}`}>
       {OPTIONS.map(({ value, label, Icon }, i) => {
         const checked = preference === value;
         return (
           <button key={value} ref={el => { refs.current[i] = el; }} type="button" role="radio" aria-checked={checked}
             aria-label={label} title={label} tabIndex={checked ? 0 : -1} onClick={() => choose(value)} onKeyDown={e => onKeyDown(e, i)}
-            className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${checked ? 'bg-mk-text/10 text-mk-text' : 'text-mk-dim hover:text-mk-text'}`}>
+            className={`flex h-8 w-8 items-center justify-center rounded-md transition-colors ${checked ? 'bg-gp-primary text-gp-primary-foreground' : 'text-gp-text-muted hover:text-gp-text-secondary hover:bg-gp-surface-secondary'}`}>
             <Icon className="h-4 w-4" aria-hidden="true" />
           </button>
         );

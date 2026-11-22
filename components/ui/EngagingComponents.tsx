@@ -19,7 +19,7 @@ export function CircularProgress({
   progress, 
   size = 80, 
   strokeWidth = 8,
-  color = '#0c826c',
+  color = 'var(--gp-primary)',
   showLabel = true,
   label
 }: { 
@@ -41,7 +41,7 @@ export function CircularProgress({
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke="#e2e8f0"
+          stroke="var(--color-gp-border)"
           strokeWidth={strokeWidth}
           fill="none"
         />
@@ -65,7 +65,7 @@ export function CircularProgress({
       {showLabel && (
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <motion.span
-            className="text-xl font-bold text-slate-900"
+            className="text-xl font-bold text-gp-text"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
@@ -73,7 +73,7 @@ export function CircularProgress({
             {progress}%
           </motion.span>
           {label && (
-            <span className="text-xs text-slate-500 mt-1">{label}</span>
+            <span className="text-xs text-gp-text-secondary mt-1">{label}</span>
           )}
         </div>
       )}
@@ -96,10 +96,10 @@ export function FloatingActionButton({
   color?: 'blue' | 'green' | 'red' | 'purple';
 }) {
   const colorClasses = {
-    blue: 'bg-blue-600 hover:bg-blue-700',
-    green: 'bg-emerald-600 hover:bg-emerald-700',
-    red: 'bg-rose-600 hover:bg-rose-700',
-    purple: 'bg-purple-600 hover:bg-purple-700'
+    blue: 'bg-gp-primary hover:bg-gp-primary-hover text-gp-primary-foreground',
+    green: 'bg-gp-success hover:bg-gp-success/90 text-gp-canvas',
+    red: 'bg-gp-danger hover:bg-gp-danger/90 text-gp-danger-foreground',
+    purple: 'bg-gp-plum hover:bg-gp-plum/90 text-white'
   };
 
   const positionClasses = {
@@ -115,14 +115,14 @@ export function FloatingActionButton({
       <motion.button
         onClick={onClick}
         aria-label={label}
-        className={`${colorClasses[color]} w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-white relative`}
+        className={`${colorClasses[color]} w-14 h-14 rounded-full shadow-lg flex items-center justify-center relative`}
         whileTap={{ scale: 0.94 }}
       >
         <Icon className="w-6 h-6 relative z-10" aria-hidden="true" />
       </motion.button>
       {label && (
         <motion.div
-          className="absolute left-full ml-3 top-1/2 -translate-y-1/2 bg-slate-900 text-white text-xs px-3 py-1.5 rounded-lg whitespace-nowrap"
+          className="absolute left-full ml-3 top-1/2 -translate-y-1/2 bg-gp-plum text-white text-xs px-3 py-1.5 rounded-lg whitespace-nowrap"
           initial={{ opacity: 0, x: -10 }}
           whileHover={{ opacity: 1, x: 0 }}
           animate={{ opacity: 0, x: -10 }}
@@ -164,14 +164,14 @@ export function InteractiveTooltip({
       <AnimatePresence>
         {isVisible && (
           <motion.div
-            className={`absolute ${positionClasses[position]} bg-slate-900 text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap z-50 shadow-lg`}
+            className={`absolute ${positionClasses[position]} bg-gp-plum text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap z-50 shadow-lg`}
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ duration: 0.2 }}
           >
             {content}
-            <div className={`absolute w-2 h-2 bg-slate-900 transform rotate-45 ${
+            <div className={`absolute w-2 h-2 bg-gp-plum transform rotate-45 ${
               position === 'top' ? '-bottom-1 left-1/2 -translate-x-1/2' :
               position === 'bottom' ? '-top-1 left-1/2 -translate-x-1/2' :
               position === 'left' ? '-right-1 top-1/2 -translate-y-1/2' :
@@ -201,19 +201,19 @@ export function SuccessCelebration({
 
   return (
     <motion.div
-      className="fixed inset-0 flex items-center justify-center z-50 bg-black/50 backdrop-blur-sm"
+      className="fixed inset-0 flex items-center justify-center z-50 bg-gp-text/40 backdrop-blur-sm"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
       <motion.div
-        className="bg-white rounded-2xl p-8 shadow-2xl text-center max-w-sm mx-4"
+        className="bg-gp-surface rounded-2xl p-8 shadow-gp-pop text-center max-w-sm mx-4"
         initial={{ scale: 0.5, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: 'spring', duration: 0.5 }}
       >
         <motion.div
-          className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4"
+          className="w-20 h-20 bg-gp-success-soft rounded-full flex items-center justify-center mx-auto mb-4"
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
@@ -223,11 +223,11 @@ export function SuccessCelebration({
             animate={{ scale: 1 }}
             transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
           >
-            <CheckCircle2 className="w-10 h-10 text-emerald-600" />
+            <CheckCircle2 className="w-10 h-10 text-gp-success" />
           </motion.div>
         </motion.div>
         <motion.h3
-          className="text-xl font-bold text-slate-900 mb-2"
+          className="text-xl font-bold text-gp-text mb-2"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.4 }}
@@ -235,7 +235,7 @@ export function SuccessCelebration({
           Success!
         </motion.h3>
         <motion.p
-          className="text-slate-600"
+          className="text-gp-text-secondary"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.5 }}
@@ -251,7 +251,7 @@ export function SuccessCelebration({
           {[...Array(5)].map((_, i) => (
             <motion.div
               key={i}
-              className="w-2 h-2 bg-emerald-500 rounded-full"
+              className="w-2 h-2 bg-gp-success rounded-full"
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.7 + i * 0.1, type: 'spring', stiffness: 300 }}
@@ -279,7 +279,7 @@ export function Skeleton({
 
   return (
     <motion.div
-      className={`bg-slate-200 ${variantClasses[variant]} ${className}`}
+      className={`bg-gp-surface-secondary ${variantClasses[variant]} ${className}`}
       animate={{
         opacity: [0.5, 1, 0.5]
       }}
@@ -301,10 +301,10 @@ export function TimeIndicator({
   time: string;
 }) {
   const statusConfig = {
-    active: { icon: Zap, color: 'text-emerald-600 bg-emerald-50', pulse: true },
-    pending: { icon: Clock, color: 'text-amber-600 bg-amber-50', pulse: false },
-    completed: { icon: CheckCircle2, color: 'text-blue-600 bg-blue-50', pulse: false },
-    overdue: { icon: AlertTriangle, color: 'text-rose-600 bg-rose-50', pulse: true }
+    active: { icon: Zap, color: 'text-gp-success bg-gp-success-soft', pulse: true },
+    pending: { icon: Clock, color: 'text-gp-warning bg-gp-warning-soft', pulse: false },
+    completed: { icon: CheckCircle2, color: 'text-gp-info bg-gp-info-soft', pulse: false },
+    overdue: { icon: AlertTriangle, color: 'text-gp-danger bg-gp-danger-soft', pulse: true }
   };
 
   const config = statusConfig[status];
@@ -315,7 +315,7 @@ export function TimeIndicator({
       className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${config.color}`}
       animate={config.pulse ? {
         scale: [1, 1.02, 1],
-        boxShadow: ['0 0 0 0 rgba(16, 185, 129, 0)', '0 0 0 8px rgba(16, 185, 129, 0)']
+        boxShadow: ['0 0 0 0 rgba(74, 222, 128, 0)', '0 0 0 8px rgba(74, 222, 128, 0)']
       } : {}}
       transition={{
         duration: 2,
@@ -341,10 +341,10 @@ export function AchievementBadge({
   unlocked?: boolean;
 }) {
   const colorClasses = {
-    blue: 'from-blue-500 to-blue-600',
-    purple: 'from-purple-500 to-purple-600',
+    blue: 'from-gp-primary to-gp-primary-hover',
+    purple: 'from-gp-plum to-gp-plum/80',
     gold: 'from-amber-400 to-amber-500',
-    emerald: 'from-emerald-500 to-emerald-600'
+    emerald: 'from-gp-success to-gp-success/80'
   };
 
   return (
@@ -366,7 +366,7 @@ export function AchievementBadge({
             ease: 'linear'
           }}
         >
-          <Sparkles className="w-6 h-6 text-yellow-300" />
+          <Sparkles className="w-6 h-6 text-gp-warning" />
         </motion.div>
       )}
       <div className="flex items-center gap-3">
@@ -398,14 +398,14 @@ export function ProgressSteps({
             <motion.div
               className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${
                 index < currentStep
-                  ? 'bg-emerald-500 text-white'
+                  ? 'bg-gp-success text-gp-canvas'
                   : index === currentStep
-                  ? 'bg-blue-500 text-white ring-4 ring-blue-200'
-                  : 'bg-slate-200 text-slate-400'
+                  ? 'bg-gp-primary text-gp-primary-foreground ring-4 ring-gp-primary/30'
+                  : 'bg-gp-surface-secondary text-gp-text-muted'
               }`}
               animate={index === currentStep ? {
                 scale: [1, 1.1, 1],
-                boxShadow: ['0 0 0 0 rgba(59, 130, 246, 0)', '0 0 0 8px rgba(59, 130, 246, 0)']
+                boxShadow: ['0 0 0 0 rgba(249, 115, 22, 0)', '0 0 0 8px rgba(249, 115, 22, 0)']
               } : {}}
               transition={{
                 duration: 2,
@@ -416,7 +416,7 @@ export function ProgressSteps({
             </motion.div>
             <motion.span
               className={`text-xs mt-2 ${
-                index <= currentStep ? 'text-slate-900 font-medium' : 'text-slate-400'
+                index <= currentStep ? 'text-gp-text font-medium' : 'text-gp-text-muted'
               }`}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -426,9 +426,9 @@ export function ProgressSteps({
             </motion.span>
           </div>
           {index < steps.length - 1 && (
-            <div className="flex-1 h-1 mx-2 bg-slate-200 rounded overflow-hidden">
+            <div className="flex-1 h-1 mx-2 bg-gp-surface-secondary rounded overflow-hidden">
               <motion.div
-                className="h-full bg-blue-500"
+                className="h-full bg-gp-primary"
                 initial={{ width: 0 }}
                 animate={{ width: index < currentStep ? '100%' : '0%' }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -458,26 +458,26 @@ export function StatusCard({
   onClick?: () => void;
 }) {
   const colorClasses = {
-    blue: 'hover:border-blue-300 hover:shadow-blue-100',
-    green: 'hover:border-emerald-300 hover:shadow-emerald-100',
-    purple: 'hover:border-purple-300 hover:shadow-purple-100',
-    orange: 'hover:border-orange-300 hover:shadow-orange-100'
+    blue: 'hover:border-gp-primary/50 hover:shadow-gp-primary/20',
+    green: 'hover:border-gp-success/50 hover:shadow-gp-success/20',
+    purple: 'hover:border-gp-plum/50 hover:shadow-gp-plum/20',
+    orange: 'hover:border-gp-accent/50 hover:shadow-gp-accent/20'
   };
 
   return (
     <motion.div
-      className={`bg-white p-6 rounded-2xl border border-slate-200 shadow-sm cursor-pointer transition-all ${colorClasses[color]} hover:shadow-lg`}
+      className={`bg-gp-surface p-6 rounded-2xl border border-gp-border shadow-sm cursor-pointer transition-colors ${colorClasses[color]} hover:shadow-lg`}
       whileHover={{ y: -8, scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
     >
       <div className="flex items-start justify-between mb-4">
-        <div className={`w-12 h-12 rounded-xl bg-${color}-100 flex items-center justify-center`}>
-          <Icon className={`w-6 h-6 text-${color}-600`} />
+        <div className={`w-12 h-12 rounded-xl bg-gp-primary-soft flex items-center justify-center`}>
+          <Icon className={`w-6 h-6 text-gp-primary-strong`} />
         </div>
         {trend && (
           <motion.div
-            className="flex items-center gap-1 text-emerald-600 text-sm font-medium"
+            className="flex items-center gap-1 text-gp-success text-sm font-medium"
             initial={{ x: -10, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
@@ -488,16 +488,16 @@ export function StatusCard({
         )}
       </div>
       <motion.div
-        className="text-3xl font-bold text-slate-900 mb-1"
+        className="text-3xl font-bold text-gp-text mb-1"
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 0.1, type: 'spring', stiffness: 200 }}
       >
         {value}
       </motion.div>
-      <div className="text-sm text-slate-500">{title}</div>
+      <div className="text-sm text-gp-text-secondary">{title}</div>
       <motion.div
-        className="mt-4 flex items-center gap-2 text-blue-600 text-sm font-medium"
+        className="mt-4 flex items-center gap-2 text-gp-primary-strong text-sm font-medium"
         initial={{ opacity: 0 }}
         whileHover={{ x: 5 }}
         transition={{ type: 'spring', stiffness: 300 }}

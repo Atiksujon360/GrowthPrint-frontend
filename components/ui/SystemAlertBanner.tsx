@@ -20,19 +20,19 @@ export function SystemAlertBanner({ onNavigateTab }: SystemAlertBannerProps) {
 
   const styles = {
     info: {
-      container: 'bg-blue-50 border-blue-200 text-blue-900',
-      icon: <AlertCircle className="w-4 h-4 text-blue-600 shrink-0" />,
-      action: 'text-blue-700 hover:text-blue-800'
+      container: 'bg-gp-info-soft border-gp-info/30 text-gp-text',
+      icon: <AlertCircle className="w-4 h-4 text-gp-info shrink-0" />,
+      action: 'text-gp-info hover:underline'
     },
     warning: {
-      container: 'bg-amber-50 border-amber-200 text-amber-900',
-      icon: <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />,
-      action: 'text-amber-800 hover:text-amber-900'
+      container: 'bg-gp-warning-soft border-gp-warning/30 text-gp-text',
+      icon: <AlertTriangle className="w-4 h-4 text-gp-warning shrink-0" />,
+      action: 'text-gp-warning hover:underline'
     },
     success: {
-      container: 'bg-emerald-50 border-emerald-200 text-emerald-900',
-      icon: <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />,
-      action: 'text-emerald-800 hover:text-emerald-900'
+      container: 'bg-gp-success-soft border-gp-success/30 text-gp-text',
+      icon: <CheckCircle2 className="w-4 h-4 text-gp-success shrink-0" />,
+      action: 'text-gp-success hover:underline'
     }
   }[alert.type || 'info'];
 
@@ -43,7 +43,7 @@ export function SystemAlertBanner({ onNavigateTab }: SystemAlertBannerProps) {
   };
 
   return (
-    <div className={`px-4 py-2.5 border-b text-xs flex items-center justify-between gap-4 transition-all ${styles.container}`}>
+    <div className={`px-4 py-2.5 border-b text-xs flex items-center justify-between gap-4 transition-colors ${styles.container}`}>
       <div className="flex items-center gap-2.5 min-w-0">
         {styles.icon}
         <div className="truncate">
@@ -66,7 +66,7 @@ export function SystemAlertBanner({ onNavigateTab }: SystemAlertBannerProps) {
         <button
           onClick={() => dispatch(dismissSystemAlert(alert === retainerAlert ? alert.id : undefined))}
           aria-label="Dismiss banner"
-          className="p-1 rounded-md hover:bg-black/5 transition-colors opacity-70 hover:opacity-100"
+          className="p-1 rounded-md hover:bg-gp-surface/20 transition-colors opacity-70 hover:opacity-100"
         >
           <X className="w-3.5 h-3.5" />
         </button>

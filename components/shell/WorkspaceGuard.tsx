@@ -42,10 +42,10 @@ export function WorkspaceGuard({ workspace, children }: Readonly<{ workspace: Wo
 
   if (!isMounted || (isSessionValidating && !isLoginPage)) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F8FAFD]">
+      <div className="min-h-screen flex items-center justify-center bg-gp-canvas">
         <div className="flex flex-col items-center gap-4" role="status" aria-live="polite">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-600" aria-hidden="true" />
-          <p className="text-sm text-slate-500">Loading your workspace…</p>
+          <Loader2 className="h-8 w-8 animate-spin text-gp-primary-strong" aria-hidden="true" />
+          <p className="text-sm text-gp-text-secondary">Loading your workspace…</p>
         </div>
       </div>
     );

@@ -41,14 +41,14 @@ export function CommandCentreScreen() {
 
       {error && <ErrorState message={errorMessage(error)} onRetry={() => void refetch()} />}
       {isLoading && (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" role="status" aria-label="Loading dashboard">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4" role="status" aria-label="Loading dashboard">
           {[0, 1, 2, 3].map(i => <Skeleton key={i} className="h-28" />)}
         </div>
       )}
 
       {data && (
         <div className="space-y-6">
-          <section aria-label="Key numbers" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <section aria-label="Key numbers" className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard label="Active clients" value={data.clients.active} href={r.clients}
               hint={`${data.clients.total} total · ${data.clients.newThisMonth} new this month`} />
             <StatCard label="Open leads" value={data.leads.open} href={r.leads}
@@ -59,7 +59,7 @@ export function CommandCentreScreen() {
               hint={data.team.pendingInvitations ? `${data.team.pendingInvitations} invitation${data.team.pendingInvitations > 1 ? 's' : ''} pending` : 'Active members'} />
           </section>
 
-          <div className="grid gap-6 lg:grid-cols-5">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
             <section aria-labelledby="priorities" className="rounded-2xl border border-ink-200 bg-white shadow-xs lg:col-span-3">
               <header className="flex items-center justify-between border-b border-ink-100 px-5 py-4">
                 <h2 id="priorities" className="text-sm font-semibold text-ink-900">Needs your attention</h2>

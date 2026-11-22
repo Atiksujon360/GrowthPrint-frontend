@@ -19,7 +19,7 @@ const STATE_LABEL: Record<MilestoneState, string> = {
 function Marker({ state }: { state: MilestoneState }) {
   if (state === 'done') {
     return (
-      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-gp-primary text-white">
+      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-gp-primary text-gp-primary-foreground">
         <Check className="h-3 w-3" strokeWidth={3} aria-hidden="true" />
       </span>
     );
@@ -120,7 +120,7 @@ export function ProjectDetailDrawer({ project, onClose }: { project: Project | n
               <p className="text-sm tabular-nums text-gp-text-secondary">of {formatMoney(budget.total, currency)}</p>
             </div>
             <div className="mt-2 h-2 overflow-hidden rounded-full bg-gp-divider" aria-hidden="true">
-              <div className={`h-full rounded-full ${budget.over ? 'bg-gp-danger' : budget.percent >= 85 ? 'bg-amber-500' : 'bg-gp-accent'}`}
+              <div className={`h-full rounded-full ${budget.over ? 'bg-gp-danger' : budget.percent >= 85 ? 'bg-gp-warning' : 'bg-gp-accent'}`}
                 style={{ width: `${Math.min(100, budget.percent)}%` }} />
             </div>
             <p className={`mt-2 text-sm ${budget.over ? 'text-gp-danger' : 'text-gp-text-secondary'}`}>

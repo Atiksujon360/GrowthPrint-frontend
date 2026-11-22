@@ -25,7 +25,7 @@ export function LoadingSpinner({ size = 'md', label = 'Loading', className = '' 
 
 export function PageLoading({ label = 'Loading workspace' }: { label?: string }) {
   return (
-    <div className="flex min-h-64 items-center justify-center rounded-2xl border border-slate-200 bg-white p-8 text-sm text-slate-500" role="status" aria-live="polite">
+    <div className="flex min-h-64 items-center justify-center rounded-2xl border border-gp-border bg-gp-surface p-8 text-sm text-gp-text-secondary" role="status" aria-live="polite">
       <LoadingSpinner size="lg" label={label} />
       <span className="ml-3">{label}</span>
     </div>
@@ -33,5 +33,5 @@ export function PageLoading({ label = 'Loading workspace' }: { label?: string })
 }
 
 export function Skeleton({ className = '' }: { className?: string }) {
-  return <span className={`block animate-pulse rounded-lg bg-slate-200/80 ${className}`} aria-hidden="true" />;
+  return <span className={`block animate-pulse rounded-lg bg-gp-surface-secondary ${className}`} aria-hidden="true" />;
 }

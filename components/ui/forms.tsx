@@ -25,10 +25,10 @@ const cx = (...classes: Array<string | false | null | undefined>) => classes.fil
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
 
 const BUTTON_VARIANTS: Record<ButtonVariant, string> = {
-  primary: 'bg-brand-600 text-white shadow-sm hover:bg-brand-700 active:bg-brand-800',
-  secondary: 'border border-ink-200 bg-white text-ink-800 hover:bg-ink-50 active:bg-ink-100',
-  ghost: 'text-ink-600 hover:bg-ink-100 hover:text-ink-900',
-  danger: 'bg-red-600 text-white shadow-sm hover:bg-red-700',
+  primary: 'bg-gp-primary text-gp-primary-foreground shadow-sm hover:bg-gp-primary-hover active:bg-gp-primary-hover',
+  secondary: 'border border-gp-border bg-gp-surface text-gp-text hover:bg-gp-surface-secondary active:bg-gp-surface-secondary',
+  ghost: 'text-gp-text-secondary hover:bg-gp-surface-secondary hover:text-gp-text',
+  danger: 'bg-gp-danger text-gp-danger-foreground shadow-sm hover:bg-gp-danger/90',
 };
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -53,8 +53,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       disabled={disabled || loading}
       aria-busy={loading || undefined}
       className={cx(
-        'inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-colors',
-        'focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-200',
+        'inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-colors',
+        'focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gp-primary/30',
         'disabled:cursor-not-allowed disabled:opacity-55',
         sizes[size], BUTTON_VARIANTS[variant], fullWidth && 'w-full', className,
       )}
@@ -88,31 +88,31 @@ export function Field({ label, required, help, error, className, children }: Fie
   const describedBy = [errorId, helpId].filter(Boolean).join(' ') || undefined;
   return (
     <div className={cx('space-y-1.5', className)}>
-      <label htmlFor={inputId} className="block text-sm font-medium text-ink-800">
+      <label htmlFor={inputId} className="block text-sm font-medium text-gp-text">
         {label}
         {required ? (
-          <span className="ml-0.5 text-red-600" aria-hidden="true">*</span>
+          <span className="ml-0.5 text-gp-danger" aria-hidden="true">*</span>
         ) : (
-          <span className="ml-1.5 text-xs font-normal text-ink-400">(optional)</span>
+          <span className="ml-1.5 text-xs font-normal text-gp-text-muted">(optional)</span>
         )}
       </label>
       {children({ inputId, describedBy, invalid: Boolean(error) })}
       {error && (
-        <p id={errorId} className="flex items-start gap-1.5 text-xs font-medium text-red-700">
+        <p id={errorId} className="flex items-start gap-1.5 text-xs font-medium text-gp-danger">
           <AlertCircle className="mt-px h-3.5 w-3.5 shrink-0" aria-hidden="true" />
           {error}
         </p>
       )}
-      {help && <div id={helpId} className="text-xs leading-5 text-ink-500">{help}</div>}
+      {help && <div id={helpId} className="text-xs leading-5 text-gp-text-secondary">{help}</div>}
     </div>
   );
 }
 
 export const inputClass = (invalid: boolean, extra?: string) => cx(
-  'block w-full rounded-xl border bg-white px-3 py-2 text-sm text-ink-900 transition',
-  'placeholder:text-ink-400 focus:outline-none focus:ring-4',
-  'disabled:cursor-not-allowed disabled:bg-ink-50 disabled:text-ink-500',
-  invalid ? 'border-red-400 focus:border-red-500 focus:ring-red-100' : 'border-ink-200 focus:border-brand-500 focus:ring-brand-100',
+  'block w-full rounded-lg border bg-gp-surface px-3 py-2 text-sm text-gp-text transition',
+  'placeholder:text-gp-text-muted focus:outline-none focus:ring-4',
+  'disabled:cursor-not-allowed disabled:bg-gp-surface-secondary disabled:text-gp-text-muted',
+  invalid ? 'border-gp-danger focus:border-gp-danger focus:ring-gp-danger/20' : 'border-gp-border focus:border-gp-primary focus:ring-gp-primary/30',
   extra,
 );
 
@@ -194,7 +194,7 @@ export function PasswordField({ label, help, error, required, className, ...inpu
             aria-pressed={visible}
             aria-controls={inputId}
             disabled={input.disabled}
-            className="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-r-xl text-ink-500 transition-colors hover:text-ink-900 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-200 disabled:opacity-50"
+            className="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-r-lg text-gp-text-muted transition-colors hover:text-gp-text focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gp-primary/30 disabled:opacity-50"
           >
             {visible ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
           </button>
@@ -209,10 +209,10 @@ export function PasswordRequirements({ rules }: { rules: ReadonlyArray<{ id: str
   return (
     <ul className="grid gap-1 sm:grid-cols-2" aria-live="polite">
       {rules.map(rule => (
-        <li key={rule.id} className={cx('flex items-center gap-1.5 text-xs', rule.met ? 'text-emerald-700' : 'text-ink-500')}>
+        <li key={rule.id} className={cx('flex items-center gap-1.5 text-xs', rule.met ? 'text-gp-success' : 'text-gp-text-secondary')}>
           {rule.met
             ? <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
-            : <span className="h-3.5 w-3.5 rounded-full border border-ink-300" aria-hidden="true" />}
+            : <span className="h-3.5 w-3.5 rounded-full border border-gp-border" aria-hidden="true" />}
           <span>{rule.label}<span className="sr-only">{rule.met ? ' (met)' : ' (not met yet)'}</span></span>
         </li>
       ))}
@@ -227,10 +227,10 @@ export function PasswordRequirements({ rules }: { rules: ReadonlyArray<{ id: str
 type Tone = 'info' | 'success' | 'warning' | 'error';
 
 const TONES: Record<Tone, { box: string; icon: typeof Info }> = {
-  info: { box: 'border-brand-200 bg-brand-50 text-brand-900', icon: Info },
-  success: { box: 'border-emerald-200 bg-emerald-50 text-emerald-900', icon: CheckCircle2 },
-  warning: { box: 'border-amber-200 bg-amber-50 text-amber-900', icon: AlertCircle },
-  error: { box: 'border-red-200 bg-red-50 text-red-800', icon: XCircle },
+  info: { box: 'border-gp-info/30 bg-gp-info-soft text-gp-text', icon: Info },
+  success: { box: 'border-gp-success/30 bg-gp-success-soft text-gp-success', icon: CheckCircle2 },
+  warning: { box: 'border-gp-warning/30 bg-gp-warning-soft text-gp-warning', icon: AlertCircle },
+  error: { box: 'border-gp-danger/30 bg-gp-danger-soft text-gp-danger', icon: XCircle },
 };
 
 export function Notice({ tone = 'info', title, children, className }: {
@@ -255,12 +255,12 @@ export function Card({ title, description, actions, children, className }: {
   title?: string; description?: ReactNode; actions?: ReactNode; children: ReactNode; className?: string;
 }) {
   return (
-    <section className={cx('rounded-2xl border border-ink-200 bg-white shadow-xs', className)}>
+    <section className={cx('rounded-lg border border-gp-border bg-gp-surface shadow-xs', className)}>
       {(title || actions) && (
-        <header className="flex flex-wrap items-start justify-between gap-3 border-b border-ink-100 px-5 py-4 sm:px-6">
+        <header className="flex flex-wrap items-start justify-between gap-3 border-b border-gp-divider px-5 py-4 sm:px-6">
           <div>
-            {title && <h2 className="text-base font-semibold text-ink-900">{title}</h2>}
-            {description && <p className="mt-1 text-sm text-ink-500">{description}</p>}
+            {title && <h2 className="text-base font-semibold text-gp-text">{title}</h2>}
+            {description && <p className="mt-1 text-sm text-gp-text-secondary">{description}</p>}
           </div>
           {actions}
         </header>
@@ -271,17 +271,17 @@ export function Card({ title, description, actions, children, className }: {
 }
 
 export function Skeleton({ className }: { className?: string }) {
-  return <div className={cx('animate-pulse rounded-lg bg-ink-100', className)} aria-hidden="true" />;
+  return <div className={cx('animate-pulse rounded-lg bg-gp-surface-secondary', className)} aria-hidden="true" />;
 }
 
 export function EmptyState({ icon, title, description, action }: {
   icon?: ReactNode; title: string; description?: string; action?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-ink-200 px-6 py-12 text-center">
-      {icon && <div className="mb-3 text-ink-400" aria-hidden="true">{icon}</div>}
-      <p className="text-sm font-semibold text-ink-900">{title}</p>
-      {description && <p className="mt-1 max-w-sm text-sm text-ink-500">{description}</p>}
+    <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-gp-border px-6 py-12 text-center">
+      {icon && <div className="mb-3 text-gp-text-muted" aria-hidden="true">{icon}</div>}
+      <p className="text-sm font-semibold text-gp-text">{title}</p>
+      {description && <p className="mt-1 max-w-sm text-sm text-gp-text-secondary">{description}</p>}
       {action && <div className="mt-4">{action}</div>}
     </div>
   );
@@ -304,7 +304,7 @@ export function Avatar({ initials, size = 'md' }: { initials: string; size?: 'sm
   const sizes = { sm: 'h-7 w-7 text-[11px]', md: 'h-9 w-9 text-xs', lg: 'h-12 w-12 text-sm' };
   return (
     <span
-      className={cx('inline-flex shrink-0 items-center justify-center rounded-full bg-ink-900 font-semibold text-white', sizes[size])}
+      className={cx('inline-flex shrink-0 items-center justify-center rounded-full bg-gp-primary font-semibold text-gp-primary-foreground', sizes[size])}
       aria-hidden="true"
     >
       {initials}

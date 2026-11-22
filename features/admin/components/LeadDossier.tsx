@@ -77,7 +77,7 @@ export function LeadDossierBody({ lead, onStageChange }: { lead: Lead; onStageCh
         <FactList items={[
           { term: 'Source', value: humanizeCode(lead.source) },
           { term: 'Evidence link', value: lead.sourceUrl && (
-            <a href={lead.sourceUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 break-all text-gp-primary hover:underline">
+            <a href={lead.sourceUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 break-all text-gp-primary-strong hover:underline">
               {lead.sourceUrl.replace(/^https?:\/\//, '')}<ExternalLink className="h-3 w-3 shrink-0" aria-hidden="true" />
             </a>
           ) },
@@ -112,7 +112,7 @@ export function LeadDossierBody({ lead, onStageChange }: { lead: Lead; onStageCh
 function OutreachButton({ lead, onOpenOutreach }: { lead: Lead; onOpenOutreach: (id: string) => void }) {
   return (
     <button type="button" disabled={lead.doNotContact} onClick={() => onOpenOutreach(lead.id)}
-      className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-gp-control bg-gp-primary px-4 text-sm font-semibold text-white hover:bg-gp-primary-hover disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gp-primary">
+      className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-gp-control bg-gp-primary px-4 text-sm font-semibold text-gp-primary-foreground hover:bg-gp-primary-hover disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gp-primary">
       <Mail className="h-4 w-4" aria-hidden="true" /> Draft outreach
     </button>
   );
@@ -124,7 +124,7 @@ function LeadSubtitle({ lead }: { lead: Lead }) {
     <span className="inline-flex flex-wrap items-center gap-x-2">
       {where}
       {lead.website && (
-        <a href={lead.website} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-gp-primary hover:underline">
+        <a href={lead.website} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-gp-primary-strong hover:underline">
           Website<ExternalLink className="h-3 w-3" aria-hidden="true" />
         </a>
       )}

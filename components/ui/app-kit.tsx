@@ -15,10 +15,10 @@ export function Panel({ title, description, action, children, className = '', bo
   return (
     <section className={`rounded-gp-card border border-gp-border bg-gp-surface shadow-gp-card ${className}`}>
       {(title || action) && (
-        <header className="flex items-start justify-between gap-4 border-b border-ink-100 px-5 py-4">
+        <header className="flex items-start justify-between gap-4 border-b border-gp-divider px-5 py-4">
           <div className="min-w-0">
-            {title && <h2 className="text-[0.98rem] font-semibold text-ink-950">{title}</h2>}
-            {description && <p className="mt-0.5 text-sm text-ink-500">{description}</p>}
+            {title && <h2 className="text-[0.98rem] font-semibold text-gp-text">{title}</h2>}
+            {description && <p className="mt-0.5 text-sm text-gp-text-secondary">{description}</p>}
           </div>
           {action && <div className="shrink-0">{action}</div>}
         </header>
@@ -56,14 +56,14 @@ export function KpiCard({ label, value, icon: Icon, context, delta, spark, onCli
   tone?: 'primary' | 'success' | 'warning' | 'danger';
 }) {
   const iconTone = {
-    primary: 'bg-gp-primary-soft text-gp-primary',
+    primary: 'bg-gp-primary-soft text-gp-primary-strong',
     success: 'bg-gp-success-soft text-gp-success',
     warning: 'bg-gp-warning-soft text-gp-warning',
     danger: 'bg-gp-danger-soft text-gp-danger',
   }[tone];
   const body = (
     <>
-      {/* COMPREO layout: icon tile beside the label, value, then change / context. */}
+      {/* Premium layout: icon tile beside the label, value, then change / context. */}
       <div className="flex items-center gap-2.5">
         {Icon && (
           <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-gp-control ${iconTone}`}>
@@ -91,16 +91,16 @@ export function KpiCard({ label, value, icon: Icon, context, delta, spark, onCli
   );
   const cls = 'block w-full rounded-gp-card border border-gp-border bg-gp-surface p-5 text-left shadow-gp-card';
   return onClick
-    ? <button type="button" onClick={onClick} className={`${cls} transition-colors hover:border-ink-300`}>{body}</button>
+    ? <button type="button" onClick={onClick} className={`${cls} transition-colors hover:border-gp-primary/50`}>{body}</button>
     : <div className={cls}>{body}</div>;
 }
 
 /** Compact inline metric for secondary figures (a row of these under the KPI cards). */
 export function MiniStat({ label, value, tone = 'neutral' }: { label: string; value: ReactNode; tone?: 'neutral' | 'warning' | 'danger' }) {
-  const color = tone === 'danger' ? 'text-rose-700' : tone === 'warning' ? 'text-amber-700' : 'text-ink-950';
+  const color = tone === 'danger' ? 'text-gp-danger' : tone === 'warning' ? 'text-gp-warning' : 'text-gp-text';
   return (
     <div className="min-w-0">
-      <dt className="truncate text-sm text-ink-500">{label}</dt>
+      <dt className="truncate text-sm text-gp-text-muted">{label}</dt>
       <dd className={`mt-1 text-lg font-semibold tabular-nums ${color}`}>{value}</dd>
     </div>
   );
@@ -112,7 +112,7 @@ export function percentChange(current: number, previous: number): number | null 
   return Math.round(((current - previous) / previous) * 100);
 }
 
-/** Compact module summary (COMPREO): a row of labelled real figures above a module's table. */
+/** Compact module summary: a row of labelled real figures above a module's table. */
 export function SummaryStrip({ items, label }: {
   label: string;
   items: Array<{ label: string; value: ReactNode; tone?: 'default' | 'attention' | 'success' }>;

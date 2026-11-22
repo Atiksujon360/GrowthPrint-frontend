@@ -3,21 +3,23 @@
 /*
  * GrowthPrint design tokens (Tailwind v4 @theme).
  *
- * Brand: emerald-teal primary, mint highlights, navy text and dark surfaces, white and cool grey neutrals.
- *   brand-*  primary actions, links, active navigation, focus rings (600+ meets AA on white)
- *   mint-*   soft highlights and illustration tints
- *   ink-*    navy text, borders and neutral surfaces
+ * PHASE 1: Premium Brand Foundation
+ * Light mode is the default with warm neutrals and vibrant orange accents.
+ * Dark mode uses deep plum, charcoal, and orange/coral accents.
  *
- * Most existing screens were written with Tailwind's default `blue-*`, `purple-*`/`violet-*` and `slate-*`
- * utilities. Instead of editing ~300 class names (and risking regressions), those palettes are re-pointed
- * here at the GrowthPrint scales, so every screen picks up the brand consistently:
- *   blue -> brand, purple/violet -> mint, slate 800-950 -> navy.
- * `emerald-*` keeps Tailwind's values and stays the semantic "success" colour, distinct from the
- * teal-leaning brand primary. New code should use brand-/mint-/ink- names directly.
+ * Brand: Orange/coral primary (new), plum secondary, warm neutrals.
+ *   gp-*    New premium GrowthPrint semantic tokens
+ *   brand-* Legacy teal (being phased out, still used by existing components)
+ *   mint-*  Legacy mint highlights (being phased out)
+ *   ink-*   Legacy navy/cool neutrals (being phased out)
+ *   mk-*    Marketing site tokens (being migrated to orange/coral)
+ *
+ * Legacy palettes are preserved to avoid breaking existing components during migration.
+ * New code should use gp-* semantic tokens directly.
  */
 @theme {
   --font-sans: var(--font-ui), "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
-  --font-display: var(--font-display-face), var(--font-ui), "Segoe UI", system-ui, sans-serif;
+  --font-display: var(--font-sora), var(--font-display-face), var(--font-ui), "Segoe UI", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* Deep navy for dark public surfaces and the app sidebar (between ink-900 and ink-950). */
@@ -133,57 +135,270 @@
   --shadow-card: 0 1px 2px rgb(10 22 40 / 0.04), 0 8px 24px -12px rgb(10 22 40 / 0.12);
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
 
-  /* COMPREO direction tokens (docs/ui-transformation/DESIGN-TOKENS.md). Contrast-safe: primary text and fills use
-     the "strong" teal (4.9:1 on white); the lighter teal is for charts and icons only. */
-  --color-gp-canvas: #fafbfc;
-  --color-gp-surface: #ffffff;
-  --color-gp-primary: #117f76;
-  --color-gp-primary-hover: #0e6c64;
-  --color-gp-primary-soft: #e9f6f4;
-  --color-gp-accent: #159f91;
-  --color-gp-text: #17212b;
-  --color-gp-text-secondary: #66717d;
-  --color-gp-text-muted: #8a949e;
-  --color-gp-border: #e8ecef;
-  --color-gp-divider: #f0f2f4;
-  --color-gp-success: #1e7d45;
-  --color-gp-success-soft: #e9f6ee;
-  --color-gp-warning: #8f5b0a;
-  --color-gp-warning-soft: #fdf4e3;
-  --color-gp-danger: #c23b42;
-  --color-gp-danger-soft: #fceced;
-  --color-gp-info: #2a62a0;
-  --color-gp-info-soft: #eaf1f9;
+  /* COMPREO direction tokens. Utilities resolve through --gp-* so the
+     [data-theme="dark"] block below re-themes every gp-* class automatically. */
+  --color-gp-canvas: var(--gp-canvas);
+  --color-gp-surface: var(--gp-surface);
+  --color-gp-surface-secondary: var(--gp-surface-secondary);
+  --color-gp-surface-elevated: var(--gp-surface-elevated);
+  --color-gp-primary: var(--gp-primary);
+  --color-gp-primary-hover: var(--gp-primary-hover);
+  --color-gp-primary-soft: var(--gp-primary-soft);
+  --color-gp-primary-foreground: var(--gp-primary-foreground);
+  --color-gp-primary-strong: var(--gp-primary-strong);
+  --color-gp-accent: var(--gp-accent);
+  --color-gp-plum: var(--gp-plum);
+  --color-gp-text: var(--gp-text-primary);
+  --color-gp-text-secondary: var(--gp-text-secondary);
+  --color-gp-text-muted: var(--gp-text-muted);
+  --color-gp-border: var(--gp-border);
+  --color-gp-divider: var(--gp-divider);
+  --color-gp-success: var(--gp-success);
+  --color-gp-success-soft: var(--gp-success-soft);
+  --color-gp-warning: var(--gp-warning);
+  --color-gp-warning-soft: var(--gp-warning-soft);
+  --color-gp-danger: var(--gp-danger);
+  --color-gp-danger-soft: var(--gp-danger-soft);
+  --color-gp-danger-foreground: var(--gp-danger-foreground);
+  --color-gp-info: var(--gp-info);
+  --color-gp-info-soft: var(--gp-info-soft);
+  --color-gp-warning-foreground: var(--gp-warning-foreground);
   --radius-gp-card: 10px;
   --radius-gp-control: 8px;
   --radius-gp-badge: 6px;
   --shadow-gp-card: 0 1px 2px rgb(23 33 43 / 0.04), 0 1px 3px rgb(23 33 43 / 0.04);
   --shadow-gp-pop: 0 12px 32px -12px rgb(23 33 43 / 0.2);
 
-  /* Marketing site (public homepage): dark violet, from the approved brief. Used only inside .gp-marketing. */
-  --color-mk-bg: #07050d;
-  --color-mk-surface: #100b1d;
-  --color-mk-soft: #171025;
-  --color-mk-text: #ffffff;
-  --color-mk-muted: #c4bece;
-  --color-mk-dim: #8f87a0;
-  --color-mk-purple: #7426c9;
-  --color-mk-blue: #3826b7;
-  --color-mk-violet: #9b5cff;
-  --color-mk-cyan: #5ed6ff;
-  --color-mk-line: rgb(255 255 255 / 0.12);
-  --font-marketing: var(--font-poppins), "Segoe UI", system-ui, sans-serif;
+  /* PHASE 1: New GrowthPrint premium brand tokens - Light mode (default) */
+  --gp-canvas: #F8F6F4;
+  --gp-surface: #FFFFFF;
+  --gp-surface-secondary: #F3EFEC;
+  --gp-surface-elevated: #FFFFFF;
+  --gp-text-primary: #211923;
+  --gp-text-secondary: #655B63;
+  --gp-text-muted: #756A72;
+  --gp-border: #E9DFE3;
+  --gp-divider: #F0E9EC;
+  --gp-primary: #F97316;
+  --gp-primary-hover: #EA580C;
+  --gp-primary-soft: #FFF0E5;
+  --gp-primary-foreground: #24130C;
+  --gp-primary-strong: #B83A0C;
+  --gp-accent: #FF784F;
+  --gp-plum: #30172D;
+  --gp-gradient-primary: linear-gradient(135deg, #FF4D24 0%, #FF7845 55%, #FF9A55 100%);
+
+  /* Semantic status tokens — kept distinct from the orange brand. */
+  --gp-success: #1E7D45;
+  --gp-success-soft: #E9F6EE;
+  --gp-warning: #8F5B0A;
+  --gp-warning-soft: #FDF4E3;
+  --gp-danger: #C23B42;
+  --gp-danger-soft: #FCECED;
+  --gp-danger-foreground: #FFFFFF;
+  --gp-info: #2A62A0;
+  --gp-info-soft: #EAF1F9;
+  --gp-warning-foreground: #FFFFFF;
+
+  /* Marketing site tokens: utilities resolve through --mk-* vars so the public site follows the
+     light/dark theme. Light values live on :root; dark overrides live under [data-theme="dark"]. */
+  --color-mk-bg: var(--mk-bg);
+  --color-mk-surface: var(--mk-surface);
+  --color-mk-soft: var(--mk-soft);
+  --color-mk-text: var(--mk-text);
+  --color-mk-muted: var(--mk-muted);
+  --color-mk-dim: var(--mk-dim);
+  --color-mk-purple: var(--mk-purple);
+  --color-mk-blue: var(--mk-blue);
+  --color-mk-violet: var(--mk-violet);
+  --color-mk-cyan: var(--mk-cyan);
+  --color-mk-line: var(--mk-line);
+  /* Text that sits on the orange/coral accent gradient (dark on light accents, both themes). */
+  --color-mk-accent-fg: #24130C;
+  /* Always-dark surface for code/developer panels inside the marketing site. */
+  --color-mk-code: #150E1B;
+  --font-marketing: var(--font-inter), "Segoe UI", system-ui, sans-serif;
 }
 
-/* Public marketing site scope: dark canvas, violet focus ring and selection. */
+/* PHASE 1: Dark mode theme support - Deep plum backgrounds with orange/coral accents */
+[data-theme="dark"] {
+  --gp-canvas: #100B12;
+  --gp-surface: #19121D;
+  --gp-surface-secondary: #211824;
+  --gp-surface-elevated: #291E2C;
+  --gp-text-primary: #F7F2F3;
+  --gp-text-secondary: #C0B3BE;
+  --gp-text-muted: #988B97;
+  --gp-border: #38283A;
+  --gp-divider: #2B202E;
+  --gp-primary: #FF7845;
+  --gp-primary-hover: #FF956A;
+  --gp-primary-soft: rgba(255, 120, 69, 0.14);
+  --gp-primary-foreground: #1A0E12;
+  --gp-primary-strong: #FF7845;
+  --gp-accent: #FF9A70;
+  --gp-plum: #3A2040;
+  --gp-gradient-primary: linear-gradient(135deg, #FF572E 0%, #FF7845 55%, #FFA16A 100%);
+
+  /* Semantic status tokens — lighter variants for contrast on dark surfaces. */
+  --gp-success: #4ADE80;
+  --gp-success-soft: rgba(74, 222, 128, 0.14);
+  --gp-warning: #FBBF24;
+  --gp-warning-soft: rgba(251, 191, 36, 0.14);
+  --gp-danger: #FB7185;
+  --gp-danger-soft: rgba(251, 113, 133, 0.14);
+  --gp-danger-foreground: #1A0E12;
+  --gp-info: #60A5FA;
+  --gp-info-soft: rgba(96, 165, 250, 0.14);
+  --gp-warning-foreground: #1A0E12;
+}
+
+/* Dark mode: keep the page canvas consistent outside .gp-app surfaces (overscroll, auth pages). */
+[data-theme="dark"] body {
+  background-color: var(--gp-canvas);
+  color: var(--gp-text-primary);
+}
+
+/* Marketing site palette — light (warm editorial) is the default. Declared on :root (like the gp-*
+   tokens) so the @theme --color-mk-* var() references always resolve; scoped overrides below re-point them. */
+:root {
+  --mk-bg: #FAF8F5;
+  --mk-surface: #FFFFFF;
+  --mk-soft: #F4F0EA;
+  --mk-text: #211923;
+  --mk-muted: #655B63;
+  --mk-dim: #756A72;
+  --mk-purple: #F97316;
+  --mk-blue: #FB923C;
+  --mk-violet: #B83A0C;
+  --mk-cyan: #2A62A0;
+  --mk-line: rgb(33 25 35 / 0.13);
+}
+
+/* Dark marketing theme: --color-mk-* must be re-declared per scope because custom-property computed
+   values freeze var() references — re-pointing them here re-resolves against this scope's --mk-* values. */
+[data-theme="dark"] .gp-marketing {
+  --mk-bg: #100B12;
+  --mk-surface: #19121D;
+  --mk-soft: #211824;
+  --mk-text: #F7F2F3;
+  --mk-muted: #C0B3BE;
+  --mk-dim: #988B97;
+  --mk-purple: #FF7845;
+  --mk-blue: #FF9A70;
+  --mk-violet: #FF9A70;
+  --mk-cyan: #60A5FA;
+  --mk-line: rgb(255 255 255 / 0.12);
+  --color-mk-bg: var(--mk-bg);
+  --color-mk-surface: var(--mk-surface);
+  --color-mk-soft: var(--mk-soft);
+  --color-mk-text: var(--mk-text);
+  --color-mk-muted: var(--mk-muted);
+  --color-mk-dim: var(--mk-dim);
+  --color-mk-purple: var(--mk-purple);
+  --color-mk-blue: var(--mk-blue);
+  --color-mk-violet: var(--mk-violet);
+  --color-mk-cyan: var(--mk-cyan);
+  --color-mk-line: var(--mk-line);
+}
+
+/* Mixed-theme composition scopes: the public site intentionally alternates cinematic dark and warm cream
+   sections regardless of the visitor's app theme preference. These override the mk-* vars locally. */
+.gp-marketing .mk-dark {
+  --mk-bg: #100B12;
+  --mk-surface: #19121D;
+  --mk-soft: #211824;
+  --mk-text: #F7F2F3;
+  --mk-muted: #C0B3BE;
+  --mk-dim: #988B97;
+  --mk-purple: #FF7845;
+  --mk-blue: #FF9A70;
+  --mk-violet: #FF9A70;
+  --mk-cyan: #7FB3E8;
+  --mk-line: rgb(255 255 255 / 0.12);
+  --color-mk-bg: var(--mk-bg);
+  --color-mk-surface: var(--mk-surface);
+  --color-mk-soft: var(--mk-soft);
+  --color-mk-text: var(--mk-text);
+  --color-mk-muted: var(--mk-muted);
+  --color-mk-dim: var(--mk-dim);
+  --color-mk-purple: var(--mk-purple);
+  --color-mk-blue: var(--mk-blue);
+  --color-mk-violet: var(--mk-violet);
+  --color-mk-cyan: var(--mk-cyan);
+  --color-mk-line: var(--mk-line);
+  color-scheme: dark;
+}
+.gp-marketing .mk-cream {
+  --mk-bg: #F8F5F1;
+  --mk-surface: #FFFFFF;
+  --mk-soft: #F3EEE9;
+  --mk-text: #211923;
+  --mk-muted: #655B63;
+  --mk-dim: #8A7F87;
+  --mk-purple: #F97316;
+  --mk-blue: #FB923C;
+  --mk-violet: #B83A0C;
+  --mk-cyan: #2A62A0;
+  --mk-line: rgb(33 25 35 / 0.12);
+  --color-mk-bg: var(--mk-bg);
+  --color-mk-surface: var(--mk-surface);
+  --color-mk-soft: var(--mk-soft);
+  --color-mk-text: var(--mk-text);
+  --color-mk-muted: var(--mk-muted);
+  --color-mk-dim: var(--mk-dim);
+  --color-mk-purple: var(--mk-purple);
+  --color-mk-blue: var(--mk-blue);
+  --color-mk-violet: var(--mk-violet);
+  --color-mk-cyan: var(--mk-cyan);
+  --color-mk-line: var(--mk-line);
+  color-scheme: light;
+}
+
+/* Scoped sections also set their text color so unclassed descendants inherit correctly. */
+.gp-marketing .mk-dark, .gp-marketing .mk-cream { color: var(--mk-text); }
+
+/* PHASE 1: Typography scale for premium brand (Sora headings, Inter body) */
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    /* Typography scale using CSS custom properties */
+    --text-h1: clamp(2.5rem, 5vw, 4.5rem);
+    --text-h2: clamp(2rem, 4vw, 3rem);
+    --text-h3: clamp(1.5rem, 3vw, 2rem);
+    --text-h4: 1.25rem;
+    --text-h5: 1.125rem;
+    --text-h6: 1rem;
+    --text-base: 1rem;
+    --text-sm: 0.875rem;
+    --text-xs: 0.75rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.25rem;
+    --text-2xl: 1.5rem;
+    /* Line heights */
+    --leading-tight: 1.1;
+    --leading-normal: 1.5;
+    --leading-relaxed: 1.75;
+    /* Letter spacing */
+    --tracking-tight: -0.025em;
+    --tracking-normal: 0;
+    --tracking-wide: 0.05em;
+  }
+}
+
+/* Public marketing site scope: theme-aware canvas, orange focus ring and selection, Sora display type. */
 .gp-marketing {
   background: var(--color-mk-bg);
   color: var(--color-mk-text);
   font-family: var(--font-marketing);
-  color-scheme: dark;
 }
+.gp-marketing :is(h1, h2, h3, h4) {
+  font-family: var(--font-sora), var(--font-sans);
+  letter-spacing: -0.02em;
+}
+[data-theme="dark"] .gp-marketing { color-scheme: dark; }
 .gp-marketing :focus-visible { outline: 2px solid var(--color-mk-violet); outline-offset: 3px; }
-.gp-marketing ::selection { background: rgb(155 92 255 / 0.4); }
+.gp-marketing ::selection { background: rgb(249 115 22 / 0.35); }
 @keyframes mk-float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-14px) rotate(1.5deg); } }
 @keyframes mk-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
 .mk-float { animation: mk-float 9s ease-in-out infinite; }
@@ -252,8 +467,25 @@
   --radius-2xl: 0.625rem;
   --radius-3xl: 0.75rem;
 }
-.gp-app :focus-visible { outline-color: var(--color-gp-primary); }
+.gp-app :focus-visible { outline-color: var(--color-gp-primary-strong); }
 .gp-app ::selection { background: var(--color-gp-primary-soft); }
+
+/* Recharts theme bridge: SVG presentation attributes can't use var(), so chart series keep
+   brand hexes (components/charts/GpCharts.tsx) while axes, grids and labels pick up gp tokens
+   here — CSS overrides the attributes Recharts emits. */
+.gp-app .recharts-cartesian-axis-tick text,
+.gp-app .recharts-cartesian-axis-tick-value,
+.gp-app .recharts-label,
+.gp-app .recharts-legend-item-text {
+  fill: var(--gp-text-secondary);
+}
+.gp-app .recharts-cartesian-grid line {
+  stroke: var(--gp-divider);
+}
+.gp-app .recharts-pie-label-text,
+.gp-app .recharts-sector {
+  outline: none;
+}
 
 @layer base {
   body {

@@ -2,11 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { DEFAULT_THEME, THEME_INIT_SCRIPT, parsePreference, resolveTheme } from './theme.ts';
 
-test('dark is the default, and unknown stored values fall back to it', () => {
-  assert.equal(DEFAULT_THEME, 'dark');
-  assert.equal(parsePreference(null), 'dark');
-  assert.equal(parsePreference('purple'), 'dark');
+test('light is the default, and unknown stored values fall back to it', () => {
+  assert.equal(DEFAULT_THEME, 'light');
+  assert.equal(parsePreference(null), 'light');
+  assert.equal(parsePreference('purple'), 'light');
   assert.equal(parsePreference('light'), 'light');
+  assert.equal(parsePreference('dark'), 'dark');
   assert.equal(parsePreference('system'), 'system');
 });
 
@@ -28,9 +29,10 @@ test('the pre-paint script applies the stored theme and survives storage errors'
     new Function('localStorage', 'window', 'document', THEME_INIT_SCRIPT)(g.localStorage, g.window, g.document);
     return root.dataset.theme;
   };
-  assert.equal(run(null), 'dark');
+  assert.equal(run(null), 'light');
   assert.equal(run('light'), 'light');
+  assert.equal(run('dark'), 'dark');
   assert.equal(run('system', true), 'light');
-  assert.equal(run('nonsense'), 'dark');
-  assert.equal(run('light', false, true), 'dark');
+  assert.equal(run('nonsense'), 'light');
+  assert.equal(run('dark', false, true), 'light');
 });

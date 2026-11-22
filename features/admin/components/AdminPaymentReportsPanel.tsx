@@ -48,12 +48,12 @@ export function AdminPaymentReportsPanel() {
   const invoiceById = new Map(invoices.map(invoice => [invoice.id, invoice]));
 
   return (
-    <section aria-labelledby="pending-payments-heading" className="bg-amber-50/60 border border-amber-200 rounded-2xl p-5 space-y-3">
+    <section aria-labelledby="pending-payments-heading" className="bg-gp-warning-soft/60 border border-gp-warning/30 rounded-2xl p-5 space-y-3">
       <div>
-        <h3 id="pending-payments-heading" className="text-sm font-semibold text-slate-900">
+        <h3 id="pending-payments-heading" className="text-sm font-semibold text-gp-text">
           Payments to confirm ({pending.length})
         </h3>
-        <p className="text-xs text-slate-600">
+        <p className="text-xs text-gp-text-secondary">
           Clients have told us they paid these invoices. Check that the money has arrived before confirming.
         </p>
       </div>
@@ -112,28 +112,28 @@ function PendingReportItem({ report, invoice, onReviewed }: { report: PaymentRep
   };
 
   return (
-    <li className="bg-white border border-slate-200 rounded-xl p-4 space-y-3">
+    <li className="bg-gp-surface border border-gp-border rounded-xl p-4 space-y-3">
       <div className="flex flex-wrap items-start justify-between gap-2 text-xs">
         <div className="space-y-0.5">
-          <div className="font-semibold text-slate-900">
+          <div className="font-semibold text-gp-text">
             {report.invoiceNumber}{invoice ? ` · ${invoice.clientName}` : ''}
           </div>
-          <div className="text-slate-700">
+          <div className="text-gp-text">
             {formatMoney(report.amount, report.currency)} by {METHOD_LABEL[report.paymentMethod]} on {report.paidOn}
             {report.reference ? ` · ref ${report.reference}` : ''}
           </div>
-          <div className="text-slate-500">Reported {new Date(report.reportedAt).toLocaleString()}</div>
-          {report.note && <div className="text-slate-600">Client note: {report.note}</div>}
+          <div className="text-gp-text-muted">Reported {new Date(report.reportedAt).toLocaleString()}</div>
+          {report.note && <div className="text-gp-text-secondary">Client note: {report.note}</div>}
         </div>
         {amountMismatch && invoice && (
-          <span className="px-2 py-0.5 rounded-md border text-xs font-medium bg-amber-50 text-amber-800 border-amber-200">
+          <span className="px-2 py-0.5 rounded-md border text-xs font-medium bg-gp-warning-soft text-gp-warning border-gp-warning/30">
             Invoice total is {formatMoney(invoice.totalAmount, invoice.currency)}
           </span>
         )}
       </div>
 
       <div>
-        <label htmlFor={`${id}-note`} className="block text-xs font-medium text-slate-700 mb-1">
+        <label htmlFor={`${id}-note`} className="block text-xs font-medium text-gp-text mb-1">
           Review note (required if you reject)
         </label>
         <textarea
@@ -142,18 +142,18 @@ function PendingReportItem({ report, invoice, onReviewed }: { report: PaymentRep
           maxLength={2000}
           value={note}
           onChange={e => setNote(e.target.value)}
-          className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+          className="w-full px-3 py-2 text-xs border border-gp-border rounded-lg focus:outline-none focus:ring-2 focus:ring-gp-primary/30"
         />
       </div>
 
-      {error && <p role="alert" className="text-xs text-rose-700">{error}</p>}
+      {error && <p role="alert" className="text-xs text-gp-danger">{error}</p>}
 
       <div className="flex items-center justify-end gap-2">
         <button
           type="button"
           onClick={handleReject}
           disabled={busy !== null}
-          className="px-3 py-2 text-xs font-semibold text-rose-700 border border-rose-200 hover:bg-rose-50 rounded-lg disabled:opacity-50 min-h-[36px]"
+          className="px-3 py-2 text-xs font-semibold text-gp-danger border border-gp-danger/30 hover:bg-gp-danger-soft rounded-lg disabled:opacity-50 min-h-[36px]"
         >
           {busy === 'reject' ? 'Rejecting…' : 'Reject'}
         </button>
@@ -161,7 +161,7 @@ function PendingReportItem({ report, invoice, onReviewed }: { report: PaymentRep
           type="button"
           onClick={() => setIsConfirmOpen(true)}
           disabled={busy !== null}
-          className="px-3 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg disabled:opacity-50 min-h-[36px]"
+          className="px-3 py-2 text-xs font-semibold text-white bg-gp-success hover:bg-gp-success rounded-lg disabled:opacity-50 min-h-[36px]"
         >
           Confirm payment received
         </button>

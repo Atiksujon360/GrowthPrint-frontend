@@ -76,13 +76,13 @@ export function SettingsScreen() {
       <PageHeader title="Settings" description="Business profile and what your role allows."
         breadcrumb={[{ label: business.name, href: r.home }, { label: 'Settings' }]} />
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <Card title="Business profile" className="lg:col-span-2"
           description={editable ? undefined : `Only ${ROLE_LABEL[minimumRoleFor('business.edit')]}s and Owners can change the profile.`}>
           {editable ? (
             <form noValidate onSubmit={submit} className="space-y-5">
               {formError && <Notice tone="error">{formError}</Notice>}
-              <div className="grid gap-5 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                 <TextField label="Business name" required maxLength={120} value={form.name}
                   onChange={e => setForm(f => ({ ...f, name: e.target.value }))} error={errors.name} />
                 <TextField label="Industry" maxLength={120} value={form.industry}

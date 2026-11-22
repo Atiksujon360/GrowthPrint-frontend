@@ -7,7 +7,7 @@ import {
   ACTIVE_PROJECT_STATUSES,
 } from '../../../lib/dashboardMetrics.ts';
 import { isMockModeEnv } from '../../../lib/api/client.ts';
-import { Users, FolderKanban, Send, ArrowRight, Target, CreditCard, ListChecks, FileText, CalendarDays } from 'lucide-react';
+import { Users, FolderKanban, Send, ArrowRight, Target, CreditCard, ListChecks, FileText } from 'lucide-react';
 import { KpiCard, Panel, percentChange } from '../../../components/ui/app-kit.tsx';
 import { StatusBadge } from '../../../components/ui/Badges.tsx';
 import { humanizeCode } from '../../../lib/labels.ts';
@@ -19,13 +19,8 @@ const money = (n: number) => `$${n.toLocaleString()}`;
 
 export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTab) => void }) {
   const dispatch = useAppDispatch();
-  const currentUser = useAppSelector(state => state.auth.currentUser);
   const now = new Date();
-  const hour = now.getHours();
-  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
-  const firstName = (currentUser.name || '').split(' ')[0];
   const periodLabel = new Intl.DateTimeFormat(undefined, { month: 'long', year: 'numeric' }).format(now);
-  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const clients = useAppSelector(state => state.agency.clients);
   const projects = useAppSelector(state => state.agency.projects);
   const requests = useAppSelector(state => state.agency.requests);
@@ -131,28 +126,27 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
   const empty = (text: string) => <p className="flex h-full items-center justify-center text-center text-sm text-gp-text-secondary">{text}</p>;
 
   return (
-    <div className="space-y-5">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-        <div>
-          <h1 className="text-[1.625rem] font-bold leading-tight tracking-tight text-gp-text">
-            {greeting}{firstName ? `, ${firstName}` : ''}
+    <div className="space-y-6">
+      {/* Context header: the period is the title, actions sit beside it. */}
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+        <div className="space-y-1">
+          <h1 className="text-[1.75rem] font-bold leading-tight tracking-tight text-gp-text">
+            {periodLabel}
           </h1>
-          <p className="mt-1 text-sm text-gp-text-secondary">Here is what is happening across clients, delivery and the pipeline today.</p>
+          <p className="text-sm text-gp-text-secondary">Pipeline, delivery and revenue across studio operations.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <span className="inline-flex h-10 items-center gap-2 rounded-gp-control border border-gp-border bg-gp-surface px-3 text-sm font-medium text-gp-text">
-            <CalendarDays className="h-4 w-4 text-gp-text-secondary" aria-hidden="true" />{periodLabel}
-            <span className="sr-only"> ({timeZone})</span>
-          </span>
-          <button onClick={() => onNavigateTab('OUTREACH')}
-            className="inline-flex h-10 items-center gap-2 rounded-gp-control border border-gp-border bg-gp-surface px-3 text-sm font-semibold text-gp-text hover:border-ink-300">
-            <Send className="h-4 w-4 text-gp-primary" aria-hidden="true" />
-            Outreach queue ({pendingDrafts.length})
-          </button>
+          {pendingDrafts.length > 0 && (
+            <button onClick={() => onNavigateTab('OUTREACH')}
+              className="inline-flex h-10 items-center gap-2 rounded-gp-control border border-gp-border bg-gp-surface px-3 text-sm font-semibold text-gp-text transition-colors hover:border-gp-primary/50 hover:text-gp-primary-strong">
+              <Send className="h-4 w-4 text-gp-primary-strong" aria-hidden="true" />
+              Outreach queue ({pendingDrafts.length})
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Six KPI cards (COMPREO). Deltas only for flow metrics with real history. */}
+      {/* Six KPI cards with improved spacing and visual balance */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
         <KpiCard label="Active projects" icon={FolderKanban} value={activeProjectCount}
           context={waitingProjects ? `${waitingProjects} waiting for client` : `${projects.length} in total`} onClick={() => onNavigateTab('PROJECTS')} />
@@ -188,14 +182,14 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
       {/* Analytics row 2 */}
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-3">
         <Panel title="Project status" description="All projects">
-          {projectStatus.length ? <DonutBreakdown data={projectStatus} centerLabel="Projects" /> : <div className="h-40">{empty('No projects yet.')}</div>}
+          <div className="h-60">{projectStatus.length ? <HorizontalBars data={projectStatus} valueLabel="Projects" /> : empty('No projects yet.')}</div>
         </Panel>
         <Panel title="Milestone performance" description="Done vs open milestones by due month"
-          action={<span className="flex gap-3 text-xs text-gp-text-secondary"><span className="flex items-center gap-1"><i className="h-2 w-2 rounded-sm bg-gp-accent" />Done</span><span className="flex items-center gap-1"><i className="h-2 w-2 rounded-sm bg-ink-300" />Open</span></span>}>
+          action={<span className="flex gap-3 text-xs text-gp-text-secondary"><span className="flex items-center gap-1"><i className="h-2 w-2 rounded-sm bg-gp-accent" />Done</span><span className="flex items-center gap-1"><i className="h-2 w-2 rounded-sm bg-gp-divider" />Open</span></span>}>
           <div className="h-60">{milestones.total ? <GroupedBars data={milestoneTrend} aLabel="Done" bLabel="Open" /> : empty('No milestones yet.')}</div>
         </Panel>
         <Panel title="Collected vs invoiced" description="USD by month"
-          action={<span className="flex gap-3 text-xs text-gp-text-secondary"><span className="flex items-center gap-1"><i className="h-2 w-2 rounded-sm bg-gp-primary-soft ring-1 ring-brand-200" />Invoiced</span><span className="flex items-center gap-1"><i className="h-0.5 w-3 bg-gp-primary" />Collected</span></span>}>
+          action={<span className="flex gap-3 text-xs text-gp-text-secondary"><span className="flex items-center gap-1"><i className="h-2 w-2 rounded-sm bg-gp-primary-soft ring-1 ring-gp-primary/40" />Invoiced</span><span className="flex items-center gap-1"><i className="h-0.5 w-3 bg-gp-primary" />Collected</span></span>}>
           <div className="h-60"><ComboBarLine data={collectedVsInvoiced} barLabel="Invoiced" lineLabel="Collected" /></div>
           <p className="mt-2 text-xs text-gp-text-secondary">Collected to date: <strong className="tabular-nums text-gp-text">{money(cashCollected)}</strong></p>
         </Panel>
@@ -204,7 +198,7 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
       {/* Operational tables */}
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
         <Panel className="xl:col-span-2" title="Active projects" bodyClassName="p-0"
-          action={<button onClick={() => onNavigateTab('PROJECTS')} className="text-sm font-semibold text-gp-primary hover:underline">View all</button>}>
+          action={<button onClick={() => onNavigateTab('PROJECTS')} className="text-sm font-semibold text-gp-primary-strong hover:underline">View all</button>}>
           {activeProjectRows.length === 0 ? <p className="px-5 py-8 text-sm text-gp-text-secondary">No active projects.</p> : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-[0.8125rem]">
@@ -229,7 +223,7 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
           )}
         </Panel>
         <Panel title="Recent leads" bodyClassName="p-0"
-          action={<button onClick={() => onNavigateTab('LEADS')} className="text-sm font-semibold text-gp-primary hover:underline">View all</button>}>
+          action={<button onClick={() => onNavigateTab('LEADS')} className="text-sm font-semibold text-gp-primary-strong hover:underline">View all</button>}>
           {recentLeads.length === 0 ? <p className="px-5 py-8 text-sm text-gp-text-secondary">No leads yet.</p> : (
             <table className="w-full text-left text-[0.8125rem]">
               <caption className="sr-only">Recent leads</caption>
@@ -276,8 +270,8 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
                     <p className="mt-0.5 text-gp-text-secondary">{item.area} · {item.reason}</p>
                   </div>
                   <span className={`w-fit rounded-gp-badge px-2 py-0.5 text-xs font-medium ${
-                    item.priority === 'High' ? 'bg-gp-danger-soft text-gp-danger' : item.priority === 'Medium' ? 'bg-gp-warning-soft text-gp-warning' : 'bg-ink-100 text-ink-700'}`}>{item.priority}</span>
-                  <button onClick={item.onExecute} className="inline-flex min-h-9 w-fit items-center gap-1 rounded-gp-control px-2 text-sm font-semibold text-gp-primary hover:bg-gp-primary-soft">
+                    item.priority === 'High' ? 'bg-gp-danger-soft text-gp-danger' : item.priority === 'Medium' ? 'bg-gp-warning-soft text-gp-warning' : 'bg-gp-surface-secondary text-gp-text-secondary'}`}>{item.priority}</span>
+                  <button onClick={item.onExecute} className="inline-flex min-h-9 w-fit items-center gap-1 rounded-gp-control px-2 text-sm font-semibold text-gp-primary-strong hover:bg-gp-primary-soft">
                     {item.cta} <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </button>
                 </li>
@@ -286,7 +280,7 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
           )}
         </Panel>
         <Panel title="Recent activity" bodyClassName="p-0"
-          action={activityConnected ? <button onClick={() => onNavigateTab('ACTIVITY')} className="text-sm font-semibold text-gp-primary hover:underline">See all</button> : undefined}>
+          action={activityConnected ? <button onClick={() => onNavigateTab('ACTIVITY')} className="text-sm font-semibold text-gp-primary-strong hover:underline">See all</button> : undefined}>
           {!activityConnected ? (
             <p className="px-5 py-8 text-sm text-gp-text-secondary">The activity log is not connected yet: there is no activity API in MVP1.</p>
           ) : recent.length === 0 ? (

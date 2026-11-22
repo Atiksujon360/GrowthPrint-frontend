@@ -39,7 +39,7 @@ export default function HomePage() {
     <div className="gp-marketing min-h-screen overflow-x-clip">
       {/* Demo-mode only: lets testers switch between the public site, client hub and studio. Renders nothing otherwise. */}
       <RoleSwitcherBar />
-      <a href="#main" className="sr-only z-50 rounded-lg bg-white px-4 py-2 text-mk-bg focus:not-sr-only focus:fixed focus:left-4 focus:top-4">
+      <a href="#main" className="sr-only z-50 rounded-lg bg-mk-purple px-4 py-2 text-mk-accent-fg focus:not-sr-only focus:fixed focus:left-4 focus:top-4">
         Skip to content
       </a>
       <MarketingNav />

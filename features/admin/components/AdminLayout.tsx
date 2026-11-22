@@ -189,7 +189,7 @@ export function AdminLayout({ currentTab, onTabChange, children }: AdminLayoutPr
             <button
               type="button"
               onClick={() => setIsQuickCreateOpen(true)}
-              className="flex h-10 items-center gap-1.5 rounded-gp-control bg-gp-primary px-3.5 text-sm font-semibold text-white transition-colors hover:bg-gp-primary-hover"
+              className="flex h-10 items-center gap-1.5 rounded-gp-control bg-gp-primary px-3.5 text-sm font-semibold text-gp-primary-foreground transition-colors hover:bg-gp-primary-hover"
             >
               <Plus className="h-4 w-4" aria-hidden="true" />
               <span className="hidden sm:inline">New record</span>

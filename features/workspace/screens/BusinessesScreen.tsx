@@ -39,7 +39,7 @@ export function BusinessesScreen() {
         />
 
         {isLoading && (
-          <div className="grid gap-4 sm:grid-cols-2" role="status" aria-label="Loading businesses">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2" role="status" aria-label="Loading businesses">
             <Skeleton className="h-36" /><Skeleton className="h-36" />
           </div>
         )}
@@ -53,7 +53,7 @@ export function BusinessesScreen() {
           />
         )}
         {data && data.length > 0 && (
-          <ul className="grid gap-4 sm:grid-cols-2">
+          <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {data.map(b => (
               <li key={b.id}>
                 <Link href={workspaceRoutes(b.id).home}

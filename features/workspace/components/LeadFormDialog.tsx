@@ -87,7 +87,7 @@ export function LeadFormDialog({ open, onClose, lead, onSubmit, saving }: {
       )}>
       <form id="lead-form" noValidate onSubmit={submit} className="space-y-5">
         {formError && <Notice tone="error">{formError}</Notice>}
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <TextField label="Company name" required value={form.companyName} maxLength={160} onChange={e => set('companyName', e.target.value)} error={errors.companyName} />
           <TextField label="Contact name" required value={form.contactName} maxLength={120} onChange={e => set('contactName', e.target.value)} error={errors.contactName} />
           <TextField label="Contact email" type="email" value={form.contactEmail} maxLength={254} onChange={e => set('contactEmail', e.target.value)}

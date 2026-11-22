@@ -41,7 +41,7 @@ export function ClientDetailScreen() {
           <Button variant="secondary" onClick={() => setEditing(true)} icon={<Pencil className="h-4 w-4" aria-hidden="true" />}>Edit</Button>
         ) : undefined}
       />
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <Card title="Details" className="lg:col-span-2">
           <DefinitionList items={[
             { label: 'Status', value: <StatusPill tone={CLIENT_STATUS_TONE[client.status]}>{CLIENT_STATUS_LABEL[client.status]}</StatusPill> },

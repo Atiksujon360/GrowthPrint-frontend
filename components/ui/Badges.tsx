@@ -9,29 +9,29 @@ export function StatusBadge({ status }: { status: string }) {
       case 'ACTIVE':
       case 'READY_TO_START':
       case 'OUTREACH_APPROVED':
-        return 'text-blue-700 bg-blue-50 border-blue-200';
+        return 'text-gp-info bg-gp-info-soft border-gp-info/30';
       case 'COMPLETED':
       case 'ACCEPTED':
       case 'PAID':
       case 'WON':
       case 'SUCCESS':
-        return 'text-emerald-700 bg-emerald-50 border-emerald-200';
+        return 'text-gp-success bg-gp-success-soft border-gp-success/30';
       case 'AWAITING_CLIENT_APPROVAL':
       case 'AWAITING_HUMAN_APPROVAL':
       case 'ESTIMATE_PENDING':
       case 'NEEDS_REVIEW':
       case 'ISSUED':
       case 'WAITING_FOR_CLIENT':
-        return 'text-amber-700 bg-amber-50 border-amber-200';
+        return 'text-gp-warning bg-gp-warning-soft border-gp-warning/30';
       case 'URGENT':
       case 'CRITICAL_BLOCKER':
       case 'OVERDUE':
       case 'FAILED':
       case 'SUSPENDED':
       case 'LOST':
-        return 'text-rose-700 bg-rose-50 border-rose-200';
+        return 'text-gp-danger bg-gp-danger-soft border-gp-danger/30';
       default:
-        return 'text-slate-600 bg-slate-50 border-slate-200';
+        return 'text-gp-text-secondary bg-gp-surface-secondary border-gp-border';
     }
   };
 
@@ -46,13 +46,13 @@ export function PriorityBadge({ priority }: { priority: 'LOW' | 'MEDIUM' | 'HIGH
   const getStyle = () => {
     switch (priority) {
       case 'URGENT':
-        return 'text-rose-700 bg-rose-50 border-rose-200';
+        return 'text-gp-danger bg-gp-danger-soft border-gp-danger/30';
       case 'HIGH':
-        return 'text-amber-700 bg-amber-50 border-amber-200';
+        return 'text-gp-warning bg-gp-warning-soft border-gp-warning/30';
       case 'MEDIUM':
-        return 'text-blue-700 bg-blue-50 border-blue-200';
+        return 'text-gp-info bg-gp-info-soft border-gp-info/30';
       default:
-        return 'text-slate-600 bg-slate-50 border-slate-200';
+        return 'text-gp-text-secondary bg-gp-surface-secondary border-gp-border';
     }
   };
 

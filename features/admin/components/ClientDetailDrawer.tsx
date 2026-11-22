@@ -48,7 +48,7 @@ export function ClientDetailDrawer({ client, onClose }: { client: Client | null;
       footer={(
         <>
           <a href={`mailto:${client.contactEmail}`}
-            className="inline-flex h-10 items-center gap-2 rounded-gp-control bg-gp-primary px-4 text-sm font-semibold text-white hover:bg-gp-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gp-primary">
+            className="inline-flex h-10 items-center gap-2 rounded-gp-control bg-gp-primary px-4 text-sm font-semibold text-gp-primary-foreground hover:bg-gp-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gp-primary">
             <Mail className="h-4 w-4" aria-hidden="true" /> Email {client.name}
           </a>
           {website && (
@@ -72,7 +72,7 @@ export function ClientDetailDrawer({ client, onClose }: { client: Client | null;
             <div className="mt-2 h-2 overflow-hidden rounded-full bg-gp-divider" role="meter"
               aria-label="Retainer hours used" aria-valuemin={0} aria-valuemax={usage.allowance} aria-valuenow={Math.min(usage.used, usage.allowance)}
               aria-valuetext={`${usage.used} of ${usage.allowance} hours used`}>
-              <div className={`h-full rounded-full ${usage.overBy > 0 ? 'bg-gp-danger' : usage.percent >= 85 ? 'bg-amber-500' : 'bg-gp-primary'}`}
+              <div className={`h-full rounded-full ${usage.overBy > 0 ? 'bg-gp-danger' : usage.percent >= 85 ? 'bg-gp-warning' : 'bg-gp-primary'}`}
                 style={{ width: `${usage.percent}%` }} />
             </div>
             {usage.overBy > 0 && (
@@ -89,7 +89,7 @@ export function ClientDetailDrawer({ client, onClose }: { client: Client | null;
           { term: 'Email', value: (
             <span className="inline-flex items-center gap-1.5">
               <Mail className="h-3.5 w-3.5 text-gp-text-muted" aria-hidden="true" />
-              <a className="text-gp-primary hover:underline" href={`mailto:${client.contactEmail}`}>{client.contactEmail}</a>
+              <a className="text-gp-primary-strong hover:underline" href={`mailto:${client.contactEmail}`}>{client.contactEmail}</a>
               <CopyButton value={client.contactEmail} title="Copy client email" />
             </span>
           ) },

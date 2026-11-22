@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useId, useState } from 'react';
+import { Check } from 'lucide-react';
 import { useAppDispatch } from '../../../store/hooks.ts';
 import { addToast } from '../../../store/index.ts';
 import { getErrorMessage } from '../../../lib/api/errors.ts';
@@ -36,8 +37,8 @@ function StepHeading({ id, number, title, done }: { id: string; number: number; 
   return (
     <div className="flex items-center gap-3">
       <span aria-hidden="true"
-        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${done ? 'bg-gp-primary text-white' : 'border border-gp-border bg-gp-canvas text-gp-text-secondary'}`}>
-        {done ? '✓' : number}
+        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${done ? 'bg-gp-primary text-gp-primary-foreground' : 'border border-gp-border bg-gp-canvas text-gp-text-secondary'}`}>
+        {done ? <Check className="h-3.5 w-3.5" aria-hidden="true" /> : number}
       </span>
       <h3 id={id} className="text-base font-semibold text-gp-text">{title}</h3>
     </div>
@@ -116,7 +117,7 @@ export function AdminAiSettingsView() {
   const step = nextStep(settings, state);
   const status = AI_STATUS_TEXT[settings.status];
   const inputClass = 'h-10 w-full rounded-gp-control border border-gp-border bg-gp-surface px-3 text-sm text-gp-text placeholder:text-gp-text-muted focus:border-gp-primary focus:outline-none focus:ring-2 focus:ring-gp-primary/20 disabled:bg-gp-canvas disabled:text-gp-text-muted';
-  const primaryButton = 'inline-flex h-10 items-center justify-center rounded-gp-control bg-gp-primary px-4 text-sm font-semibold text-white hover:bg-gp-primary-hover disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gp-primary';
+  const primaryButton = 'inline-flex h-10 items-center justify-center rounded-gp-control bg-gp-primary px-4 text-sm font-semibold text-gp-primary-foreground hover:bg-gp-primary-hover disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gp-primary';
   const secondaryButton = 'inline-flex h-10 items-center justify-center rounded-gp-control border border-gp-border bg-gp-surface px-4 text-sm font-semibold text-gp-text hover:bg-gp-canvas disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gp-primary';
   const setupDone = settings.apiKeyConfigured && !settings.keyUnreadable && !state.hasUnsavedChanges && Boolean(settings.provider && settings.model);
   const testDone = setupDone && settings.status === 'CONNECTED';
@@ -229,7 +230,7 @@ export function AdminAiSettingsView() {
             {form.provider && <p className="mt-1 text-xs text-gp-text-muted">{MODEL_HINT[form.provider]}</p>}
             {settings.apiKeyConfigured && !settings.keyUnreadable && !state.hasUnsavedChanges && selected?.supportsModelListing && (
               <button type="button" onClick={() => void loadModels()} disabled={busy !== null}
-                className="mt-1 text-xs font-semibold text-gp-primary hover:underline disabled:opacity-50">
+                className="mt-1 text-xs font-semibold text-gp-primary-strong hover:underline disabled:opacity-50">
                 {busy === 'models' ? 'Loading models…' : 'Show models available to this key'}
               </button>
             )}

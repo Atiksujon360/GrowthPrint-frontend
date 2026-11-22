@@ -10,10 +10,17 @@ import {
   Tooltip, XAxis, YAxis,
 } from 'recharts';
 
-export const CHART_COLORS = ['#159f91', '#2f6fb5', '#e58a2b', '#6b5fb5', '#98a2ad'] as const;
-const AXIS = { fontSize: 12, fill: '#66717d' };
-const GRID = '#f0f2f4';
-const TOOLTIP = { backgroundColor: '#ffffff', borderRadius: '8px', border: '1px solid #e8ecef', fontSize: '13px' };
+// Brand palette that reads on both light and dark surfaces (Recharts SVG attrs can't use var()).
+// Axis/grid/label colours are bridged to gp tokens via CSS in globals.css (.gp-app .recharts-*).
+export const CHART_COLORS = ['#FF572E', '#FF8050', '#A85B32', '#6E4B5E', '#988B97'] as const;
+const AXIS = { fontSize: 12, fill: '#8A7F88' };
+const GRID = '#e8e0da';
+const TOOLTIP = {
+  backgroundColor: 'var(--gp-surface)', color: 'var(--gp-text)',
+  borderRadius: '10px', border: '1px solid var(--gp-border)', fontSize: '13px',
+  boxShadow: '0 12px 32px -12px rgb(0 0 0 / 0.35)',
+};
+const CURSOR = { fill: 'rgba(128, 116, 110, 0.08)' };
 
 export interface Point { label: string; value: number }
 
@@ -23,16 +30,16 @@ export function AreaTrend({ data, valueLabel }: { data: Point[]; valueLabel: str
       <AreaChart data={data} margin={{ top: 8, right: 12, left: -16, bottom: 0 }}>
         <defs>
           <linearGradient id="gp-area" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#159f91" stopOpacity={0.22} />
-            <stop offset="100%" stopColor="#159f91" stopOpacity={0.02} />
+            <stop offset="0%" stopColor="#FF572E" stopOpacity={0.28} />
+            <stop offset="100%" stopColor="#FF572E" stopOpacity={0.03} />
           </linearGradient>
         </defs>
         <CartesianGrid stroke={GRID} vertical={false} />
         <XAxis dataKey="label" tick={AXIS} axisLine={false} tickLine={false} />
         <YAxis allowDecimals={false} tick={AXIS} axisLine={false} tickLine={false} />
         <Tooltip contentStyle={TOOLTIP} formatter={(v: unknown) => [String(v), valueLabel]} />
-        <Area type="linear" dataKey="value" stroke="#159f91" strokeWidth={2.4} fill="url(#gp-area)"
-          dot={{ r: 4, fill: '#fff', stroke: '#159f91', strokeWidth: 2 }} activeDot={{ r: 5 }} />
+        <Area type="linear" dataKey="value" stroke="#FF572E" strokeWidth={2.4} fill="url(#gp-area)"
+          dot={{ r: 4, fill: 'var(--gp-surface)', stroke: '#FF572E', strokeWidth: 2 }} activeDot={{ r: 5 }} />
       </AreaChart>
     </ResponsiveContainer>
   );
@@ -77,10 +84,10 @@ export function HorizontalBars({ data, valueLabel }: { data: Point[]; valueLabel
     <ResponsiveContainer width="100%" height="100%">
       <BarChart data={data} layout="vertical" margin={{ top: 4, right: 36, left: 8, bottom: 0 }} barCategoryGap={10}>
         <XAxis type="number" hide allowDecimals={false} />
-        <YAxis type="category" dataKey="label" width={118} tick={{ ...AXIS, fill: '#17212b' }} axisLine={false} tickLine={false} />
-        <Tooltip cursor={{ fill: '#fafbfc' }} contentStyle={TOOLTIP} formatter={(v: unknown) => [String(v), valueLabel]} />
-        <Bar dataKey="value" fill="#159f91" radius={[3, 3, 3, 3]} maxBarSize={20}
-          label={{ position: 'right', fill: '#117f76', fontSize: 12, fontWeight: 600 }} />
+        <YAxis type="category" dataKey="label" width={118} tick={{ ...AXIS }} axisLine={false} tickLine={false} />
+        <Tooltip cursor={CURSOR} contentStyle={TOOLTIP} formatter={(v: unknown) => [String(v), valueLabel]} />
+        <Bar dataKey="value" fill="#FF572E" radius={[3, 3, 3, 3]} maxBarSize={20}
+          label={{ position: 'right', fill: '#B83A0C', fontSize: 12, fontWeight: 600 }} />
       </BarChart>
     </ResponsiveContainer>
   );
@@ -93,9 +100,9 @@ export function GroupedBars({ data, aLabel, bLabel }: { data: Array<{ label: str
         <CartesianGrid stroke={GRID} vertical={false} />
         <XAxis dataKey="label" tick={AXIS} axisLine={false} tickLine={false} />
         <YAxis allowDecimals={false} tick={AXIS} axisLine={false} tickLine={false} />
-        <Tooltip cursor={{ fill: '#fafbfc' }} contentStyle={TOOLTIP} />
-        <Bar dataKey="a" name={aLabel} fill="#159f91" radius={[3, 3, 0, 0]} maxBarSize={18} />
-        <Bar dataKey="b" name={bLabel} fill="#cbd2d9" radius={[3, 3, 0, 0]} maxBarSize={18} />
+        <Tooltip cursor={CURSOR} contentStyle={TOOLTIP} />
+        <Bar dataKey="a" name={aLabel} fill="#FF572E" radius={[3, 3, 0, 0]} maxBarSize={18} />
+        <Bar dataKey="b" name={bLabel} fill="#C9B8AE" radius={[3, 3, 0, 0]} maxBarSize={18} />
       </BarChart>
     </ResponsiveContainer>
   );
@@ -112,10 +119,10 @@ export function ComboBarLine({ data, barLabel, lineLabel }: {
         <CartesianGrid stroke={GRID} vertical={false} />
         <XAxis dataKey="label" tick={AXIS} axisLine={false} tickLine={false} />
         <YAxis tick={AXIS} axisLine={false} tickLine={false} tickFormatter={money} />
-        <Tooltip cursor={{ fill: '#fafbfc' }} contentStyle={TOOLTIP}
+        <Tooltip cursor={CURSOR} contentStyle={TOOLTIP}
           formatter={(v: unknown, n: unknown) => [`$${Number(v).toLocaleString()}`, String(n)]} />
-        <Bar dataKey="bar" name={barLabel} fill="#e9f6f4" stroke="#a3dbd2" radius={[3, 3, 0, 0]} maxBarSize={34} />
-        <Line dataKey="line" name={lineLabel} stroke="#117f76" strokeWidth={2.4} dot={{ r: 3.5, fill: '#fff', stroke: '#117f76', strokeWidth: 2 }} />
+        <Bar dataKey="bar" name={barLabel} fill="rgba(255, 87, 46, 0.16)" stroke="#FF572E" strokeWidth={1.5} radius={[3, 3, 0, 0]} maxBarSize={34} />
+        <Line dataKey="line" name={lineLabel} stroke="#FF572E" strokeWidth={2.6} dot={{ r: 3.5, fill: 'var(--gp-surface)', stroke: '#FF572E', strokeWidth: 2 }} />
       </ComposedChart>
     </ResponsiveContainer>
   );

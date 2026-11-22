@@ -68,7 +68,7 @@ export function Dialog({ open, onClose, title, description, children, footer, si
   const widths = { sm: 'max-w-md', md: 'max-w-lg', lg: 'max-w-2xl' };
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4">
-      <div className="absolute inset-0 bg-ink-950/40" aria-hidden="true" onClick={() => dismissible && onClose()} />
+      <div className="absolute inset-0 bg-gp-text/40" aria-hidden="true" onClick={() => dismissible && onClose()} />
       <div
         ref={panelRef}
         role="dialog"
@@ -76,20 +76,20 @@ export function Dialog({ open, onClose, title, description, children, footer, si
         aria-labelledby={titleId}
         aria-describedby={description ? descId : undefined}
         tabIndex={-1}
-        className={cx('relative flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-2xl bg-white shadow-xl sm:rounded-2xl', widths[size])}
+        className={cx('relative flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-lg bg-gp-surface shadow-gp-pop sm:rounded-lg', widths[size])}
       >
-        <div className="flex items-start justify-between gap-4 border-b border-ink-100 px-5 py-4 sm:px-6">
+        <div className="flex items-start justify-between gap-4 border-b border-gp-divider px-5 py-4 sm:px-6">
           <div>
-            <h2 id={titleId} className="text-base font-semibold text-ink-900">{title}</h2>
-            {description && <div id={descId} className="mt-1 text-sm text-ink-500">{description}</div>}
+            <h2 id={titleId} className="text-base font-semibold text-gp-text">{title}</h2>
+            {description && <div id={descId} className="mt-1 text-sm text-gp-text-secondary">{description}</div>}
           </div>
           <button type="button" onClick={onClose} disabled={!dismissible} aria-label="Close dialog"
-            className="-mr-2 rounded-lg p-2 text-ink-400 hover:bg-ink-100 hover:text-ink-700 disabled:opacity-40">
+            className="-mr-2 rounded-lg p-2 text-gp-text-muted hover:bg-gp-surface-secondary hover:text-gp-text disabled:opacity-40">
             <X className="h-4 w-4" aria-hidden="true" />
           </button>
         </div>
         {children && <div className="overflow-y-auto px-5 py-5 sm:px-6">{children}</div>}
-        {footer && <div className="flex flex-wrap justify-end gap-2 border-t border-ink-100 bg-ink-50/60 px-5 py-3 sm:px-6">{footer}</div>}
+        {footer && <div className="flex flex-wrap justify-end gap-2 border-t border-gp-divider bg-gp-surface-secondary/60 px-5 py-3 sm:px-6">{footer}</div>}
       </div>
     </div>
   );
@@ -108,19 +108,19 @@ export function PageHeader({ title, description, actions, breadcrumb }: {
       <div className="min-w-0">
         {breadcrumb && (
           <nav aria-label="Breadcrumb" className="mb-2">
-            <ol className="flex flex-wrap items-center gap-1 text-xs text-ink-500">
+            <ol className="flex flex-wrap items-center gap-1 text-xs text-gp-text-muted">
               {breadcrumb.map((b, i) => (
                 <li key={`${b.label}-${i}`} className="flex items-center gap-1">
                   {i > 0 && <ChevronRight className="h-3 w-3" aria-hidden="true" />}
-                  {b.href ? <Link href={b.href} className="hover:text-brand-700 hover:underline">{b.label}</Link>
-                    : <span aria-current="page" className="text-ink-700">{b.label}</span>}
+                  {b.href ? <Link href={b.href} className="hover:text-gp-primary-strong hover:underline">{b.label}</Link>
+                    : <span aria-current="page" className="text-gp-text-secondary">{b.label}</span>}
                 </li>
               ))}
             </ol>
           </nav>
         )}
-        <h1 className="gp-display truncate text-[1.75rem] font-semibold leading-tight text-ink-950">{title}</h1>
-        {description && <p className="mt-1 max-w-2xl text-sm text-ink-500">{description}</p>}
+        <h1 className="gp-display truncate text-[1.75rem] font-semibold leading-tight text-gp-text">{title}</h1>
+        {description && <p className="mt-1 max-w-2xl text-sm text-gp-text-secondary">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
     </header>
@@ -139,7 +139,7 @@ export function SearchInput({ value, onChange, placeholder, label }: {
     <div className="w-full sm:max-w-xs">
       <label htmlFor={id} className="sr-only">{label}</label>
       <input id={id} type="search" value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-        className="block min-h-10 w-full rounded-xl border border-ink-200 bg-white px-3.5 text-sm text-ink-900 placeholder:text-ink-400 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-100" />
+        className="block min-h-10 w-full rounded-lg border border-gp-border bg-gp-surface px-3.5 text-sm text-gp-text placeholder:text-gp-text-muted focus:border-gp-primary focus:outline-none focus:ring-4 focus:ring-gp-primary/30" />
     </div>
   );
 }
@@ -148,11 +148,11 @@ export function FilterTabs<T extends string>({ value, onChange, options, label }
   value: T; onChange: (v: T) => void; options: ReadonlyArray<{ value: T; label: string; count?: number }>; label: string;
 }) {
   return (
-    <div role="group" aria-label={label} className="flex max-w-full gap-1 overflow-x-auto rounded-xl border border-ink-200 bg-white p-1">
+    <div role="group" aria-label={label} className="flex max-w-full gap-1 overflow-x-auto rounded-lg border border-gp-border bg-gp-surface p-1">
       {options.map(o => (
         <button key={o.value} type="button" onClick={() => onChange(o.value)} aria-pressed={value === o.value}
-          className={cx('min-h-8 shrink-0 rounded-lg px-3 text-xs font-medium transition-colors',
-            value === o.value ? 'bg-navy-950 text-white' : 'text-ink-600 hover:bg-ink-100')}>
+          className={cx('min-h-8 shrink-0 rounded-md px-3 text-xs font-medium transition-colors',
+            value === o.value ? 'bg-gp-text text-gp-canvas' : 'text-gp-text-secondary hover:bg-gp-surface-secondary')}>
           {o.label}{o.count !== undefined && <span className="ml-1.5 tabular-nums opacity-70">{o.count}</span>}
         </button>
       ))}
@@ -171,29 +171,29 @@ export function Pagination({ page, pageSize, total, onPage, noun = 'results' }: 
   const from = total === 0 ? 0 : (page - 1) * pageSize + 1;
   const to = Math.min(page * pageSize, total);
   return (
-    <nav aria-label="Pagination" className="flex flex-col items-center justify-between gap-3 border-t border-ink-100 px-4 py-3 sm:flex-row">
-      <p className="text-xs text-ink-500" aria-live="polite">
-        Showing <span className="tabular-nums font-medium text-ink-800">{from}–{to}</span> of{' '}
-        <span className="tabular-nums font-medium text-ink-800">{total}</span> {noun}
+    <nav aria-label="Pagination" className="flex flex-col items-center justify-between gap-3 border-t border-gp-divider px-4 py-3 sm:flex-row">
+      <p className="text-xs text-gp-text-muted" aria-live="polite">
+        Showing <span className="tabular-nums font-medium text-gp-text">{from}–{to}</span> of{' '}
+        <span className="tabular-nums font-medium text-gp-text">{total}</span> {noun}
       </p>
       <div className="flex items-center gap-1">
         <button type="button" onClick={() => onPage(page - 1)} disabled={page <= 1} aria-label="Previous page"
-          className="inline-flex min-h-9 items-center gap-1 rounded-lg border border-ink-200 bg-white px-2.5 text-xs font-medium text-ink-700 hover:bg-ink-50 disabled:cursor-not-allowed disabled:opacity-40">
+          className="inline-flex min-h-9 items-center gap-1 rounded-lg border border-gp-border bg-gp-surface px-2.5 text-xs font-medium text-gp-text hover:bg-gp-surface-secondary disabled:cursor-not-allowed disabled:opacity-40">
           <ChevronLeft className="h-3.5 w-3.5" aria-hidden="true" /> Previous
         </button>
         <span className="sr-only">Page {page} of {pages}</span>
         {pageWindow(page, pages).map((token, i) => token === 'gap'
-          ? <span key={`gap-${i}`} className="px-1 text-xs text-ink-400" aria-hidden="true">…</span>
+          ? <span key={`gap-${i}`} className="px-1 text-xs text-gp-text-muted" aria-hidden="true">…</span>
           : (
             <button key={token} type="button" onClick={() => onPage(token)} aria-label={`Page ${token}`}
               aria-current={token === page ? 'page' : undefined}
               className={cx('min-h-9 min-w-9 rounded-md px-2 text-xs font-medium tabular-nums transition-colors',
-                token === page ? 'bg-brand-600 text-white' : 'border border-ink-200 bg-white text-ink-700 hover:bg-ink-50')}>
+                token === page ? 'bg-gp-primary text-gp-primary-foreground' : 'border border-gp-border bg-gp-surface text-gp-text hover:bg-gp-surface-secondary')}>
               {token}
             </button>
           ))}
         <button type="button" onClick={() => onPage(page + 1)} disabled={page >= pages} aria-label="Next page"
-          className="inline-flex min-h-9 items-center gap-1 rounded-lg border border-ink-200 bg-white px-2.5 text-xs font-medium text-ink-700 hover:bg-ink-50 disabled:cursor-not-allowed disabled:opacity-40">
+          className="inline-flex min-h-9 items-center gap-1 rounded-lg border border-gp-border bg-gp-surface px-2.5 text-xs font-medium text-gp-text hover:bg-gp-surface-secondary disabled:cursor-not-allowed disabled:opacity-40">
           Next <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
         </button>
       </div>
@@ -208,12 +208,12 @@ export function Pagination({ page, pageSize, total, onPage, noun = 'results' }: 
 export type Tone = 'neutral' | 'brand' | 'success' | 'warning' | 'danger' | 'info';
 
 const TONES: Record<Tone, string> = {
-  neutral: 'bg-ink-100 text-ink-700 ring-ink-200',
-  brand: 'bg-brand-50 text-brand-800 ring-brand-200',
-  success: 'bg-emerald-50 text-emerald-800 ring-emerald-200',
-  warning: 'bg-amber-50 text-amber-800 ring-amber-200',
-  danger: 'bg-red-50 text-red-700 ring-red-200',
-  info: 'bg-mint-50 text-mint-800 ring-mint-200',
+  neutral: 'bg-gp-surface-secondary text-gp-text ring-gp-border',
+  brand: 'bg-gp-primary-soft text-gp-primary-strong ring-gp-primary/30',
+  success: 'bg-gp-success-soft text-gp-success ring-gp-success/30',
+  warning: 'bg-gp-warning-soft text-gp-warning ring-gp-warning/30',
+  danger: 'bg-gp-danger-soft text-gp-danger ring-gp-danger/30',
+  info: 'bg-gp-info-soft text-gp-info ring-gp-info/30',
 };
 
 export function StatusPill({ tone = 'neutral', children }: { tone?: Tone; children: ReactNode }) {
@@ -227,14 +227,14 @@ export function StatusPill({ tone = 'neutral', children }: { tone?: Tone; childr
 export function StatCard({ label, value, hint, href }: { label: string; value: ReactNode; hint?: ReactNode; href?: string }) {
   const body = (
     <>
-      <p className="text-sm font-medium text-ink-600">{label}</p>
-      <p className="mt-2 text-[1.65rem] font-semibold leading-tight tabular-nums text-ink-950">{value}</p>
-      {hint && <p className="mt-2 text-xs text-ink-500">{hint}</p>}
+      <p className="text-sm font-medium text-gp-text-secondary">{label}</p>
+      <p className="mt-2 text-[1.65rem] font-semibold leading-tight tabular-nums text-gp-text">{value}</p>
+      {hint && <p className="mt-2 text-xs text-gp-text-muted">{hint}</p>}
     </>
   );
   const cls = 'block rounded-gp-card border border-gp-border bg-gp-surface p-5 shadow-gp-card';
   return href
-    ? <Link href={href} className={cx(cls, 'transition-colors hover:border-brand-300')}>{body}</Link>
+    ? <Link href={href} className={cx(cls, 'transition-colors hover:border-gp-primary/50')}>{body}</Link>
     : <div className={cls}>{body}</div>;
 }
 
@@ -243,8 +243,8 @@ export function DefinitionList({ items }: { items: Array<{ label: string; value:
     <dl className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
       {items.map(i => (
         <div key={i.label} className="min-w-0">
-          <dt className="text-xs font-medium text-ink-500">{i.label}</dt>
-          <dd className="mt-0.5 break-words text-sm text-ink-900">{i.value ?? '—'}</dd>
+          <dt className="text-xs font-medium text-gp-text-muted">{i.label}</dt>
+          <dd className="mt-0.5 break-words text-sm text-gp-text">{i.value ?? '—'}</dd>
         </div>
       ))}
     </dl>
@@ -262,8 +262,8 @@ export function TableShell({ children, caption }: { children: ReactNode; caption
   );
 }
 
-export const th = 'border-b border-ink-100 bg-ink-50/70 px-4 py-2.5 text-xs font-medium uppercase tracking-wide text-ink-500';
-export const td = 'border-b border-ink-100 px-4 py-3 align-middle';
+export const th = 'border-b border-gp-border bg-gp-surface-secondary/70 px-4 py-2.5 text-xs font-medium uppercase tracking-wide text-gp-text-muted';
+export const td = 'border-b border-gp-divider px-4 py-3 align-middle';
 
 export function LoadingRows({ rows = 5, cols = 4 }: { rows?: number; cols?: number }) {
   return (
@@ -271,7 +271,7 @@ export function LoadingRows({ rows = 5, cols = 4 }: { rows?: number; cols?: numb
       {Array.from({ length: rows }, (_, r) => (
         <tr key={r}>
           {Array.from({ length: cols }, (_, c) => (
-            <td key={c} className={td}><div className="h-3.5 w-3/4 animate-pulse rounded bg-ink-100" /></td>
+            <td key={c} className={td}><div className="h-3.5 w-3/4 animate-pulse rounded bg-gp-surface-secondary" /></td>
           ))}
         </tr>
       ))}

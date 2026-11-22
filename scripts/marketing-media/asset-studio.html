@@ -1,0 +1,318 @@
+<!doctype html>
+<!--
+  GrowthPrint illustration asset studio.
+  Renders one parametric scene (?scene=<name>&ratio=1x1|4x3|16x9) into a transparent stage.
+  Scenes are original SVG compositions in the brand palette — soft 3D geometry, glass panels,
+  orange/coral gradients, plum/charcoal contrast, soft shadows. No text, no logos, no charts.
+  Rendered offline by render-assets.mjs via Playwright screenshots.
+-->
+<html><head><meta charset="utf-8"><style>
+  html,body{margin:0;padding:0;background:transparent}
+  #stage{position:relative;overflow:hidden}
+  svg{display:block;width:100%;height:100%}
+</style></head>
+<body>
+<div id="stage"><svg id="art" viewBox="0 0 640 640" preserveAspectRatio="xMidYMid meet"></svg></div>
+<script>
+const P = {
+  plum:'#170D18', charcoal:'#211923', orange:'#FF572E', coral:'#FF8050',
+  warm:'#FF9B55', warmWhite:'#F8F5F2', soft:'#EEE8E5',
+  glass:'rgba(248,245,242,0.10)', glassLine:'rgba(248,245,242,0.28)',
+  inkGlass:'rgba(23,13,24,0.55)', inkLine:'rgba(23,13,24,0.18)',
+};
+const params = new URLSearchParams(location.search);
+const scene = params.get('scene') || 'orbit';
+const ratio = params.get('ratio') || '1x1';
+const S = { '1x1':[640,640], '4x3':[640,480], '16x9':[640,360] }[ratio] || [640,640];
+const [W,H] = S;
+document.getElementById('stage').style.width = W+'px';
+document.getElementById('stage').style.height = H+'px';
+const svg = document.getElementById('art');
+svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+const CX = W/2, CY = H/2;
+
+let uid = 0;
+const defs = [];
+function grad(id, stops, x2=1, y2=1){
+  defs.push(`<linearGradient id="${id}" x1="0" y1="0" x2="${x2}" y2="${y2}">${stops.map(s=>`<stop offset="${s[0]}" stop-color="${s[1]}"${s[2]!==undefined?` stop-opacity="${s[2]}"`:''}/>`).join('')}</linearGradient>`);
+  return `url(#${id})`;
+}
+function rad(id, stops, cx=.5, cy=.5, r=.5){
+  defs.push(`<radialGradient id="${id}" cx="${cx}" cy="${cy}" r="${r}">${stops.map(s=>`<stop offset="${s[0]}" stop-color="${s[1]}"${s[2]!==undefined?` stop-opacity="${s[2]}"`:''}/>`).join('')}</radialGradient>`);
+  return `url(#${id})`;
+}
+function softShadow(cx, cy, rx, ry, op=.28){
+  return `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${rad('sh'+(++uid),[[0,P.plum,op],[1,P.plum,0]],.5,.5,.5)}"/>`;
+}
+function glow(cx, cy, r, color, op){
+  return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${rad('gl'+(++uid),[[0,color,op],[1,color,0]],.5,.5,.5)}"/>`;
+}
+function sphere(cx, cy, r, fill, opts={}){
+  const {stroke,sw=0,hl=true} = opts;
+  let s = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}"${stroke?` stroke="${stroke}" stroke-width="${sw}"`:''}/>`;
+  if (hl) s += `<ellipse cx="${cx-r*0.32}" cy="${cy-r*0.38}" rx="${r*0.42}" ry="${r*0.26}" fill="#fff" opacity="0.35" transform="rotate(-24 ${cx-r*0.32} ${cy-r*0.38})"/>`;
+  return s;
+}
+function glassPanel(x,y,w,h,rx=18,accent){
+  return `<g>
+    <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}" fill="${P.glass}" stroke="${P.glassLine}" stroke-width="1.5"/>
+    <rect x="${x+10}" y="${y+10}" width="${w*0.42}" height="10" rx="5" fill="${accent||P.warm}" opacity="0.85"/>
+    <rect x="${x+10}" y="${y+32}" width="${w*0.72}" height="7" rx="3.5" fill="${P.warmWhite}" opacity="0.28"/>
+    <rect x="${x+10}" y="${y+46}" width="${w*0.55}" height="7" rx="3.5" fill="${P.warmWhite}" opacity="0.18"/>
+  </g>`;
+}
+function node(cx,cy,r,fill,ring){
+  return `<circle cx="${cx}" cy="${cy}" r="${r+5}" fill="none" stroke="${ring||P.glassLine}" stroke-width="1.5"/>
+          <circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}"/>`;
+}
+function dashedOrbit(cx,cy,rx,ry,rot,color,op=.5,dash='4 8'){
+  return `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="none" stroke="${color}" stroke-width="1.5" stroke-dasharray="${dash}" opacity="${op}" transform="rotate(${rot} ${cx} ${cy})"/>`;
+}
+
+/* ---------------- scene builders ---------------- */
+const scenes = {
+  // Central luminous sphere with orbit rings and satellites — overview/monitoring/growth
+  orbit(v=0){
+    const g = grad('ob'+v,[[0,P.warmWhite],[.35,P.warm],[.7,P.coral],[1,P.orange]],0,1);
+    return glow(CX,CY,230,P.orange,.30)+glow(CX+60,CY-40,150,P.coral,.22)
+      + dashedOrbit(CX,CY,200,90,-16,P.coral,.55)+dashedOrbit(CX,CY,200,90,22,P.warm,.4,'2 10')
+      + sphere(CX,CY,86,g)
+      + sphere(CX-150,CY-58,14,grad('n1'+v,[[0,P.warmWhite],[1,P.coral]],0,1))
+      + sphere(CX+132,CY+74,10,grad('n2'+v,[[0,P.warmWhite],[1,P.orange]],0,1))
+      + sphere(CX+40,CY-160,8,P.warmWhite,{hl:false});
+  },
+  // Floating glass panels — projects/tasks/deliverables/profiles
+  cards(v=0){
+    const a = grad('cd'+v,[[0,P.coral],[1,P.orange]],0,1);
+    const ink = P.charcoal;
+    return glow(CX-40,CY-60,200,P.orange,.22)+glow(CX+80,CY+80,160,P.coral,.18)
+      + `<g transform="rotate(-7 ${CX-70} ${CY+10})">${glassPanel(CX-190,CY-120,250,170,20,a)}</g>`
+      + `<g transform="rotate(5 ${CX+60} ${CY-30})">${glassPanel(CX+10,CY-60,260,190,22,a)}</g>`
+      + softShadow(CX,CY+120,190,26,.22)
+      + sphere(CX+150,CY+60,16,a);
+  },
+  // Node chain with connectors — pipelines/automation/api/milestones
+  pipeline(v=0){
+    const a = grad('pp'+v,[[0,P.warm],[1,P.orange]],0,1);
+    const n = 5, pts=[];
+    for(let i=0;i<n;i++){ const t=i/(n-1); pts.push([60+t*(W-120), CY + Math.sin(t*Math.PI*2+v)*46]); }
+    let s = glow(CX,CY,210,P.orange,.20);
+    s += `<path d="M${pts.map(p=>p.join(' ')).join(' L')}" fill="none" stroke="${P.coral}" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 14" opacity="0.65"/>`;
+    pts.forEach((p,i)=>{ s += node(p[0],p[1], i===2?20:15, i===2?a:P.glass, i===2?P.coral:P.glassLine); if(i===2) s+=`<circle cx="${p[0]}" cy="${p[1]}" r="7" fill="${P.warmWhite}"/>`; });
+    return s;
+  },
+  // Central hub with spokes — CRM/integrations/team/connections
+  hub(v=0){
+    const a = grad('hb'+v,[[0,P.coral],[1,P.orange]],0,1);
+    const spokes=[[-150,-70],[150,-70],[-170,60],[170,60],[0,-150],[0,150]];
+    let s = glow(CX,CY,220,P.orange,.25);
+    spokes.forEach(([dx,dy],i)=>{
+      const x=CX+dx, y=CY+dy;
+      s += `<line x1="${CX}" y1="${CY}" x2="${x}" y2="${y}" stroke="${P.coral}" stroke-width="2" stroke-dasharray="3 9" opacity="0.6"/>`;
+      s += node(x,y, i%3===0?14:11, i%3===0?P.glass:a, P.glassLine);
+      if(i%3===0) s+=`<circle cx="${x}" cy="${y}" r="4.5" fill="${P.warm}"/>`;
+    });
+    s += sphere(CX,CY,44,a)+`<circle cx="${CX-12}" cy="${CY-14}" r="12" fill="#fff" opacity="0.4"/>`;
+    return s;
+  },
+  // Ascending abstract slabs — growth/revenue/analytics (no axes, no labels)
+  columns(v=0){
+    const a = grad('cl'+v,[[0,P.warm],[1,P.orange]],0,1);
+    const hs=[90,140,190,250,205,150];
+    let s = glow(CX,CY-40,220,P.orange,.22);
+    hs.forEach((h,i)=>{
+      const w=64, gap=18, total=hs.length*w+(hs.length-1)*gap;
+      const x=CX-total/2+i*(w+gap), y=CY+150-h;
+      s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="14" fill="${i===3?a:P.glass}" stroke="${i===3?'none':P.glassLine}" stroke-width="1.5"/>`;
+      if(i===3) s+=`<rect x="${x+12}" y="${y+16}" width="${w-24}" height="10" rx="5" fill="#fff" opacity="0.4"/>`;
+      s += softShadow(x+w/2, CY+158, w*0.75, 12, .18);
+    });
+    return s;
+  },
+  // Stacked translucent planes — database/infrastructure/layers
+  layers(v=0){
+    const a = grad('ly'+v,[[0,P.coral],[1,P.orange]],0,1);
+    let s = glow(CX,CY,200,P.orange,.22);
+    for(let i=0;i<4;i++){
+      const w=300-i*46, h=64, x=CX-w/2, y=CY-70+i*56;
+      s += `<g transform="rotate(${-8+i*5} ${CX} ${y+h/2})">
+        <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="16" fill="${i===2?a:'rgba(23,13,24,0.5)'}" stroke="${i===2?'none':P.glassLine}" stroke-width="1.5"/>
+        ${i===2?`<rect x="${x+14}" y="${y+14}" width="${w*0.4}" height="9" rx="4.5" fill="#fff" opacity="0.5"/>`:''}
+      </g>`;
+    }
+    return s + sphere(CX+120,CY-150,20,a);
+  },
+  // Document panel — invoices/deliverables/proposals
+  doc(v=0){
+    const a = grad('dc'+v,[[0,P.coral],[1,P.orange]],0,1);
+    const x=CX-110,y=CY-140,w=220,h=280;
+    let s = glow(CX-30,CY-60,190,P.orange,.25);
+    s += `<g transform="rotate(6 ${CX+60} ${CY+40})">
+      <rect x="${x+18}" y="${y+14}" width="${w}" height="${h}" rx="18" fill="${P.inkGlass}" stroke="${P.inkLine}"/>
+      <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="18" fill="${P.glass}" stroke="${P.glassLine}" stroke-width="1.5"/>
+      <path d="M${x+w-52} ${y} h34 a18 18 0 0 1 18 18 v34 z" fill="${P.soft}" opacity="0.9"/>
+      <rect x="${x+22}" y="${y+24}" width="${w*0.45}" height="14" rx="7" fill="${a}"/>
+      ${[0,1,2,3].map(i=>`<rect x="${x+22}" y="${y+58+i*26}" width="${w*(i===3?.5:.78)}" height="8" rx="4" fill="${P.warmWhite}" opacity="${.3-i*.04}"/>`).join('')}
+      <circle cx="${x+w-40}" cy="${y+h-46}" r="20" fill="${a}"/>
+      <path d="M${x+w-48} ${y+h-46} l8 8 16-16" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>`;
+    return s;
+  },
+  // Shield — security/auth/permissions
+  shield(v=0){
+    const a = grad('sh'+v,[[0,P.coral],[1,P.orange]],0,1);
+    const cx=CX, cy=CY-10;
+    const d=`M${cx} ${cy-110} L${cx+95} ${cy-70} V${cy+10} C${cx+95} ${cy+80} ${cx+40} ${cy+120} ${cx} ${cy+140} C${cx-40} ${cy+120} ${cx-95} ${cy+80} ${cx-95} ${cy+10} V${cy-70} Z`;
+    let s = glow(cx,cy,190,P.orange,.25);
+    s += `<path d="${d}" fill="${P.glass}" stroke="${P.glassLine}" stroke-width="2"/>
+      <path d="${d}" fill="none" stroke="${a}" stroke-width="10" opacity="0.35" transform="translate(0 6)"/>
+      <path d="M${cx-38} ${cy+8} l26 26 52-54" stroke="${a}" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+    return s + sphere(cx+120,cy-110,16,a)+sphere(cx-130,cy+90,12,P.warm);
+  },
+  // Chat bubbles — communication/messages/collaboration
+  chat(v=0){
+    const a = grad('ch'+v,[[0,P.coral],[1,P.orange]],0,1);
+    let s = glow(CX-40,CY-40,200,P.orange,.25);
+    const bub=(x,y,w,h,tail,fill,txt)=>`<g><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${h/2}" fill="${fill}" stroke="${P.glassLine}"/>
+      ${txt||[0,1,2].map(i=>`<rect x="${x+18+i*16}" y="${y+h/2-4}" width="10" height="8" rx="4" fill="${P.warmWhite}" opacity="${.5-i*.12}"/>`).join('')}</g>`;
+    s += bub(CX-190,CY-130,240,84,false,P.glass)
+       + bub(CX-60,CY-20,250,84,true,a)
+       + bub(CX-190,CY+90,190,76,false,P.glass)
+       + `<circle cx="${CX+150}" cy="${CY-150}" r="26" fill="${a}"/><circle cx="${CX-160}" cy="${CY+160}" r="18" fill="${P.warm}"/>`;
+    return s;
+  },
+  // People cluster — team/invitations/profiles
+  people(v=0){
+    const a = grad('pp2'+v,[[0,P.coral],[1,P.orange]],0,1);
+    const person=(x,y,r,fill)=>`<g><circle cx="${x}" cy="${y-r*0.9}" r="${r*0.62}" fill="${fill}"/><rect x="${x-r}" y="${y-r*0.1}" width="${r*2}" height="${r*1.7}" rx="${r}" fill="${fill}"/></g>`;
+    let s = glow(CX,CY-30,200,P.orange,.25);
+    s += person(CX-90,CY+90,34,P.glass)+person(CX+10,CY+80,40,a)+person(CX+110,CY+95,30,P.glass)
+       + node(CX+170,CY-110,16,a,P.coral)+`<path d="M${CX+162} ${CY-110} h16 M${CX+170} ${CY-118} v16" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>`;
+    return s;
+  },
+  // Branching nodes — AI orchestration/workflow execution
+  branch(v=0){
+    const a = grad('br'+v,[[0,P.warm],[1,P.orange]],0,1);
+    let s = glow(CX-60,CY,200,P.orange,.22);
+    const src=[CX-210,CY];
+    s += node(src[0],src[1],20,a,P.coral);
+    [[-60,-120],[0,-40],[60,-130],[120,-30]].forEach(([dx,dy],i)=>{
+      const x=CX-120+dx*1.6, y=CY+dy;
+      s += `<path d="M${src[0]+18} ${src[1]} C ${src[0]+60} ${src[1]}, ${x-60} ${y}, ${x-14} ${y}" fill="none" stroke="${P.coral}" stroke-width="2.5" stroke-dasharray="3 8" opacity="0.7"/>`;
+      s += node(x,y,13,i%2?P.glass:a,P.glassLine);
+    });
+    return s + sphere(CX+150,CY-160,14,a);
+  },
+  // Ring gauge — performance/monitoring (abstract, no numbers)
+  gauge(v=0){
+    const a = grad('gg'+v,[[0,P.warm],[1,P.orange]],0,1);
+    let s = glow(CX,CY+30,200,P.orange,.25);
+    s += `<path d="M ${CX-140} ${CY+80} A 170 170 0 1 1 ${CX+140} ${CY+80}" fill="none" stroke="${P.glass}" stroke-width="26" stroke-linecap="round"/>`;
+    s += `<path d="M ${CX-140} ${CY+80} A 170 170 0 0 1 ${CX+40} ${CY-120}" fill="none" stroke="${a}" stroke-width="26" stroke-linecap="round"/>`;
+    s += sphere(CX,CY+60,34,a)+sphere(CX-160,CY-80,12,P.warm)+sphere(CX+160,CY-60,10,P.glass);
+    return s;
+  },
+  // Keyhole/lock — security & authentication
+  lock(v=0){
+    const a = grad('lk'+v,[[0,P.coral],[1,P.orange]],0,1);
+    let s = glow(CX,CY-10,190,P.orange,.25);
+    s += `<rect x="${CX-80}" y="${CY-10}" width="160" height="130" rx="22" fill="${P.glass}" stroke="${P.glassLine}" stroke-width="2"/>
+      <path d="M${CX-45} ${CY-10} v-28 a45 45 0 0 1 90 0 v28" fill="none" stroke="${a}" stroke-width="14"/>
+      <circle cx="${CX}" cy="${CY+52}" r="17" fill="${a}"/><rect x="${CX-7}" y="${CY+56}" width="14" height="34" rx="7" fill="${a}"/>`;
+    return s + sphere(CX+140,CY-120,16,P.warm)+sphere(CX-140,CY+110,12,P.glass);
+  },
+  // Rocket-ish ascent — onboarding/welcome (abstract, no literal rocket)
+  ascent(v=0){
+    const a = grad('as'+v,[[0,P.warmWhite],[.4,P.warm],[1,P.orange]],0,1);
+    let s = glow(CX,CY+60,210,P.orange,.25);
+    s += `<path d="M${CX} ${CY-160} C ${CX+90} ${CY-90} ${CX+80} ${CY+40} ${CX} ${CY+90} C ${CX-80} ${CY+40} ${CX-90} ${CY-90} ${CX} ${CY-160} Z" fill="${a}"/>
+      <circle cx="${CX}" cy="${CY-40}" r="26" fill="${P.plum}"/><circle cx="${CX}" cy="${CY-40}" r="26" fill="none" stroke="${P.glassLine}" stroke-width="2"/>
+      <path d="M${CX-60} ${CY+30} l-30 50 40-14 M${CX+60} ${CY+30} l30 50 -40-14" fill="${a}" opacity="0.85"/>`;
+    [0,1,2].forEach(i=>{ s+=sphere(CX-140+i*30,CY+140-i*36,7-i*1.5,P.warm,{hl:i===0}); });
+    return s;
+  },
+  // Cloud + server slabs — cloud infrastructure
+  cloud(v=0){
+    const a = grad('cd2'+v,[[0,P.coral],[1,P.orange]],0,1);
+    const puffs=[[CX-90,CY+10,60],[CX-20,CY-30,70],[CX+60,CY+0,60],[CX+10,CY+50,80]];
+    let s = glow(CX,CY,200,P.orange,.22);
+    s += puffs.map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${P.glass}" stroke="${P.glassLine}" stroke-width="1.5"/>`).join('');
+    puffs.forEach(([x,y,r])=>{ s+=`<rect x="${x-14}" y="${y-14}" width="28" height="28" rx="8" fill="${a}" opacity="0.9"/>`; });
+    return s;
+  },
+  // Database cylinder — data architecture
+  db(v=0){
+    const a = grad('db'+v,[[0,P.coral],[1,P.orange]],0,1);
+    const cx=CX, top=CY-110, h=230, rx=110, ry=30;
+    let s = glow(cx,CY,200,P.orange,.25);
+    s += `<ellipse cx="${cx}" cy="${top}" rx="${rx}" ry="${ry}" fill="${P.glass}" stroke="${P.glassLine}" stroke-width="2"/>
+      <path d="M${cx-rx} ${top} v${h} a${rx} ${ry} 0 0 0 ${rx*2} 0 v${-h}" fill="${P.inkGlass}" stroke="${P.inkLine}"/>
+      <path d="M${cx-rx} ${top} v${h} a${rx} ${ry} 0 0 0 ${rx*2} 0 v${-h}" fill="none" stroke="${P.glassLine}" stroke-width="1.5"/>
+      <ellipse cx="${cx}" cy="${top+h}" rx="${rx}" ry="${ry}" fill="${a}"/>`;
+    for(let i=1;i<3;i++){ const y=top+i*h/3; s+=`<path d="M${cx-rx} ${y} a${rx} ${ry} 0 0 0 ${rx*2} 0" fill="none" stroke="${P.warmWhite}" stroke-width="2" opacity="0.3" stroke-dasharray="6 8"/>`; }
+    return s;
+  },
+  // Code brackets — software development
+  code(v=0){
+    const a = grad('co'+v,[[0,P.coral],[1,P.orange]],0,1);
+    let s = glow(CX,CY,190,P.orange,.25);
+    s += `<path d="M${CX-150} ${CY-110} l-70 110 70 110" fill="none" stroke="${a}" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M${CX+150} ${CY-110} l70 110 -70 110" fill="none" stroke="${P.glass}" stroke-width="34" stroke-linecap="round" stroke-linejoin="round" stroke="${P.warmWhite}" opacity="0.9"/>
+      <rect x="${CX-40}" y="${CY-24}" width="80" height="48" rx="14" fill="${a}"/>`;
+    return s;
+  },
+  // Deploy rocket/arrow up — deployment pipelines
+  deploy(v=0){
+    const a = grad('dp'+v,[[0,P.warm],[1,P.orange]],0,1);
+    let s = glow(CX,CY+20,200,P.orange,.25);
+    s += `<rect x="${CX-90}" y="${CY+80}" width="180" height="26" rx="13" fill="${P.glass}" stroke="${P.glassLine}"/>
+      <rect x="${CX-60}" y="${CY+30}" width="120" height="26" rx="13" fill="${P.glass}" stroke="${P.glassLine}"/>
+      <path d="M${CX} ${CY-140} L${CX+55} ${CY-40} H${CX+18} V${CY+10} H${CX-18} V${CY-40} H${CX-55} Z" fill="${a}"/>
+      <circle cx="${CX}" cy="${CY-55}" r="14" fill="${P.plum}"/>`;
+    [0,1,2].forEach(i=>{ s+=`<circle cx="${CX-140+i*40}" cy="${CY+150-i*20}" r="${10-i}" fill="${P.warm}" opacity="${.8-i*.2}"/>`; });
+    return s;
+  },
+  // Pulse line on monitor — monitoring/activity feed
+  pulse(v=0){
+    const a = grad('pu'+v,[[0,P.warm],[1,P.orange]],0,1);
+    let s = glow(CX,CY,190,P.orange,.22);
+    s += `<rect x="${CX-170}" y="${CY-110}" width="340" height="220" rx="20" fill="${P.glass}" stroke="${P.glassLine}" stroke-width="2"/>
+      <rect x="${CX-170}" y="${CY-110}" width="340" height="40" rx="20" fill="${P.inkGlass}"/>
+      <circle cx="${CX-140}" cy="${CY-90}" r="6" fill="${P.coral}"/><circle cx="${CX-118}" cy="${CY-90}" r="6" fill="${P.warm}"/><circle cx="${CX-96}" cy="${CY-90}" r="6" fill="${P.glassLine}"/>
+      <path d="M${CX-140} ${CY+40} L${CX-80} ${CY+40} L${CX-50} ${CY-10} L${CX-10} ${CY+70} L${CX+40} ${CY-30} L${CX+90} ${CY+40} L${CX+140} ${CY+10}" fill="none" stroke="${a}" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>`;
+    return s;
+  },
+  // Coin/payment disc — payments/billing
+  coin(v=0){
+    const a = grad('cn'+v,[[0,P.warmWhite],[.5,P.warm],[1,P.coral]],0,1);
+    let s = glow(CX,CY-10,190,P.orange,.25);
+    s += `<ellipse cx="${CX}" cy="${CY+120}" rx="120" ry="20" fill="${P.plum}" opacity="0.35"/>
+      <circle cx="${CX}" cy="${CY-10}" r="110" fill="${a}"/>
+      <circle cx="${CX}" cy="${CY-10}" r="110" fill="none" stroke="${P.glassLine}" stroke-width="2"/>
+      <path d="M${CX} ${CY-95} A 85 85 0 0 1 ${CX+85} ${CY-10}" fill="none" stroke="#fff" stroke-width="10" opacity="0.5" stroke-linecap="round"/>
+      <circle cx="${CX-30}" cy="${CY-50}" r="18" fill="#fff" opacity="0.55"/>`;
+    return s + sphere(CX+170,CY-140,18,P.warm)+sphere(CX-160,CY+130,14,P.glass);
+  },
+  // Empty state: dashed ring + single orbiting dot + soft core — all empty states
+  empty(v=0){
+    const a = grad('em'+v,[[0,P.coral],[1,P.orange]],0,1);
+    let s = glow(CX,CY,170,P.orange,.20);
+    s += `<circle cx="${CX}" cy="${CY}" r="120" fill="none" stroke="${P.glassLine}" stroke-width="2.5" stroke-dasharray="4 12"/>
+      <circle cx="${CX}" cy="${CY}" r="70" fill="none" stroke="${P.glassLine}" stroke-width="1.5" opacity="0.6"/>
+      <circle cx="${CX+120*Math.cos(v||0)}" cy="${CY+120*Math.sin(v||0)}" r="14" fill="${a}"/>`;
+    s += `<ellipse cx="${CX-34}" cy="${CY-38}" rx="20" ry="12" fill="#fff" opacity="0.4" transform="rotate(-24 ${CX-34} ${CY-38})"/>`;
+    return s;
+  },
+};
+
+const art = document.createElementNS('http://www.w3.org/2000/svg','g');
+art.innerHTML = `<defs>${defs.join('')}</defs>`; // defs must exist before use — build order handled below
+svg.innerHTML = '';
+svg.appendChild(art);
+// rebuild: collect defs first by running scene once is complex; instead inject defs dynamically:
+// scenes push into defs during string build — so build body first, then prepend defs.
+svg.innerHTML = '';
+const body = (scenes[scene]||scenes.orbit)(0);
+svg.innerHTML = `<defs>${defs.join('')}</defs>${body}`;
+window.__done = true;
+</script></body></html>

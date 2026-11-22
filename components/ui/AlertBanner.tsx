@@ -11,10 +11,10 @@ interface AlertBannerProps {
 }
 
 const VARIANT_STYLES: Record<AlertVariant, { container: string; icon: typeof Info; iconClass: string; actionClass: string }> = {
-  info: { container: 'border-blue-200 bg-blue-50 text-blue-950', icon: Info, iconClass: 'text-blue-600', actionClass: 'text-blue-700 hover:text-blue-800' },
-  success: { container: 'border-emerald-200 bg-emerald-50 text-emerald-950', icon: CheckCircle2, iconClass: 'text-emerald-600', actionClass: 'text-emerald-700 hover:text-emerald-800' },
-  warning: { container: 'border-amber-200 bg-amber-50 text-amber-950', icon: AlertTriangle, iconClass: 'text-amber-600', actionClass: 'text-amber-800 hover:text-amber-900' },
-  error: { container: 'border-rose-200 bg-rose-50 text-rose-950', icon: AlertCircle, iconClass: 'text-rose-600', actionClass: 'text-rose-700 hover:text-rose-800' }
+  info: { container: 'border-gp-info/30 bg-gp-info-soft text-gp-text', icon: Info, iconClass: 'text-gp-info', actionClass: 'text-gp-info hover:text-gp-text' },
+  success: { container: 'border-gp-success/30 bg-gp-success-soft text-gp-text', icon: CheckCircle2, iconClass: 'text-gp-success', actionClass: 'text-gp-success hover:text-gp-text' },
+  warning: { container: 'border-gp-warning/30 bg-gp-warning-soft text-gp-text', icon: AlertTriangle, iconClass: 'text-gp-warning', actionClass: 'text-gp-warning hover:text-gp-text' },
+  error: { container: 'border-gp-danger/30 bg-gp-danger-soft text-gp-text', icon: AlertCircle, iconClass: 'text-gp-danger', actionClass: 'text-gp-danger hover:text-gp-text' }
 };
 
 export function AlertBanner({ variant = 'info', title, message, onDismiss, action }: AlertBannerProps) {
@@ -29,7 +29,7 @@ export function AlertBanner({ variant = 'info', title, message, onDismiss, actio
         {message && <div className="mt-0.5 text-xs leading-5 opacity-80">{message}</div>}
       </div>
       {action && <button type="button" onClick={action.onClick} className={`shrink-0 text-xs font-bold underline hover:no-underline ${styles.actionClass}`}>{action.label}</button>}
-      {onDismiss && <button type="button" onClick={onDismiss} aria-label="Dismiss alert" className="shrink-0 rounded-md p-1 opacity-70 transition-opacity hover:bg-black/5 hover:opacity-100"><X className="h-3.5 w-3.5" /></button>}
+      {onDismiss && <button type="button" onClick={onDismiss} aria-label="Dismiss alert" className="shrink-0 rounded-md p-1 opacity-70 transition-opacity hover:bg-gp-text/10 hover:opacity-100"><X className="h-3.5 w-3.5" /></button>}
     </div>
   );
 }

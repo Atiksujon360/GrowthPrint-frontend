@@ -66,14 +66,14 @@ export function SupportTriagePanel({ requestId, onUseCategory }: SupportTriagePa
   };
 
   return (
-    <section aria-labelledby={`${id}-title`} className="pt-2 border-t border-slate-100 space-y-2">
+    <section aria-labelledby={`${id}-title`} className="pt-2 border-t border-gp-divider space-y-2">
       <div className="flex items-center justify-between gap-2">
-        <h4 id={`${id}-title`} className="text-xs font-bold text-slate-900">AI suggestion</h4>
+        <h4 id={`${id}-title`} className="text-xs font-bold text-gp-text">AI suggestion</h4>
         <button
           type="button"
           onClick={() => void suggest()}
           disabled={isLoading}
-          className="px-2.5 py-1 text-xs font-semibold text-violet-700 border border-violet-200 hover:bg-violet-50 rounded-md flex items-center gap-1 disabled:opacity-50 min-h-[32px]"
+          className="px-2.5 py-1 text-xs font-semibold text-gp-primary-strong border border-gp-primary/30 hover:bg-gp-primary-soft rounded-md flex items-center gap-1 disabled:opacity-50 min-h-[32px]"
         >
           <Sparkles className="w-3.5 h-3.5" aria-hidden="true" />
           {isLoading ? 'Thinking…' : suggestion ? 'Suggest again' : 'Suggest with AI'}
@@ -82,28 +82,28 @@ export function SupportTriagePanel({ requestId, onUseCategory }: SupportTriagePa
 
       {error && (
         <p role="alert" className={`text-xs rounded-lg px-3 py-2 border ${isUnavailable
-          ? 'text-slate-700 bg-slate-50 border-slate-200'
-          : 'text-rose-800 bg-rose-50 border-rose-200'}`}>
+          ? 'text-gp-text bg-gp-canvas border-gp-border'
+          : 'text-gp-danger bg-gp-danger-soft border-gp-danger/30'}`}>
           {error}
         </p>
       )}
 
       {suggestion && (
-        <div className="rounded-xl border border-violet-200 bg-violet-50/40 p-3 space-y-2 text-xs text-slate-800">
-          <p className="text-xs font-semibold text-violet-800">
+        <div className="rounded-xl border border-gp-primary/30 bg-gp-primary-soft/40 p-3 space-y-2 text-xs text-gp-text">
+          <p className="text-xs font-semibold text-gp-primary-strong">
             AI-generated · {suggestion.provider} {suggestion.model} · review before using
           </p>
           <dl className="grid grid-cols-3 gap-2">
             <div>
-              <dt className="text-xs text-slate-500 uppercase">Category</dt>
+              <dt className="text-xs text-gp-text-muted">Category</dt>
               <dd className="font-medium">{CATEGORY_LABEL[suggestion.category]}</dd>
             </div>
             <div>
-              <dt className="text-xs text-slate-500 uppercase">Urgency</dt>
+              <dt className="text-xs text-gp-text-muted">Urgency</dt>
               <dd className="font-medium">{suggestion.urgency === 'URGENT' ? 'Urgent' : 'Normal'}</dd>
             </div>
             <div>
-              <dt className="text-xs text-slate-500 uppercase">Impact</dt>
+              <dt className="text-xs text-gp-text-muted">Impact</dt>
               <dd className="font-medium">{suggestion.businessImpact.replace('_', ' ').toLowerCase()}</dd>
             </div>
           </dl>
@@ -111,13 +111,13 @@ export function SupportTriagePanel({ requestId, onUseCategory }: SupportTriagePa
           <button
             type="button"
             onClick={() => onUseCategory(suggestion.category)}
-            className="px-2.5 py-1 text-xs font-semibold text-slate-800 border border-slate-300 bg-white hover:bg-slate-50 rounded-md min-h-[32px]"
+            className="px-2.5 py-1 text-xs font-semibold text-gp-text border border-gp-border bg-gp-surface hover:bg-gp-canvas rounded-md min-h-[32px]"
           >
             Use this category
           </button>
 
           <div>
-            <label htmlFor={`${id}-draft`} className="block text-xs font-semibold text-slate-700 mb-1">
+            <label htmlFor={`${id}-draft`} className="block text-xs font-semibold text-gp-text mb-1">
               Reply draft (AI-generated — edit before sending)
             </label>
             <textarea
@@ -125,14 +125,14 @@ export function SupportTriagePanel({ requestId, onUseCategory }: SupportTriagePa
               rows={4}
               value={draft}
               onChange={e => { setDraft(e.target.value); setCopied(false); }}
-              className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/30"
+              className="w-full px-3 py-2 text-xs border border-gp-border rounded-lg bg-gp-surface focus:outline-none focus:ring-2 focus:ring-gp-primary/30"
             />
             <div className="flex items-center justify-end gap-2 mt-1">
-              <span className="text-xs text-slate-500" role="status">{copied ? 'Copied' : ''}</span>
+              <span className="text-xs text-gp-text-muted" role="status">{copied ? 'Copied' : ''}</span>
               <button
                 type="button"
                 onClick={() => void copyDraft()}
-                className="px-2.5 py-1 text-xs font-semibold text-slate-800 border border-slate-300 bg-white hover:bg-slate-50 rounded-md min-h-[32px]"
+                className="px-2.5 py-1 text-xs font-semibold text-gp-text border border-gp-border bg-gp-surface hover:bg-gp-canvas rounded-md min-h-[32px]"
               >
                 Copy draft
               </button>

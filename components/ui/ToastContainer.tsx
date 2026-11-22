@@ -50,17 +50,17 @@ function ToastItem({
   }, [toast.id, toast.durationMs, onClose]);
 
   const icons = {
-    success: <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />,
-    error: <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />,
-    warning: <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0" />,
-    info: <Info className="w-5 h-5 text-blue-600 shrink-0" />
+    success: <CheckCircle2 className="w-5 h-5 text-gp-success shrink-0" />,
+    error: <AlertCircle className="w-5 h-5 text-gp-danger shrink-0" />,
+    warning: <AlertTriangle className="w-5 h-5 text-gp-warning shrink-0" />,
+    info: <Info className="w-5 h-5 text-gp-info shrink-0" />
   };
 
   const borders = {
-    success: 'border-emerald-200/90 bg-emerald-50/90 text-emerald-950',
-    error: 'border-rose-200/90 bg-rose-50/90 text-rose-950',
-    warning: 'border-amber-200/90 bg-amber-50/90 text-amber-950',
-    info: 'border-blue-200/90 bg-blue-50/90 text-blue-950'
+    success: 'border-gp-success/30 bg-gp-success-soft text-gp-success',
+    error: 'border-gp-danger/30 bg-gp-danger-soft text-gp-danger',
+    warning: 'border-gp-warning/30 bg-gp-warning-soft text-gp-warning',
+    info: 'border-gp-info/30 bg-gp-info-soft text-gp-info'
   };
 
   const handleActionClick = () => {
@@ -72,7 +72,7 @@ function ToastItem({
 
   return (
     <div
-      className={`pointer-events-auto rounded-xl border p-4 shadow-lg backdrop-blur-md transition-all duration-200 flex items-start gap-3 animate-in fade-in slide-in-from-bottom-2 ${
+      className={`pointer-events-auto rounded-lg border p-4 shadow-lg backdrop-blur-md transition-colors duration-200 flex items-start gap-3 animate-in fade-in slide-in-from-bottom-2 ${
         borders[toast.type]
       }`}
       role="status"
@@ -102,7 +102,7 @@ function ToastItem({
       <button
         onClick={onClose}
         aria-label="Dismiss notification"
-        className="text-slate-400 hover:text-slate-700 p-1 rounded-md hover:bg-black/5 transition-colors shrink-0"
+        className="text-gp-text-muted hover:text-gp-text p-1 rounded-md hover:bg-gp-surface-secondary/50 transition-colors shrink-0"
       >
         <X className="w-3.5 h-3.5" />
       </button>

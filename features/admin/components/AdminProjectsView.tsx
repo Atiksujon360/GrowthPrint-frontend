@@ -70,7 +70,7 @@ export function AdminProjectsView() {
       sortable: true,
       cell: ({ row }) => (
         <div className="flex items-center gap-1.5">
-          <span className="font-bold text-slate-800 text-xs">
+          <span className="font-bold text-gp-text text-xs">
             {row.reference}
           </span>
           <CopyButton value={row.reference} title="Copy project reference" />
@@ -84,8 +84,8 @@ export function AdminProjectsView() {
       sortable: true,
       cell: ({ row }) => (
         <div>
-          <div className="font-bold text-slate-900">{row.name}</div>
-          <div className="text-xs text-slate-400">{humanizeCode(row.serviceCategory)}</div>
+          <div className="font-bold text-gp-text">{row.name}</div>
+          <div className="text-xs text-gp-text-muted">{humanizeCode(row.serviceCategory)}</div>
         </div>
       )
     },
@@ -95,7 +95,7 @@ export function AdminProjectsView() {
       accessorKey: 'clientName',
       sortable: true,
       cell: ({ row }) => (
-        <span className="font-semibold text-slate-800 text-xs">
+        <span className="font-semibold text-gp-text text-xs">
           {row.clientName}
         </span>
       )
@@ -107,10 +107,10 @@ export function AdminProjectsView() {
       sortable: true,
       cell: ({ row }) => (
         <div>
-          <div className="font-bold text-slate-900 tabular-nums text-xs">
+          <div className="font-bold text-gp-text tabular-nums text-xs">
             ${row.budgetSpent.toLocaleString()} / ${row.budgetTotal.toLocaleString()} USD
           </div>
-          <div className="text-xs text-slate-400">
+          <div className="text-xs text-gp-text-muted">
             {budgetUsage(row) ? `${budgetUsage(row)!.percent}% consumed` : 'No budget set'}
           </div>
         </div>
@@ -123,13 +123,13 @@ export function AdminProjectsView() {
       sortable: true,
       cell: ({ row }) => (
         <div className="min-w-[120px]">
-          <div className="flex justify-between text-xs text-slate-600 mb-1">
+          <div className="flex justify-between text-xs text-gp-text-secondary mb-1">
             <span className="font-medium">Milestones</span>
-            <span className="font-bold text-slate-800 tabular-nums">{row.progressPercent}%</span>
+            <span className="font-bold text-gp-text tabular-nums">{row.progressPercent}%</span>
           </div>
-          <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+          <div className="w-full h-1.5 bg-gp-border rounded-full overflow-hidden">
             <div 
-              className="h-full bg-blue-600 rounded-full"
+              className="h-full bg-gp-primary rounded-full"
               style={{ width: `${row.progressPercent}%` }}
             />
           </div>
@@ -142,7 +142,7 @@ export function AdminProjectsView() {
       accessorKey: 'targetCompletionDate',
       sortable: true,
       cell: ({ row }) => (
-        <span className="text-slate-500 text-xs">
+        <span className="text-gp-text-muted text-xs">
           {row.targetCompletionDate}
         </span>
       )
@@ -165,13 +165,13 @@ export function AdminProjectsView() {
         { label: 'In review', value: projects.filter(p => p.status === 'IN_REVIEW').length },
         { label: 'Completed', value: projects.filter(p => p.status === 'COMPLETED').length, tone: 'success' },
       ]} />
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <h2 className="text-lg font-semibold text-ink-950">
-            Client Projects & Delivery Sprints
+          <h2 className="text-xl font-semibold tracking-tight text-gp-text">
+            Projects
           </h2>
-          <p className="text-xs text-slate-500">
-            Active engineering engagements, milestone schedules, deliverable checklists, and budget tracking.
+          <p className="mt-1 text-sm text-gp-text-muted">
+            Active engagements, milestone schedules, deliverables, and budget tracking.
           </p>
         </div>
 
@@ -180,18 +180,18 @@ export function AdminProjectsView() {
           <button
             onClick={handleRefresh}
             disabled={isRefreshing || isLoadingProjects}
-            className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 text-gp-text-secondary hover:text-gp-text hover:bg-gp-surface-secondary rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             title="Refresh projects"
           >
             <RefreshCw className={`w-4 h-4 ${isRefreshing || isLoadingProjects ? 'animate-spin' : ''}`} />
           </button>
 
           {/* View Switcher */}
-          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
+          <div className="flex items-center gap-1 bg-gp-surface-secondary p-1 rounded-xl border border-gp-border">
             <button
               onClick={() => setViewMode('TABLE')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-all ${
-                viewMode === 'TABLE' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors ${
+                viewMode === 'TABLE' ? 'bg-gp-surface text-gp-text shadow-2xs' : 'text-gp-text-secondary hover:text-gp-text'
               }`}
             >
               <TableIcon className="w-3.5 h-3.5" />
@@ -199,8 +199,8 @@ export function AdminProjectsView() {
             </button>
             <button
               onClick={() => setViewMode('CARDS')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-all ${
-                viewMode === 'CARDS' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors ${
+                viewMode === 'CARDS' ? 'bg-gp-surface text-gp-text shadow-2xs' : 'text-gp-text-secondary hover:text-gp-text'
               }`}
             >
               <Columns className="w-3.5 h-3.5" />
@@ -214,19 +214,19 @@ export function AdminProjectsView() {
       {isLoadingProjects && (
         <div className="flex flex-col items-center justify-center py-16">
           <LoadingSpinner />
-          <p className="text-sm text-slate-500 mt-4">Loading projects...</p>
+          <p className="text-sm text-gp-text-muted mt-4">Loading projects...</p>
         </div>
       )}
 
       {/* Error State */}
       {!isLoadingProjects && projectsError && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-6 flex flex-col items-center justify-center">
-          <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
-          <h3 className="text-lg font-semibold text-red-900 mb-2">Failed to Load Projects</h3>
-          <p className="text-sm text-red-700 mb-4">{projectsError}</p>
+        <div className="bg-gp-danger-soft border border-gp-danger/30 rounded-xl p-6 flex flex-col items-center justify-center">
+          <AlertCircle className="w-12 h-12 text-gp-danger mb-4" />
+          <h3 className="text-lg font-semibold text-gp-danger mb-2">Failed to Load Projects</h3>
+          <p className="text-sm text-gp-danger mb-4">{projectsError}</p>
           <button
             onClick={handleRetry}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+            className="px-4 py-2 bg-gp-danger text-white rounded-lg hover:bg-gp-danger transition-colors text-sm font-medium"
           >
             Retry
           </button>
@@ -238,6 +238,7 @@ export function AdminProjectsView() {
         <EmptyState
           title="No Projects Yet"
           message="Projects will appear here when they are created for clients."
+          illustration="/illustrations/empty/empty-projects.webp"
         />
       )}
 
@@ -275,42 +276,42 @@ export function AdminProjectsView() {
       ) : (
         <div className="space-y-6">
           {projects.map((p) => (
-            <div key={p.id} className="bg-white rounded-2xl border border-slate-200/90 overflow-hidden">
-              <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-50/50">
+            <div key={p.id} className="bg-gp-surface rounded-2xl border border-gp-border/90 overflow-hidden">
+              <div className="p-6 border-b border-gp-divider flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gp-surface-secondary/50">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-slate-400">{p.reference}</span>
+                    <span className="text-xs font-bold text-gp-text-muted">{p.reference}</span>
                     <StatusBadge status={p.status} />
                   </div>
-                  <h3 className="text-lg font-bold text-slate-900">
+                  <h3 className="text-lg font-bold text-gp-text">
                     <button type="button" onClick={() => setSelectedProjectId(p.id)}
-                      className="rounded-sm text-left hover:text-gp-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gp-primary">
+                      className="rounded-sm text-left hover:text-gp-primary-strong hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gp-primary">
                       {p.name}
                     </button>
                   </h3>
-                  <div className="text-xs text-slate-500">
-                    Client: <strong className="text-slate-800">{p.clientName}</strong> · Service: <strong>{humanizeCode(p.serviceCategory)}</strong>
+                  <div className="text-xs text-gp-text-muted">
+                    Client: <strong className="text-gp-text">{p.clientName}</strong> · Service: <strong>{humanizeCode(p.serviceCategory)}</strong>
                   </div>
                 </div>
 
                 <div className="text-right space-y-1">
-                  <div className="text-xs text-slate-400 font-medium">Budget & Spend</div>
-                  <div className="text-sm font-bold text-slate-900 tabular-nums">
+                  <div className="text-xs text-gp-text-muted font-medium">Budget & Spend</div>
+                  <div className="text-sm font-bold text-gp-text tabular-nums">
                     ${p.budgetSpent.toLocaleString()} / ${p.budgetTotal.toLocaleString()} USD
                   </div>
-                  <div className="text-xs text-slate-500">Delivery: {p.targetCompletionDate}</div>
+                  <div className="text-xs text-gp-text-muted">Delivery: {p.targetCompletionDate}</div>
                 </div>
               </div>
 
               <div className="p-6 space-y-4">
                 <div>
-                  <div className="flex items-center justify-between text-xs text-slate-600 mb-1">
+                  <div className="flex items-center justify-between text-xs text-gp-text-secondary mb-1">
                     <span>Overall Milestone Completion</span>
-                    <span className="font-bold text-slate-900 tabular-nums">{p.progressPercent}%</span>
+                    <span className="font-bold text-gp-text tabular-nums">{p.progressPercent}%</span>
                   </div>
-                  <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="w-full h-2 bg-gp-surface-secondary rounded-full overflow-hidden">
                     <div 
-                      className="h-full bg-blue-600 rounded-full"
+                      className="h-full bg-gp-primary rounded-full"
                       style={{ width: `${p.progressPercent}%` }}
                     />
                   </div>
@@ -318,32 +319,32 @@ export function AdminProjectsView() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                   <div>
-                    <h4 className="text-xs font-bold text-slate-700 mb-2">
+                    <h4 className="text-xs font-bold text-gp-text mb-2">
                       Milestones ({p.milestones.length})
                     </h4>
                     <div className="space-y-2">
                       {p.milestones.map((m) => (
-                        <div key={m.id} className="p-2.5 rounded-lg border border-slate-100 bg-slate-50/60 flex items-center justify-between text-xs">
+                        <div key={m.id} className="p-2.5 rounded-lg border border-gp-divider bg-gp-canvas/60 flex items-center justify-between text-xs">
                           <div className="flex items-center gap-2">
-                            <CheckCircle2 className={`w-3.5 h-3.5 ${m.status === 'COMPLETED' ? 'text-emerald-600' : 'text-slate-300'}`} />
-                            <span className={m.status === 'COMPLETED' ? 'text-slate-700' : 'text-slate-900 font-medium'}>
+                            <CheckCircle2 className={`w-3.5 h-3.5 ${m.status === 'COMPLETED' ? 'text-gp-success' : 'text-gp-text-muted'}`} />
+                            <span className={m.status === 'COMPLETED' ? 'text-gp-text' : 'text-gp-text font-medium'}>
                               {m.title}
                             </span>
                           </div>
-                          <span className="text-xs text-slate-400">{m.dueDate}</span>
+                          <span className="text-xs text-gp-text-muted">{m.dueDate}</span>
                         </div>
                       ))}
                     </div>
                   </div>
 
                   <div>
-                    <h4 className="text-xs font-bold text-slate-700 mb-2">
+                    <h4 className="text-xs font-bold text-gp-text mb-2">
                       Deliverables & Scope
                     </h4>
-                    <ul className="space-y-1.5 text-xs text-slate-600">
+                    <ul className="space-y-1.5 text-xs text-gp-text-secondary">
                       {p.deliverables.map((d, dIdx) => (
                         <li key={dIdx} className="flex items-start gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-blue-600 mt-1.5 shrink-0" />
+                          <span className="w-1.5 h-1.5 rounded-full bg-gp-primary mt-1.5 shrink-0" />
                           <span>{d}</span>
                         </li>
                       ))}

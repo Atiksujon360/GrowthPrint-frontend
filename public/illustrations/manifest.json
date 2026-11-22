@@ -1,0 +1,291 @@
+{
+  "generated": "asset-studio.html + render-assets.mjs",
+  "brand": "GrowthPrint — plum/charcoal/orange/coral, transparent PNG masters → WebP",
+  "assets": [
+    {
+      "id": "automation-ai-orchestration",
+      "category": "automation",
+      "src": "/illustrations/automation/automation-ai-orchestration.webp"
+    },
+    {
+      "id": "automation-api",
+      "category": "automation",
+      "src": "/illustrations/automation/automation-api.webp"
+    },
+    {
+      "id": "automation-connected-systems",
+      "category": "automation",
+      "src": "/illustrations/automation/automation-connected-systems.webp"
+    },
+    {
+      "id": "automation-execution",
+      "category": "automation",
+      "src": "/illustrations/automation/automation-execution.webp"
+    },
+    {
+      "id": "automation-processes",
+      "category": "automation",
+      "src": "/illustrations/automation/automation-processes.webp"
+    },
+    {
+      "id": "automation-workflow",
+      "category": "automation",
+      "src": "/illustrations/automation/automation-workflow.webp"
+    },
+    {
+      "id": "billing-analytics",
+      "category": "billing",
+      "src": "/illustrations/billing/billing-analytics.webp"
+    },
+    {
+      "id": "billing-invoices",
+      "category": "billing",
+      "src": "/illustrations/billing/billing-invoices.webp"
+    },
+    {
+      "id": "billing-management",
+      "category": "billing",
+      "src": "/illustrations/billing/billing-management.webp"
+    },
+    {
+      "id": "billing-payments",
+      "category": "billing",
+      "src": "/illustrations/billing/billing-payments.webp"
+    },
+    {
+      "id": "billing-revenue",
+      "category": "billing",
+      "src": "/illustrations/billing/billing-revenue.webp"
+    },
+    {
+      "id": "crm-client-profiles",
+      "category": "crm",
+      "src": "/illustrations/crm/crm-client-profiles.webp"
+    },
+    {
+      "id": "crm-communication",
+      "category": "crm",
+      "src": "/illustrations/crm/crm-communication.webp"
+    },
+    {
+      "id": "crm-lead-pipeline",
+      "category": "crm",
+      "src": "/illustrations/crm/crm-lead-pipeline.webp"
+    },
+    {
+      "id": "crm-onboarding",
+      "category": "crm",
+      "src": "/illustrations/crm/crm-onboarding.webp"
+    },
+    {
+      "id": "crm-opportunities",
+      "category": "crm",
+      "src": "/illustrations/crm/crm-opportunities.webp"
+    },
+    {
+      "id": "crm-relationships",
+      "category": "crm",
+      "src": "/illustrations/crm/crm-relationships.webp"
+    },
+    {
+      "id": "dashboard-analytics",
+      "category": "dashboard",
+      "src": "/illustrations/dashboard/dashboard-analytics.webp"
+    },
+    {
+      "id": "dashboard-growth",
+      "category": "dashboard",
+      "src": "/illustrations/dashboard/dashboard-growth.webp"
+    },
+    {
+      "id": "dashboard-monitoring",
+      "category": "dashboard",
+      "src": "/illustrations/dashboard/dashboard-monitoring.webp"
+    },
+    {
+      "id": "dashboard-overview",
+      "category": "dashboard",
+      "src": "/illustrations/dashboard/dashboard-overview.webp"
+    },
+    {
+      "id": "dashboard-projects",
+      "category": "dashboard",
+      "src": "/illustrations/dashboard/dashboard-projects.webp"
+    },
+    {
+      "id": "dashboard-team",
+      "category": "dashboard",
+      "src": "/illustrations/dashboard/dashboard-team.webp"
+    },
+    {
+      "id": "empty-activity",
+      "category": "empty",
+      "src": "/illustrations/empty/empty-activity.webp"
+    },
+    {
+      "id": "empty-clients",
+      "category": "empty",
+      "src": "/illustrations/empty/empty-clients.webp"
+    },
+    {
+      "id": "empty-integrations",
+      "category": "empty",
+      "src": "/illustrations/empty/empty-integrations.webp"
+    },
+    {
+      "id": "empty-invoices",
+      "category": "empty",
+      "src": "/illustrations/empty/empty-invoices.webp"
+    },
+    {
+      "id": "empty-notifications",
+      "category": "empty",
+      "src": "/illustrations/empty/empty-notifications.webp"
+    },
+    {
+      "id": "empty-projects",
+      "category": "empty",
+      "src": "/illustrations/empty/empty-projects.webp"
+    },
+    {
+      "id": "empty-search",
+      "category": "empty",
+      "src": "/illustrations/empty/empty-search.webp"
+    },
+    {
+      "id": "empty-tasks",
+      "category": "empty",
+      "src": "/illustrations/empty/empty-tasks.webp"
+    },
+    {
+      "id": "onboarding-configure",
+      "category": "onboarding",
+      "src": "/illustrations/onboarding/onboarding-configure.webp"
+    },
+    {
+      "id": "onboarding-connect",
+      "category": "onboarding",
+      "src": "/illustrations/onboarding/onboarding-connect.webp"
+    },
+    {
+      "id": "onboarding-first-business",
+      "category": "onboarding",
+      "src": "/illustrations/onboarding/onboarding-first-business.webp"
+    },
+    {
+      "id": "onboarding-first-project",
+      "category": "onboarding",
+      "src": "/illustrations/onboarding/onboarding-first-project.webp"
+    },
+    {
+      "id": "onboarding-invite-team",
+      "category": "onboarding",
+      "src": "/illustrations/onboarding/onboarding-invite-team.webp"
+    },
+    {
+      "id": "onboarding-welcome",
+      "category": "onboarding",
+      "src": "/illustrations/onboarding/onboarding-welcome.webp"
+    },
+    {
+      "id": "projects-active",
+      "category": "projects",
+      "src": "/illustrations/projects/projects-active.webp"
+    },
+    {
+      "id": "projects-collaboration",
+      "category": "projects",
+      "src": "/illustrations/projects/projects-collaboration.webp"
+    },
+    {
+      "id": "projects-completed",
+      "category": "projects",
+      "src": "/illustrations/projects/projects-completed.webp"
+    },
+    {
+      "id": "projects-deliverables",
+      "category": "projects",
+      "src": "/illustrations/projects/projects-deliverables.webp"
+    },
+    {
+      "id": "projects-milestones",
+      "category": "projects",
+      "src": "/illustrations/projects/projects-milestones.webp"
+    },
+    {
+      "id": "projects-tasks",
+      "category": "projects",
+      "src": "/illustrations/projects/projects-tasks.webp"
+    },
+    {
+      "id": "team-activity",
+      "category": "team",
+      "src": "/illustrations/team/team-activity.webp"
+    },
+    {
+      "id": "team-collaboration",
+      "category": "team",
+      "src": "/illustrations/team/team-collaboration.webp"
+    },
+    {
+      "id": "team-communication",
+      "category": "team",
+      "src": "/illustrations/team/team-communication.webp"
+    },
+    {
+      "id": "team-invitations",
+      "category": "team",
+      "src": "/illustrations/team/team-invitations.webp"
+    },
+    {
+      "id": "team-management",
+      "category": "team",
+      "src": "/illustrations/team/team-management.webp"
+    },
+    {
+      "id": "team-permissions",
+      "category": "team",
+      "src": "/illustrations/team/team-permissions.webp"
+    },
+    {
+      "id": "tech-api",
+      "category": "technical",
+      "src": "/illustrations/technical/tech-api.webp"
+    },
+    {
+      "id": "tech-cloud",
+      "category": "technical",
+      "src": "/illustrations/technical/tech-cloud.webp"
+    },
+    {
+      "id": "tech-database",
+      "category": "technical",
+      "src": "/illustrations/technical/tech-database.webp"
+    },
+    {
+      "id": "tech-deployment",
+      "category": "technical",
+      "src": "/illustrations/technical/tech-deployment.webp"
+    },
+    {
+      "id": "tech-development",
+      "category": "technical",
+      "src": "/illustrations/technical/tech-development.webp"
+    },
+    {
+      "id": "tech-integrations",
+      "category": "technical",
+      "src": "/illustrations/technical/tech-integrations.webp"
+    },
+    {
+      "id": "tech-monitoring",
+      "category": "technical",
+      "src": "/illustrations/technical/tech-monitoring.webp"
+    },
+    {
+      "id": "tech-security",
+      "category": "technical",
+      "src": "/illustrations/technical/tech-security.webp"
+    }
+  ]
+}

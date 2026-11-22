@@ -123,7 +123,7 @@ export function AdminRequestsQueue() {
       sortable: true,
       cell: ({ row }) => (
         <div className="flex items-center gap-1.5">
-          <span className="whitespace-nowrap font-semibold tabular-nums text-ink-800 text-xs">
+          <span className="whitespace-nowrap font-semibold tabular-nums text-gp-text text-xs">
             {row.reference}
           </span>
           <CopyButton value={row.reference} title="Copy ticket reference" />
@@ -137,8 +137,8 @@ export function AdminRequestsQueue() {
       sortable: true,
       cell: ({ row }) => (
         <div>
-          <div className="font-bold text-slate-900 line-clamp-1">{row.title}</div>
-          <div className="text-xs text-slate-400">{row.clientName}</div>
+          <div className="font-bold text-gp-text line-clamp-1">{row.title}</div>
+          <div className="text-xs text-gp-text-muted">{row.clientName}</div>
         </div>
       )
     },
@@ -148,7 +148,7 @@ export function AdminRequestsQueue() {
       accessorKey: 'category',
       sortable: true,
       cell: ({ row }) => (
-        <span className="font-medium text-slate-700 text-xs">
+        <span className="font-medium text-gp-text text-xs">
           {humanizeCode(row.category)}
         </span>
       )
@@ -160,7 +160,7 @@ export function AdminRequestsQueue() {
       sortable: true,
       cell: ({ row }) => (
         <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${
-          row.urgency === 'URGENT' ? 'bg-rose-100 text-rose-800' : 'bg-slate-100 text-slate-700'
+          row.urgency === 'URGENT' ? 'bg-gp-danger-soft text-gp-danger' : 'bg-gp-surface-secondary text-gp-text'
         }`}>
           {humanizeCode(row.urgency)}
         </span>
@@ -179,7 +179,7 @@ export function AdminRequestsQueue() {
       accessorKey: 'createdAt',
       sortable: true,
       cell: ({ row }) => (
-        <span className="text-slate-400 text-xs">
+        <span className="text-gp-text-muted text-xs">
           {new Date(row.createdAt).toLocaleDateString()}
         </span>
       )
@@ -203,18 +203,18 @@ export function AdminRequestsQueue() {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-lg font-semibold text-ink-950">
-              Client Support & Maintenance Tickets
+            <h2 className="text-xl font-semibold tracking-tight text-gp-text">
+              Support
             </h2>
-            <p className="text-xs text-slate-500">
-              Review incoming client tickets, verify retainer coverage, and prepare transparent estimates before touching code.
+            <p className="mt-1 text-sm text-gp-text-muted">
+              Client tickets, retainer coverage, and estimates before work begins.
             </p>
           </div>
         </div>
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
-            <RefreshCw className="w-8 h-8 text-slate-400 animate-spin mx-auto mb-3" />
-            <p className="text-sm text-slate-500">Loading support requests...</p>
+            <RefreshCw className="w-8 h-8 text-gp-text-muted animate-spin mx-auto mb-3" />
+            <p className="text-sm text-gp-text-muted">Loading support requests...</p>
           </div>
         </div>
       </div>
@@ -226,16 +226,16 @@ export function AdminRequestsQueue() {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-lg font-semibold text-ink-950">
-              Client Support & Maintenance Tickets
+            <h2 className="text-xl font-semibold tracking-tight text-gp-text">
+              Support
             </h2>
-            <p className="text-xs text-slate-500">
-              Review incoming client tickets, verify retainer coverage, and prepare transparent estimates before touching code.
+            <p className="mt-1 text-sm text-gp-text-muted">
+              Client tickets, retainer coverage, and estimates before work begins.
             </p>
           </div>
           <button
             onClick={handleRefresh}
-            className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-50 flex items-center gap-1.5"
+            className="px-3 py-1.5 bg-gp-surface border border-gp-border rounded-lg text-xs font-medium text-gp-text-secondary hover:bg-gp-canvas flex items-center gap-1.5"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             <span>Retry</span>
@@ -243,12 +243,12 @@ export function AdminRequestsQueue() {
         </div>
         <div className="flex items-center justify-center py-12">
           <div className="text-center max-w-md">
-            <AlertCircle className="w-8 h-8 text-rose-500 mx-auto mb-3" />
-            <p className="text-sm font-medium text-slate-900 mb-1">Failed to load support requests</p>
-            <p className="text-xs text-slate-500 mb-3">{requestsError}</p>
+            <AlertCircle className="w-8 h-8 text-gp-danger mx-auto mb-3" />
+            <p className="text-sm font-medium text-gp-text mb-1">Failed to load support requests</p>
+            <p className="text-xs text-gp-text-muted mb-3">{requestsError}</p>
             <button
               onClick={handleRefresh}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold"
+              className="px-4 py-2 bg-gp-primary hover:bg-gp-primary-hover text-gp-primary-foreground rounded-lg text-xs font-semibold"
             >
               Try Again
             </button>
@@ -263,17 +263,17 @@ export function AdminRequestsQueue() {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-lg font-semibold text-ink-950">
-              Client Support & Maintenance Tickets
+            <h2 className="text-xl font-semibold tracking-tight text-gp-text">
+              Support
             </h2>
-            <p className="text-xs text-slate-500">
-              Review incoming client tickets, verify retainer coverage, and prepare transparent estimates before touching code.
+            <p className="mt-1 text-sm text-gp-text-muted">
+              Client tickets, retainer coverage, and estimates before work begins.
             </p>
           </div>
           <button
             onClick={handleRefresh}
             disabled={isLoadingRequests}
-            className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+            className="px-3 py-1.5 bg-gp-surface border border-gp-border rounded-lg text-xs font-medium text-gp-text-secondary hover:bg-gp-canvas disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isLoadingRequests ? 'animate-spin' : ''}`} />
             <span>Refresh</span>
@@ -281,9 +281,9 @@ export function AdminRequestsQueue() {
         </div>
         <div className="flex items-center justify-center py-12">
           <div className="text-center max-w-md">
-            <TicketCheck className="w-8 h-8 text-slate-400 mx-auto mb-3" />
-            <p className="text-sm font-medium text-slate-900 mb-1">No support requests</p>
-            <p className="text-xs text-slate-500">Support requests from clients will appear here.</p>
+            <TicketCheck className="w-8 h-8 text-gp-text-muted mx-auto mb-3" />
+            <p className="text-sm font-medium text-gp-text mb-1">No support requests</p>
+            <p className="text-xs text-gp-text-muted">Support requests from clients will appear here.</p>
           </div>
         </div>
       </div>
@@ -295,20 +295,20 @@ export function AdminRequestsQueue() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-lg font-semibold text-ink-950">
-            Client Support & Maintenance Tickets
+          <h2 className="text-xl font-semibold tracking-tight text-gp-text">
+            Support
           </h2>
-          <p className="text-xs text-slate-500">
-            Review incoming client tickets, verify retainer coverage, and prepare transparent estimates before touching code.
+          <p className="mt-1 text-sm text-gp-text-muted">
+            Client tickets, retainer coverage, and estimates before work begins.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+          <div className="flex items-center bg-gp-surface-secondary p-1 rounded-xl border border-gp-border">
             <button
               onClick={() => setViewMode('SPLIT')}
               className={`px-3 py-1 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-colors ${
-                viewMode === 'SPLIT' ? 'bg-white text-slate-900 shadow-2xs font-semibold' : 'text-slate-600'
+                viewMode === 'SPLIT' ? 'bg-gp-surface text-gp-text shadow-2xs font-semibold' : 'text-gp-text-secondary'
               }`}
             >
               <Columns className="w-3.5 h-3.5" />
@@ -317,7 +317,7 @@ export function AdminRequestsQueue() {
             <button
               onClick={() => setViewMode('FULL_TABLE')}
               className={`px-3 py-1 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-colors ${
-                viewMode === 'FULL_TABLE' ? 'bg-white text-slate-900 shadow-2xs font-semibold' : 'text-slate-600'
+                viewMode === 'FULL_TABLE' ? 'bg-gp-surface text-gp-text shadow-2xs font-semibold' : 'text-gp-text-secondary'
               }`}
             >
               <TableIcon className="w-3.5 h-3.5" />
@@ -327,7 +327,7 @@ export function AdminRequestsQueue() {
           <button
             onClick={handleRefresh}
             disabled={isLoadingRequests}
-            className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+            className="px-3 py-1.5 bg-gp-surface border border-gp-border rounded-lg text-xs font-medium text-gp-text-secondary hover:bg-gp-canvas disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isLoadingRequests ? 'animate-spin' : ''}`} />
             <span>Refresh</span>
@@ -373,16 +373,16 @@ export function AdminRequestsQueue() {
         {/* Classification & Estimate Station */}
         {activeReq && (
           <div className={viewMode === 'SPLIT' ? 'lg:col-span-5' : 'w-full'}>
-            <div className="bg-white rounded-2xl border border-slate-200/90 p-6 space-y-5 sticky top-20">
+            <div className="bg-gp-surface rounded-2xl border border-gp-border/90 p-6 space-y-5 sticky top-20">
               {/* Header */}
-              <div className="flex items-start justify-between gap-4 pb-4 border-b border-slate-100">
+              <div className="flex items-start justify-between gap-4 pb-4 border-b border-gp-divider">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-slate-400">{activeReq.reference}</span>
+                    <span className="text-xs font-bold text-gp-text-muted">{activeReq.reference}</span>
                     <StatusBadge status={activeReq.status} />
                   </div>
-                  <h3 className="text-base font-bold text-slate-900">{activeReq.title}</h3>
-                  <div className="text-xs text-slate-500">
+                  <h3 className="text-base font-bold text-gp-text">{activeReq.title}</h3>
+                  <div className="text-xs text-gp-text-muted">
                     Client: <strong>{activeReq.clientName}</strong> · Urgency: <strong>{humanizeCode(activeReq.urgency)}</strong>
                   </div>
                 </div>
@@ -391,7 +391,7 @@ export function AdminRequestsQueue() {
                   {activeReq.status === 'READY_TO_START' && (
                     <button
                       onClick={() => handleUpdateStatus(activeReq.id, 'IN_PROGRESS')}
-                      className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold"
+                      className="px-3 py-1 bg-gp-primary hover:bg-gp-primary-hover text-gp-primary-foreground rounded-lg text-xs font-semibold"
                     >
                       Start Work
                     </button>
@@ -400,7 +400,7 @@ export function AdminRequestsQueue() {
                   {activeReq.status === 'IN_PROGRESS' && (
                     <button
                       onClick={() => handleUpdateStatus(activeReq.id, 'COMPLETED')}
-                      className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1"
+                      className="px-3 py-1 bg-gp-success hover:bg-gp-success text-white rounded-lg text-xs font-semibold flex items-center gap-1"
                     >
                       <CheckCircle2 className="w-3.5 h-3.5" />
                       <span>Complete</span>
@@ -410,8 +410,8 @@ export function AdminRequestsQueue() {
               </div>
 
               {/* Description */}
-              <div className="p-3.5 bg-slate-50/70 rounded-xl border border-slate-200/70 text-xs text-slate-700 leading-relaxed">
-                <strong className="text-slate-900 block mb-1">Client&apos;s Message:</strong>
+              <div className="p-3.5 bg-gp-canvas/70 rounded-xl border border-gp-border/70 text-xs text-gp-text leading-relaxed">
+                <strong className="text-gp-text block mb-1">Client&apos;s Message:</strong>
                 {activeReq.description}
               </div>
 
@@ -419,14 +419,14 @@ export function AdminRequestsQueue() {
               <SupportTriagePanel requestId={activeReq.id} onUseCategory={setCategory} />
 
               {/* Classification Form */}
-              <form onSubmit={handleClassify} className="space-y-3 pt-2 border-t border-slate-100">
+              <form onSubmit={handleClassify} className="space-y-3 pt-2 border-t border-gp-divider">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-900">
+                  <span className="text-xs font-bold text-gp-text">
                     Retainer & Scope Check
                   </span>
                   <button
                     type="submit"
-                    className="px-2.5 py-1 bg-slate-800 hover:bg-slate-900 text-white rounded-md text-xs font-medium"
+                    className="px-2.5 py-1 bg-gp-primary-hover hover:bg-gp-primary text-gp-primary-foreground rounded-md text-xs font-medium"
                   >
                     Save
                   </button>
@@ -437,7 +437,7 @@ export function AdminRequestsQueue() {
                     aria-label="Request category"
                     value={category}
                     onChange={(e) => setCategory(e.target.value as SupportCategory)}
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded-lg bg-white"
+                    className="w-full px-3 py-1.5 text-xs border border-gp-border rounded-lg bg-gp-surface"
                   >
                     <option value="INCLUDED_SUPPORT">INCLUDED SUPPORT (Retainer applies)</option>
                     <option value="PAID_AD_HOC_SUPPORT">PAID AD-HOC SUPPORT (Estimate needed)</option>
@@ -453,50 +453,50 @@ export function AdminRequestsQueue() {
                     value={adminNotes}
                     onChange={(e) => setAdminNotes(e.target.value)}
                     placeholder="Technical assessment notes..."
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded-lg"
+                    className="w-full px-3 py-1.5 text-xs border border-gp-border rounded-lg"
                   />
                 </div>
               </form>
 
               {/* Estimate Builder if Paid Ad-Hoc */}
               {category === 'PAID_AD_HOC_SUPPORT' && (
-                <form onSubmit={handleSendEstimate} className="space-y-3 pt-3 border-t border-slate-100">
+                <form onSubmit={handleSendEstimate} className="space-y-3 pt-3 border-t border-gp-divider">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-900">
+                    <span className="text-xs font-bold text-gp-text">
                       Written Scope & Estimate
                     </span>
-                    <span className="text-xs font-bold text-blue-700 tabular-nums">
+                    <span className="text-xs font-bold text-gp-primary-strong tabular-nums">
                       ${(Number(estimateHours) * Number(hourlyRate)).toLocaleString()} USD
                     </span>
                   </div>
 
                   <div className="grid grid-cols-3 gap-2">
                     <div>
-                      <label className="block text-xs text-slate-500">Hours</label>
+                      <label className="block text-xs text-gp-text-muted">Hours</label>
                       <input
                         type="number"
                         step="0.5"
                         value={estimateHours}
                         onChange={(e) => setEstimateHours(Number(e.target.value))}
-                        className="w-full px-2 py-1 text-xs border border-slate-300 rounded"
+                        className="w-full px-2 py-1 text-xs border border-gp-border rounded"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs text-slate-500">Rate ($)</label>
+                      <label className="block text-xs text-gp-text-muted">Rate ($)</label>
                       <input
                         type="number"
                         value={hourlyRate}
                         onChange={(e) => setHourlyRate(Number(e.target.value))}
-                        className="w-full px-2 py-1 text-xs border border-slate-300 rounded"
+                        className="w-full px-2 py-1 text-xs border border-gp-border rounded"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs text-slate-500">Days</label>
+                      <label className="block text-xs text-gp-text-muted">Days</label>
                       <input
                         type="number"
                         value={deliveryDays}
                         onChange={(e) => setDeliveryDays(Number(e.target.value))}
-                        className="w-full px-2 py-1 text-xs border border-slate-300 rounded"
+                        className="w-full px-2 py-1 text-xs border border-gp-border rounded"
                       />
                     </div>
                   </div>
@@ -507,13 +507,13 @@ export function AdminRequestsQueue() {
                       value={explanation}
                       onChange={(e) => setExplanation(e.target.value)}
                       placeholder="Scope details for client approval..."
-                      className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded-lg"
+                      className="w-full px-3 py-1.5 text-xs border border-gp-border rounded-lg"
                     />
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5"
+                    className="w-full py-2 bg-gp-primary hover:bg-gp-primary-hover text-gp-primary-foreground rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5"
                   >
                     <DollarSign className="w-3.5 h-3.5" />
                     <span>Send Estimate for Authorization</span>

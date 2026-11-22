@@ -89,7 +89,7 @@ export function PortalLayout({ currentTab, onTabChange, onOpenNewRequest, childr
             <p className="mt-0.5 truncate text-sm font-semibold text-gp-text">{currentUser.clientName || 'Client Portal'}</p>
           </div>
           <button type="button" onClick={onOpenNewRequest}
-            className="flex h-9 w-full items-center justify-center gap-2 rounded-gp-control bg-gp-primary text-sm font-semibold text-white transition-colors hover:bg-gp-primary-hover">
+            className="flex h-9 w-full items-center justify-center gap-2 rounded-gp-control bg-gp-primary text-sm font-semibold text-gp-primary-foreground transition-colors hover:bg-gp-primary-hover">
             <Plus className="h-4 w-4" aria-hidden="true" /> Submit request
           </button>
         </div>
@@ -108,7 +108,7 @@ export function PortalLayout({ currentTab, onTabChange, onOpenNewRequest, childr
           <NotificationDropdown onNavigateTab={(tab) => onTabChange(tab as PortalTab)} />
           {/* On narrower screens the sidebar is a rail or a drawer, so the main action lives here too. */}
           <button type="button" onClick={onOpenNewRequest}
-            className="flex h-9 items-center gap-1.5 rounded-gp-control bg-gp-primary px-3 text-sm font-semibold text-white hover:bg-gp-primary-hover xl:hidden">
+            className="flex h-9 items-center gap-1.5 rounded-gp-control bg-gp-primary px-3 text-sm font-semibold text-gp-primary-foreground hover:bg-gp-primary-hover xl:hidden">
             <Plus className="h-4 w-4" aria-hidden="true" />
             <span className="hidden sm:inline">Submit request</span>
             <span className="sr-only sm:hidden">Submit request</span>

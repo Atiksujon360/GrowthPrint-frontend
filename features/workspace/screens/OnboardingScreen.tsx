@@ -137,7 +137,7 @@ export function OnboardingScreen() {
                 options={INDUSTRIES.map(i => ({ value: i, label: i }))} />
               <fieldset>
                 <legend className="mb-2 block text-sm font-medium text-ink-800">Team size</legend>
-                <div className="grid gap-2 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   {(Object.keys(TEAM_SIZE_LABEL) as TeamSize[]).map(size => (
                     <label key={size} className={`flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border px-3 text-sm ${
                       draft.teamSize === size ? 'border-brand-500 bg-brand-50 text-ink-900' : 'border-ink-200 text-ink-700 hover:bg-ink-50'}`}>

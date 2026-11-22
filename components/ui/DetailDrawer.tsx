@@ -53,13 +53,13 @@ export function DetailDrawer({ open, onClose, title, subtitle, badge, children, 
 
   return createPortal(
     <div className="gp-app fixed inset-0 z-50 flex justify-end">
-      <div className="absolute inset-0 bg-ink-950/30 motion-safe:animate-[gp-fade_160ms_ease-out]" onClick={onClose} aria-hidden="true" />
+      <div className="absolute inset-0 bg-gp-text/30 motion-safe:animate-[gp-fade_160ms_ease-out]" onClick={onClose} aria-hidden="true" />
       <div
         ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="relative flex h-full w-full max-w-[min(100vw,30rem)] flex-col bg-gp-surface shadow-[-12px_0_32px_-12px_rgba(23,33,43,0.25)] motion-safe:animate-[gp-sheet-in_200ms_cubic-bezier(0.2,0.8,0.2,1)]"
+        className="relative flex h-full w-full max-w-[min(100vw,30rem)] flex-col bg-gp-surface shadow-[-12px_0_32px_-12px_rgba(33,25,35,0.25)] motion-safe:animate-[gp-sheet-in_200ms_cubic-bezier(0.2,0.8,0.2,1)]"
       >
         <header className="flex items-start gap-3 border-b border-gp-border px-6 pb-4 pt-5">
           <div className="min-w-0 flex-1">

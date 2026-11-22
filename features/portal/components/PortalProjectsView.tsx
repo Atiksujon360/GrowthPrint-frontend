@@ -64,7 +64,7 @@ export function PortalProjectsView() {
         <button
           onClick={handleRefresh}
           disabled={isRefreshing || isLoadingProjects}
-          className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed self-start sm:self-auto"
+          className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed self-start sm:self-auto"
           title="Refresh projects"
         >
           <RefreshCw className={`w-4 h-4 ${isRefreshing || isLoadingProjects ? 'animate-spin' : ''}`} />
@@ -133,7 +133,7 @@ export function PortalProjectsView() {
               </div>
               <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-blue-600 rounded-full transition-all duration-300"
+                  className="h-full bg-blue-600 rounded-full transition-colors duration-300"
                   style={{ width: `${project.progressPercent}%` }}
                 />
               </div>
