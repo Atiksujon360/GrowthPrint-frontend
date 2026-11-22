@@ -7,7 +7,7 @@ import {
   ACTIVE_PROJECT_STATUSES,
 } from '../../../lib/dashboardMetrics.ts';
 import { isMockModeEnv } from '../../../lib/api/client.ts';
-import { Users, FolderKanban, Send, ArrowRight, Target, CreditCard, ListChecks, FileText } from 'lucide-react';
+import { Send, ArrowRight } from 'lucide-react';
 import { KpiCard, Panel, percentChange } from '../../../components/ui/app-kit.tsx';
 import { StatusBadge } from '../../../components/ui/Badges.tsx';
 import { humanizeCode } from '../../../lib/labels.ts';
@@ -146,25 +146,41 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
         </div>
       </div>
 
-      {/* Six KPI cards with improved spacing and visual balance */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
-        <KpiCard label="Active projects" icon={FolderKanban} value={activeProjectCount}
+      {/* Operational pulse: four compact stats, then the money strip — the dashboard's one bright element. */}
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <KpiCard label="Active projects" value={activeProjectCount}
           context={waitingProjects ? `${waitingProjects} waiting for client` : `${projects.length} in total`} onClick={() => onNavigateTab('PROJECTS')} />
-        <KpiCard label="Total leads" icon={Target} value={leads.length}
+        <KpiCard label="Total leads" value={leads.length}
           delta={leadsDelta === null ? null : { value: leadsDelta, label: 'new leads versus last month' }}
           context={leadsDelta === null ? `${newLeads.thisMonth} new this month` : 'new vs last month'} onClick={() => onNavigateTab('LEADS')} />
-        <KpiCard label="Active clients" icon={Users} value={activeClients}
+        <KpiCard label="Active clients" value={activeClients}
           context={`${retainerClients} on a retainer`} onClick={() => onNavigateTab('CLIENTS')} />
-        <KpiCard label="Open milestones" icon={ListChecks} value={milestones.open} tone={milestones.overdue ? 'danger' : 'primary'}
+        <KpiCard label="Open milestones" value={milestones.open}
           context={milestones.overdue ? <span className="font-medium text-gp-danger">{milestones.overdue} overdue</span> : 'None overdue'}
           onClick={() => onNavigateTab('PROJECTS')} />
-        <KpiCard label="Open proposals" icon={FileText} value={openProposals.length}
-          context={openProposals.length ? `${money(openProposalValue)} in review` : 'None in review'} />
-        <KpiCard label="Outstanding invoices" icon={CreditCard} value={money(outstandingTotal)}
-          tone={overdueInvoices.length ? 'danger' : 'primary'}
-          context={overdueInvoices.length ? <span className="font-medium text-gp-danger">{overdueInvoices.length} overdue</span> : `${outstanding.length} issued`}
-          onClick={() => onNavigateTab('INVOICES')} />
       </div>
+
+      <Panel title="Money" description="Invoiced, collected and in proposal review"
+        action={<button onClick={() => onNavigateTab('INVOICES')} className="text-sm font-semibold text-gp-primary-strong hover:underline">View invoices</button>}
+        bodyClassName="p-0">
+        <dl className="grid grid-cols-1 gap-px bg-gp-border sm:grid-cols-3">
+          <div className="bg-gp-surface px-5 py-4">
+            <dt className="text-[0.8125rem] font-medium text-gp-text-secondary">Outstanding</dt>
+            <dd className={`mt-1 text-2xl font-bold tabular-nums ${overdueInvoices.length ? 'text-gp-danger' : 'text-gp-text'}`}>{money(outstandingTotal)}</dd>
+            <dd className="mt-1 text-xs text-gp-text-secondary">{overdueInvoices.length ? <span className="font-medium text-gp-danger">{overdueInvoices.length} overdue</span> : `${outstanding.length} issued`}</dd>
+          </div>
+          <div className="bg-gp-surface px-5 py-4">
+            <dt className="text-[0.8125rem] font-medium text-gp-text-secondary">Collected to date</dt>
+            <dd className="mt-1 text-2xl font-bold tabular-nums text-gp-text">{money(cashCollected)}</dd>
+            <dd className="mt-1 text-xs text-gp-text-secondary">from paid invoices</dd>
+          </div>
+          <div className="bg-gp-surface px-5 py-4">
+            <dt className="text-[0.8125rem] font-medium text-gp-text-secondary">In proposal review</dt>
+            <dd className="mt-1 text-2xl font-bold tabular-nums text-gp-text">{openProposals.length ? money(openProposalValue) : '—'}</dd>
+            <dd className="mt-1 text-xs text-gp-text-secondary">{openProposals.length ? `${openProposals.length} open proposal${openProposals.length === 1 ? '' : 's'}` : 'No open proposals'}</dd>
+          </div>
+        </dl>
+      </Panel>
 
       {/* Analytics row 1 */}
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-3">
