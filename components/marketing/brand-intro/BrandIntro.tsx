@@ -27,27 +27,33 @@ export function BrandIntro() {
       <section id="meet" aria-labelledby="meet-title" className="relative scroll-mt-24 overflow-hidden">
         <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-40 -z-10 h-[600px] w-[1000px] -translate-x-1/2 rounded-full bg-mk-purple/15 blur-[160px]" />
         <div className="mx-auto max-w-[1240px] px-5 pb-24 sm:px-8 lg:px-14 lg:pb-32">
-          <div className="mx-auto max-w-3xl text-center">
+          <div className="mx-auto max-w-3xl text-center mb-12">
             <p className="text-sm font-medium tracking-[0.18em] text-mk-violet">MEET GROWTHPRINT</p>
             <h2 id="meet-title" className="mt-5 text-[clamp(2rem,4.2vw,3.6rem)] font-medium leading-[1.08] tracking-[-0.02em]">
               Technology should make business <em className="font-light italic">easier.</em>
             </h2>
-            <p className="mx-auto mt-6 max-w-2xl text-lg font-light leading-relaxed text-mk-muted">
-              From building modern digital experiences to automating everyday operations, GrowthPrint helps businesses turn
-              technology challenges into practical solutions.
-            </p>
           </div>
 
-          <div className="mt-14 lg:mt-16"><ExplainerVideo /></div>
-
-          <ul className="mt-12 grid grid-cols-2 border-t border-mk-line lg:grid-cols-4">
-            {HIGHLIGHTS.map((h, i) => (
-              <li key={h.title} className={`py-7 pr-6 ${i % 2 === 1 ? 'pl-6 border-l border-mk-line' : ''} ${i >= 2 ? 'border-t border-mk-line lg:border-t-0' : ''} ${i === 2 ? 'lg:pl-6 lg:border-l' : ''}`}>
-                <p className="text-xl font-medium">{h.title}</p>
-                <p className="mt-2 text-[15px] font-light leading-relaxed text-mk-muted">{h.text}</p>
-              </li>
-            ))}
-          </ul>
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            <div>
+              <p className="text-lg font-light leading-relaxed text-mk-muted">
+                From building modern digital experiences to automating everyday operations, GrowthPrint helps businesses turn
+                technology challenges into practical solutions.
+              </p>
+              <ul className="mt-8 space-y-4">
+                {HIGHLIGHTS.map((h, i) => (
+                  <li key={h.title} className="flex gap-3">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-mk-purple/20 text-mk-violet text-sm font-medium" aria-hidden="true">{i + 1}</span>
+                    <div>
+                      <p className="text-lg font-medium">{h.title}</p>
+                      <p className="mt-1 text-[15px] font-light leading-relaxed text-mk-muted">{h.text}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="w-full"><ExplainerVideo /></div>
+          </div>
         </div>
       </section>
     </>

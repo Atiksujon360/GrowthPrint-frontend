@@ -5,10 +5,12 @@ import { Play } from 'lucide-react';
 
 /** Where the film lives. Swap or add sources here; nothing else needs to change. */
 export const EXPLAINER = {
-  sources: [{ src: '/media/growthprint-explainer.webm', type: 'video/webm' }],
-  poster: '/media/growthprint-explainer-poster.webp',
-  captions: '/media/captions/growthprint-en.vtt',
-  durationLabel: '58 seconds',
+  sources: [
+    { src: "/media/GrowthPrint-Premium-1080p.mp4", type: "video/webm" },
+  ],
+  poster: "/media/growthprint-explainer-poster.webp",
+  captions: "/media/captions/growthprint-en.vtt",
+  durationLabel: "58 seconds",
 } as const;
 
 /**
@@ -34,9 +36,9 @@ export function ExplainerVideo() {
   };
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <div aria-hidden="true" className="pointer-events-none absolute -inset-8 -z-10 rounded-[40px] bg-gradient-to-br from-mk-purple/35 via-mk-blue/20 to-transparent blur-3xl" />
-      <div className="relative aspect-video overflow-hidden rounded-[22px] border border-white/15 bg-mk-surface shadow-[0_40px_120px_-40px_rgb(116_38_201/0.7)]">
+      <div className="relative aspect-video w-full overflow-hidden rounded-[22px] border border-white/15 bg-mk-surface shadow-[0_40px_120px_-40px_rgb(116_38_201/0.7)]">
         <video
           ref={videoRef}
           className="h-full w-full object-cover"
