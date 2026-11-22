@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { motion } from 'motion/react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks.ts';
 import { fetchClients, fetchCrmLeads, fetchProjects, fetchSupportRequests, fetchInvoices, fetchOutreachDrafts, fetchAllProposals } from '../../../store/index.ts';
 import {
@@ -16,6 +17,21 @@ import { AreaTrend, DonutBreakdown, HorizontalBars, GroupedBars, ComboBarLine } 
 import type { AdminTab } from './AdminLayout.tsx';
 
 const money = (n: number) => `$${n.toLocaleString()}`;
+
+// Corporate motion personality: MD3-standard curve, ~320ms rise-and-fade, 40ms card stagger.
+// [&>*]:h-full keeps grid children (KpiCard, Panel) filling their cell so rows stay equal-height.
+function Reveal({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
+  return (
+    <motion.div
+      className={`[&>*]:h-full ${className}`}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.32, delay, ease: [0.2, 0, 0, 1] }}
+    >
+      {children}
+    </motion.div>
+  );
+}
 
 export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTab) => void }) {
   const dispatch = useAppDispatch();
@@ -128,6 +144,7 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
   return (
     <div className="space-y-6">
       {/* Context header: the period is the title, actions sit beside it. */}
+      <Reveal>
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
         <div className="space-y-1">
           <h1 className="text-[1.75rem] font-bold leading-tight tracking-tight text-gp-text">
@@ -145,21 +162,23 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
           )}
         </div>
       </div>
+      </Reveal>
 
       {/* Operational pulse: four compact stats, then the money strip — the dashboard's one bright element. */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <KpiCard label="Active projects" value={activeProjectCount}
-          context={waitingProjects ? `${waitingProjects} waiting for client` : `${projects.length} in total`} onClick={() => onNavigateTab('PROJECTS')} />
-        <KpiCard label="Total leads" value={leads.length}
+        <Reveal delay={0.04}><KpiCard label="Active projects" value={activeProjectCount}
+          context={waitingProjects ? `${waitingProjects} waiting for client` : `${projects.length} in total`} onClick={() => onNavigateTab('PROJECTS')} /></Reveal>
+        <Reveal delay={0.08}><KpiCard label="Total leads" value={leads.length}
           delta={leadsDelta === null ? null : { value: leadsDelta, label: 'new leads versus last month' }}
-          context={leadsDelta === null ? `${newLeads.thisMonth} new this month` : 'new vs last month'} onClick={() => onNavigateTab('LEADS')} />
-        <KpiCard label="Active clients" value={activeClients}
-          context={`${retainerClients} on a retainer`} onClick={() => onNavigateTab('CLIENTS')} />
-        <KpiCard label="Open milestones" value={milestones.open}
+          context={leadsDelta === null ? `${newLeads.thisMonth} new this month` : 'new vs last month'} onClick={() => onNavigateTab('LEADS')} /></Reveal>
+        <Reveal delay={0.12}><KpiCard label="Active clients" value={activeClients}
+          context={`${retainerClients} on a retainer`} onClick={() => onNavigateTab('CLIENTS')} /></Reveal>
+        <Reveal delay={0.16}><KpiCard label="Open milestones" value={milestones.open}
           context={milestones.overdue ? <span className="font-medium text-gp-danger">{milestones.overdue} overdue</span> : 'None overdue'}
-          onClick={() => onNavigateTab('PROJECTS')} />
+          onClick={() => onNavigateTab('PROJECTS')} /></Reveal>
       </div>
 
+      <Reveal delay={0.18}>
       <Panel title="Money" description="Invoiced, collected and in proposal review"
         action={<button onClick={() => onNavigateTab('INVOICES')} className="text-sm font-semibold text-gp-primary-strong hover:underline">View invoices</button>}
         bodyClassName="p-0">
@@ -181,39 +200,40 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
           </div>
         </dl>
       </Panel>
+      </Reveal>
 
       {/* Analytics row 1 */}
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-3">
-        <Panel title="Projects by target month" description="Delivery load by target completion month">
+        <Reveal delay={0.2}><Panel title="Projects by target month" description="Delivery load by target completion month">
           <div className="h-60">{projects.length ? <AreaTrend data={targetTrend} valueLabel="Projects" /> : empty('No projects yet.')}</div>
-        </Panel>
-        <Panel title="Revenue by service" description="Accepted proposal value">
+        </Panel></Reveal>
+        <Reveal delay={0.24}><Panel title="Revenue by service" description="Accepted proposal value">
           {serviceRevenue.length ? <DonutBreakdown data={serviceRevenue} centerLabel="Total" format={shortMoney} /> : <div className="h-40">{empty('No accepted proposals yet.')}</div>}
-        </Panel>
-        <Panel title="Lead sources" description="CRM leads by source">
+        </Panel></Reveal>
+        <Reveal delay={0.28}><Panel title="Lead sources" description="CRM leads by source">
           <div className="h-60">{leadSources.length ? <HorizontalBars data={leadSources} valueLabel="Leads" /> : empty('No leads yet.')}</div>
-        </Panel>
+        </Panel></Reveal>
       </div>
 
       {/* Analytics row 2 */}
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-3">
-        <Panel title="Project status" description="All projects">
+        <Reveal delay={0.3}><Panel title="Project status" description="All projects">
           <div className="h-60">{projectStatus.length ? <HorizontalBars data={projectStatus} valueLabel="Projects" /> : empty('No projects yet.')}</div>
-        </Panel>
-        <Panel title="Milestone performance" description="Done vs open milestones by due month"
+        </Panel></Reveal>
+        <Reveal delay={0.34}><Panel title="Milestone performance" description="Done vs open milestones by due month"
           action={<span className="flex gap-3 text-xs text-gp-text-secondary"><span className="flex items-center gap-1"><i className="h-2 w-2 rounded-sm bg-gp-accent" />Done</span><span className="flex items-center gap-1"><i className="h-2 w-2 rounded-sm bg-gp-divider" />Open</span></span>}>
           <div className="h-60">{milestones.total ? <GroupedBars data={milestoneTrend} aLabel="Done" bLabel="Open" /> : empty('No milestones yet.')}</div>
-        </Panel>
-        <Panel title="Collected vs invoiced" description="USD by month"
+        </Panel></Reveal>
+        <Reveal delay={0.38}><Panel title="Collected vs invoiced" description="USD by month"
           action={<span className="flex gap-3 text-xs text-gp-text-secondary"><span className="flex items-center gap-1"><i className="h-2 w-2 rounded-sm bg-gp-primary-soft ring-1 ring-gp-primary/40" />Invoiced</span><span className="flex items-center gap-1"><i className="h-0.5 w-3 bg-gp-primary" />Collected</span></span>}>
           <div className="h-60"><ComboBarLine data={collectedVsInvoiced} barLabel="Invoiced" lineLabel="Collected" /></div>
           <p className="mt-2 text-xs text-gp-text-secondary">Collected to date: <strong className="tabular-nums text-gp-text">{money(cashCollected)}</strong></p>
-        </Panel>
+        </Panel></Reveal>
       </div>
 
       {/* Operational tables */}
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
-        <Panel className="xl:col-span-2" title="Active projects" bodyClassName="p-0"
+        <Reveal delay={0.4} className="xl:col-span-2"><Panel title="Active projects" bodyClassName="p-0"
           action={<button onClick={() => onNavigateTab('PROJECTS')} className="text-sm font-semibold text-gp-primary-strong hover:underline">View all</button>}>
           {activeProjectRows.length === 0 ? <p className="px-5 py-8 text-sm text-gp-text-secondary">No active projects.</p> : (
             <div className="overflow-x-auto">
@@ -237,8 +257,8 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
               </table>
             </div>
           )}
-        </Panel>
-        <Panel title="Recent leads" bodyClassName="p-0"
+        </Panel></Reveal>
+        <Reveal delay={0.44}><Panel title="Recent leads" bodyClassName="p-0"
           action={<button onClick={() => onNavigateTab('LEADS')} className="text-sm font-semibold text-gp-primary-strong hover:underline">View all</button>}>
           {recentLeads.length === 0 ? <p className="px-5 py-8 text-sm text-gp-text-secondary">No leads yet.</p> : (
             <table className="w-full text-left text-[0.8125rem]">
@@ -270,11 +290,11 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
             </ul>
             <p className="mt-3 text-xs text-gp-text-secondary">{qualifiedToMeeting === null ? 'No qualified leads yet.' : <>Qualified to meeting: <strong className="text-gp-text">{qualifiedToMeeting}%</strong>, {pipeline.open} open</>}</p>
           </div>
-        </Panel>
+        </Panel></Reveal>
       </div>
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
-        <Panel className="xl:col-span-2" title="Needs your attention" description="Prioritised from live requests, pipeline and invoices" bodyClassName="p-0">
+        <Reveal delay={0.46} className="xl:col-span-2"><Panel title="Needs your attention" description="Prioritised from live requests, pipeline and invoices" bodyClassName="p-0">
           {actionItems.length === 0 ? (
             <p className="px-5 py-8 text-center text-sm text-gp-text-secondary">Nothing needs your attention right now.</p>
           ) : (
@@ -294,8 +314,8 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
               ))}
             </ul>
           )}
-        </Panel>
-        <Panel title="Recent activity" bodyClassName="p-0"
+        </Panel></Reveal>
+        <Reveal delay={0.5}><Panel title="Recent activity" bodyClassName="p-0"
           action={activityConnected ? <button onClick={() => onNavigateTab('ACTIVITY')} className="text-sm font-semibold text-gp-primary-strong hover:underline">See all</button> : undefined}>
           {!activityConnected ? (
             <p className="px-5 py-8 text-sm text-gp-text-secondary">The activity log is not connected yet: there is no activity API in MVP1.</p>
@@ -311,7 +331,7 @@ export function AdminDashboard({ onNavigateTab }: { onNavigateTab: (tab: AdminTa
               ))}
             </ol>
           )}
-        </Panel>
+        </Panel></Reveal>
       </div>
     </div>
   );

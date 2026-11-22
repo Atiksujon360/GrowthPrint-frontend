@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, type ReactNode } from 'react';
+import { MotionConfig } from 'motion/react';
 import { Provider } from 'react-redux';
 import { store, addToast } from '../store/index.ts';
 import { validateSession, clearAuth } from '../features/auth/authSlice.ts';
@@ -45,8 +46,11 @@ function SessionBootstrap() {
 export function AppProviders({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <Provider store={store}>
-      <SessionBootstrap />
-      {children}
+      {/* Motion animations respect the OS reduced-motion preference (opacity fades stay, transforms stop). */}
+      <MotionConfig reducedMotion="user">
+        <SessionBootstrap />
+        {children}
+      </MotionConfig>
     </Provider>
   );
 }

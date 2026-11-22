@@ -15,7 +15,7 @@ export function WhyGrowthPrint() {
         </div>
         <dl className="divide-y divide-mk-line border-y border-mk-line">
           {PRINCIPLES.map(p => (
-            <div key={p.title} className="grid gap-2 py-7 sm:grid-cols-[minmax(0,15rem)_1fr] sm:gap-10">
+            <div key={p.title} className="mk-reveal grid gap-2 py-7 sm:grid-cols-[minmax(0,15rem)_1fr] sm:gap-10">
               <dt className="font-medium text-[clamp(1rem,1.1vw,1.125rem)]">{p.title}</dt>
               <dd className="font-light leading-[1.65] text-mk-muted">{p.text}</dd>
             </div>

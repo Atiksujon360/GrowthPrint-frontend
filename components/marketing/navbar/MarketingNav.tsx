@@ -61,7 +61,7 @@ export function MarketingNav() {
 
         <div className="flex items-center gap-3">
           <a href="/#start"
-            className="hidden h-12 items-center rounded-xl bg-gradient-to-r from-mk-purple to-mk-blue px-7 text-[15px] font-medium text-mk-accent-fg shadow-[0_10px_30px_-12px_rgb(249_115_22/0.6)] transition-[filter] hover:brightness-105 sm:inline-flex">
+            className="hidden h-12 items-center rounded-xl bg-gradient-to-r from-mk-purple to-mk-blue px-7 text-[15px] font-medium text-mk-accent-fg shadow-[0_10px_30px_-12px_rgb(249_115_22/0.6)] transition-[filter,transform] duration-150 hover:brightness-105 active:scale-[0.98] sm:inline-flex">
             Contact Us
           </a>
           <button ref={buttonRef} type="button" onClick={() => setOpen(o => !o)} aria-expanded={open} aria-controls="mk-menu"
@@ -73,7 +73,7 @@ export function MarketingNav() {
       </nav>
 
       {open && (
-        <div id="mk-menu" className="border-t border-mk-line px-5 pb-8 pt-4 sm:px-8 lg:hidden">
+        <div id="mk-menu" className="mk-menu-in border-t border-mk-line px-5 pb-8 pt-4 sm:px-8 lg:hidden">
           <ul className="flex flex-col">
             {NAV_LINKS.map(link => (
               <li key={link.label}>

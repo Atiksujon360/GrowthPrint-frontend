@@ -403,8 +403,30 @@
 @keyframes mk-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
 .mk-float { animation: mk-float 9s ease-in-out infinite; }
 .mk-rise { animation: mk-rise 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+/* Scroll-driven reveals: content rises into view as it enters the scrollport. Pure CSS
+   (animation-timeline: view()) — no JS; browsers without support simply show the content. */
+@keyframes mk-reveal { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+@keyframes mk-menu-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+@keyframes mk-draw-line { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@supports (animation-timeline: view()) {
+  .mk-reveal {
+    animation: mk-reveal linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 65%;
+  }
+  .mk-draw path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: mk-draw-line linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 90%;
+  }
+}
+.mk-menu-in { animation: mk-menu-in 0.25s cubic-bezier(0.2, 0, 0, 1) both; }
 @media (prefers-reduced-motion: reduce) {
-  .mk-float, .mk-rise { animation: none; }
+  .mk-float, .mk-rise, .mk-reveal, .mk-menu-in, .mk-draw path { animation: none; }
+  .mk-draw path { stroke-dashoffset: 0; }
 }
 
 /*

@@ -6,7 +6,7 @@ export function ContactSection() {
     <section id="start" aria-labelledby="start-title" className="mk-cream relative scroll-mt-20 overflow-hidden border-t border-mk-line bg-mk-bg">
       <div aria-hidden="true" className="pointer-events-none absolute -left-40 top-20 -z-10 h-[560px] w-[560px] rounded-full bg-mk-purple/10 blur-[150px]" />
       <div className="mx-auto grid max-w-[1440px] gap-12 px-5 py-24 sm:px-8 lg:grid-cols-[0.75fr_1.25fr] lg:gap-20 lg:px-14 lg:py-32">
-        <div>
+        <div className="mk-reveal">
           <h2 id="start-title" className="font-medium leading-[1.1] tracking-[-0.02em] text-[clamp(1.875rem,3.6vw,3.125rem)]">
             Start a <em className="font-light italic">project.</em>
           </h2>
@@ -26,7 +26,7 @@ export function ContactSection() {
             ))}
           </ol>
         </div>
-        <ProjectInquiryForm />
+        <div className="mk-reveal"><ProjectInquiryForm /></div>
       </div>
     </section>
   );

@@ -98,7 +98,7 @@ export function WorkspaceLoginScreen({ role, onSignIn }: WorkspaceLoginScreenPro
   return (
     <AuthShell
       eyebrow={copy.eyebrow}
-      title="Welcome back"
+      title="Sign in"
       subtitle={copy.subtitle}
       aside={copy.aside}
       footer={role === 'CLIENT'
@@ -133,7 +133,7 @@ export function WorkspaceLoginScreen({ role, onSignIn }: WorkspaceLoginScreenPro
           <div className="flex justify-end">
             <Link
               href={ROUTES.public.forgotPassword}
-              className="rounded text-sm font-medium text-brand-700 underline-offset-4 hover:underline"
+              className="rounded text-sm font-medium text-gp-primary-strong underline-offset-4 hover:underline"
             >
               Forgot password?
             </Link>

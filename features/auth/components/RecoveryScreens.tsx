@@ -72,7 +72,7 @@ export function ForgotPasswordScreen() {
     return (
       <AuthShell eyebrow="Password reset" title="Check your email">
         <div className="space-y-5">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-700">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gp-primary-soft text-gp-primary-strong">
             <MailCheck className="h-6 w-6" aria-hidden="true" />
           </div>
           {/* Same message whether or not the address has an account (no account enumeration). */}
@@ -80,12 +80,12 @@ export function ForgotPasswordScreen() {
             If an account exists for <strong>{email.trim()}</strong>, we&apos;ve sent a link to reset the password.
             The link works once and expires after a short time.
           </Notice>
-          <p className="text-sm leading-6 text-ink-500">
+          <p className="text-sm leading-6 text-gp-text-secondary">
             Didn&apos;t get it? Check your spam folder, or ask the GrowthPrint administrator to send you a reset link.
           </p>
           <div className="flex flex-wrap gap-3">
             <Button variant="secondary" onClick={() => { setSent(false); }}>Use another email</Button>
-            <Link href={ROUTES.portal.login} className="inline-flex min-h-11 items-center rounded-xl px-2 text-sm font-semibold text-brand-700 hover:underline">
+            <Link href={ROUTES.portal.login} className="inline-flex min-h-11 items-center rounded-xl px-2 text-sm font-semibold text-gp-primary-strong hover:underline">
               Back to sign in
             </Link>
           </div>
@@ -115,9 +115,9 @@ export function ForgotPasswordScreen() {
         />
         <Button type="submit" size="lg" fullWidth loading={submitting} loadingText="Sending…">Send reset link</Button>
       </form>
-      <p className="mt-6 text-center text-sm text-ink-500">
+      <p className="mt-6 text-center text-sm text-gp-text-secondary">
         Remembered it?{' '}
-        <Link href={ROUTES.portal.login} className="font-semibold text-brand-700 hover:underline">Back to sign in</Link>
+        <Link href={ROUTES.portal.login} className="font-semibold text-gp-primary-strong hover:underline">Back to sign in</Link>
       </p>
     </AuthShell>
   );
@@ -196,7 +196,7 @@ function InvalidLink({ title, body }: { title: string; body: string }) {
   return (
     <div className="space-y-5">
       <Notice tone="error" title={title}>{body}</Notice>
-      <Link href={ROUTES.public.forgotPassword} className="inline-flex min-h-11 items-center rounded-xl bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-700">
+      <Link href={ROUTES.public.forgotPassword} className="inline-flex min-h-11 items-center rounded-xl bg-gp-primary px-4 text-sm font-semibold text-gp-primary-foreground hover:bg-gp-primary-hover">
         Request a new link
       </Link>
     </div>
@@ -247,10 +247,10 @@ export function ResetPasswordScreen() {
         <div className="space-y-5">
           <Notice tone="success">Your password has been changed. For your security, every existing session was signed out.</Notice>
           <div className="flex flex-wrap gap-3">
-            <Link href={ROUTES.portal.login} className="inline-flex min-h-11 items-center rounded-xl bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-700">
+            <Link href={ROUTES.portal.login} className="inline-flex min-h-11 items-center rounded-xl bg-gp-primary px-4 text-sm font-semibold text-gp-primary-foreground hover:bg-gp-primary-hover">
               Sign in to the client hub
             </Link>
-            <Link href={ROUTES.admin.login} className="inline-flex min-h-11 items-center rounded-xl border border-ink-200 px-4 text-sm font-semibold text-ink-800 hover:bg-ink-50">
+            <Link href={ROUTES.admin.login} className="inline-flex min-h-11 items-center rounded-xl border border-gp-border bg-gp-surface px-4 text-sm font-semibold text-gp-text hover:bg-gp-surface-secondary">
               Studio sign-in
             </Link>
           </div>
@@ -286,16 +286,16 @@ export function AcceptInviteScreen() {
     );
   }, [ready, token]);
 
-  const greeting = preview?.fullName ? `Welcome, ${preview.fullName.split(' ')[0]}` : 'Set up your account';
-
   return (
     <AuthShell
       eyebrow="Account setup"
-      title={status === 'valid' ? greeting : 'Set up your account'}
+      title="Set up your account"
       subtitle={status === 'valid' && preview ? (
-        <>You&apos;ve been invited {ROLE_COPY[preview.role] ?? 'to GrowthPrint'}
-          {preview.clientName ? <> for <strong className="text-ink-800">{preview.clientName}</strong></> : null}.
-          Choose a password for <strong className="text-ink-800">{preview.email}</strong>.</>
+        <>{preview.fullName
+          ? `Hi ${preview.fullName.split(' ')[0]}, you've been invited`
+          : `You've been invited`} {ROLE_COPY[preview.role] ?? 'to GrowthPrint'}
+          {preview.clientName ? <> for <strong className="text-gp-text">{preview.clientName}</strong></> : null}.
+          Choose a password for <strong className="text-gp-text">{preview.email}</strong>.</>
       ) : undefined}
     >
       {status === 'checking' && (

@@ -79,7 +79,7 @@ export function Services() {
   return (
     <section id="services" aria-labelledby="services-title" className="mk-cream scroll-mt-24 border-t border-mk-line bg-mk-bg">
       <div className="mx-auto max-w-[1440px] px-5 py-24 sm:px-8 lg:px-14 lg:py-32">
-        <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+        <div className="mk-reveal flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
           <h2 id="services-title" className="max-w-2xl font-medium leading-[1.08] tracking-[-0.02em] text-[clamp(2rem,3.8vw,3.375rem)]">
             Everything your business needs to <em className="font-light italic">move forward.</em>
           </h2>
@@ -93,7 +93,7 @@ export function Services() {
             const Visual = VISUALS[service.id];
             return (
               <li key={service.id}
-                className={`relative overflow-hidden rounded-2xl border p-7 sm:p-8 ${PLACEMENT[service.id]} ${service.id === 'websites'
+                className={`mk-reveal relative overflow-hidden rounded-2xl border p-7 transition-transform duration-300 ease-out hover:-translate-y-1 sm:p-8 ${PLACEMENT[service.id]} ${service.id === 'websites'
                   ? 'mk-dark border-white/10 bg-gradient-to-br from-[#211824] via-[#19121D] to-[#100B12] shadow-[0_40px_90px_-40px_rgb(16_11_18/0.7)]'
                   : 'border-mk-line bg-gradient-to-br from-mk-soft via-mk-surface to-mk-bg'}`}>
                 <div aria-hidden="true" className={`pointer-events-none absolute -bottom-24 -left-16 h-64 w-64 rounded-full blur-[90px] ${service.id === 'websites' ? 'bg-[#FF572E]/20' : 'bg-mk-purple/15'}`} />
@@ -106,8 +106,8 @@ export function Services() {
                     ))}
                   </ul>
                   <a href="#start" data-service={service.id}
-                    className="mt-6 inline-flex items-center gap-1.5 text-[15px] font-medium text-mk-text hover:text-mk-violet">
-                    Discuss this service <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                    className="group mt-6 inline-flex items-center gap-1.5 text-[15px] font-medium text-mk-text transition-colors duration-150 hover:text-mk-violet">
+                    Discuss this service <ArrowUpRight className="h-4 w-4 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden="true" />
                   </a>
                 </div>
                 <Visual />

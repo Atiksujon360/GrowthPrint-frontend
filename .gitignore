@@ -17,3 +17,4 @@ coverage/
 /playwright/.auth/
 scripts/marketing-media/out/
 .devin
+.agent

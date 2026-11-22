@@ -286,7 +286,7 @@ export function Skeleton({
       transition={{
         duration: 1.5,
         repeat: Infinity,
-        ease: 'easeInOut'
+        ease: [0.37, 0, 0.63, 1]
       }}
     />
   );
@@ -301,10 +301,10 @@ export function TimeIndicator({
   time: string;
 }) {
   const statusConfig = {
-    active: { icon: Zap, color: 'text-gp-success bg-gp-success-soft', pulse: true },
-    pending: { icon: Clock, color: 'text-gp-warning bg-gp-warning-soft', pulse: false },
-    completed: { icon: CheckCircle2, color: 'text-gp-info bg-gp-info-soft', pulse: false },
-    overdue: { icon: AlertTriangle, color: 'text-gp-danger bg-gp-danger-soft', pulse: true }
+    active: { icon: Zap, color: 'text-gp-success bg-gp-success-soft', pulse: true, glow: '74, 222, 128' },
+    pending: { icon: Clock, color: 'text-gp-warning bg-gp-warning-soft', pulse: false, glow: '245, 158, 11' },
+    completed: { icon: CheckCircle2, color: 'text-gp-info bg-gp-info-soft', pulse: false, glow: '59, 130, 246' },
+    overdue: { icon: AlertTriangle, color: 'text-gp-danger bg-gp-danger-soft', pulse: true, glow: '248, 113, 113' }
   };
 
   const config = statusConfig[status];
@@ -315,7 +315,7 @@ export function TimeIndicator({
       className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${config.color}`}
       animate={config.pulse ? {
         scale: [1, 1.02, 1],
-        boxShadow: ['0 0 0 0 rgba(74, 222, 128, 0)', '0 0 0 8px rgba(74, 222, 128, 0)']
+        boxShadow: [`0 0 0 0 rgba(${config.glow}, 0)`, `0 0 0 8px rgba(${config.glow}, 0)`]
       } : {}}
       transition={{
         duration: 2,
@@ -529,8 +529,9 @@ export function AnimatedCounter({
     const animate = (currentTime: number) => {
       if (!startTime) startTime = currentTime;
       const progress = Math.min((currentTime - startTime) / (duration * 1000), 1);
-      
-      setDisplayValue(Math.floor(progress * value));
+      const eased = 1 - Math.pow(1 - progress, 3);
+
+      setDisplayValue(Math.floor(eased * value));
 
       if (progress < 1) {
         animationFrame = requestAnimationFrame(animate);
