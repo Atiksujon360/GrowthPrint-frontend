@@ -18,3 +18,5 @@ coverage/
 scripts/marketing-media/out/
 .devin
 .agent
+.claude
+.aistudio

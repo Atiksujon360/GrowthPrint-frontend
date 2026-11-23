@@ -53,9 +53,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       disabled={disabled || loading}
       aria-busy={loading || undefined}
       className={cx(
-        'inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-colors',
+        'inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-all duration-200 ease-out',
         'focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gp-primary/30',
         'disabled:cursor-not-allowed disabled:opacity-55',
+        'active:scale-[0.98] active:shadow-sm',
         sizes[size], BUTTON_VARIANTS[variant], fullWidth && 'w-full', className,
       )}
       {...rest}
@@ -109,7 +110,7 @@ export function Field({ label, required, help, error, className, children }: Fie
 }
 
 export const inputClass = (invalid: boolean, extra?: string) => cx(
-  'block w-full rounded-lg border bg-gp-surface px-3 py-2 text-sm text-gp-text transition',
+  'block w-full rounded-lg border bg-gp-surface px-3 py-2 text-sm text-gp-text transition-all duration-200 ease-out',
   'placeholder:text-gp-text-muted focus:outline-none focus:ring-4',
   'disabled:cursor-not-allowed disabled:bg-gp-surface-secondary disabled:text-gp-text-muted',
   invalid ? 'border-gp-danger focus:border-gp-danger focus:ring-gp-danger/20' : 'border-gp-border focus:border-gp-primary focus:ring-gp-primary/30',

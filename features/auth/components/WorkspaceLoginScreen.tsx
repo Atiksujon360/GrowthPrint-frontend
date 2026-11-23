@@ -103,7 +103,7 @@ export function WorkspaceLoginScreen({ role, onSignIn }: WorkspaceLoginScreenPro
       aside={copy.aside}
       footer={role === 'CLIENT'
         ? <>New to the client hub? Your invitation email contains a link to set up your account.</>
-        : <>Access to the studio is by invitation from the administrator.</>}
+        : <>Access to the studio is by invitation from the administrator</>}
     >
       {error && <Notice tone="error" className="mb-5">{error}</Notice>}
       <form noValidate onSubmit={handleSubmit} className="space-y-5">

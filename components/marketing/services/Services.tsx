@@ -10,7 +10,7 @@ function CodeVisual() {
         <div key={i} className="whitespace-pre">
           <span className="mr-4 text-white/25">{18 + i}</span>
           <span className="text-mk-muted">{l[0]}</span><span className="text-[#ffb38a]">{l[1]}</span>
-          <span className="text-[#7fd4ff]">{l[2]}</span><span className="text-[#ffd2a8]">{l[3]}</span><span className="text-mk-muted">{l[4] ?? ''}</span>
+          <span className="text-[#e8c9ae]">{l[2]}</span><span className="text-[#ffd2a8]">{l[3]}</span><span className="text-mk-muted">{l[4] ?? ''}</span>
         </div>
       ))}
     </div>
@@ -21,7 +21,7 @@ function BarsVisual() {
   return (
     <div aria-hidden="true" className="mt-8 flex h-24 items-end gap-2">
       {[38, 62, 48, 80, 56, 92, 70].map((h, i) => (
-        <span key={i} className="flex-1 rounded-t-md bg-gradient-to-t from-mk-blue/50 to-mk-purple/80" style={{ height: `${h}%` }} />
+        <span key={i} className="flex-1 rounded-t-md bg-mk-purple/80" style={{ height: `${h}%` }} />
       ))}
     </div>
   );
@@ -36,7 +36,7 @@ function FlowVisual() {
           {i < 2 && <path d={`M${x + 80} 45 H${x + 100}`} stroke="var(--mk-purple)" strokeWidth="2" />}
         </g>
       ))}
-      <circle cx="304" cy="45" r="9" fill="var(--mk-blue)" opacity="0.9" /><path d="M300 45l3 3 6-6" stroke="var(--mk-code)" strokeWidth="2" fill="none" />
+      <circle cx="304" cy="45" r="9" fill="var(--mk-purple)" opacity="0.9" /><path d="M300 45l3 3 6-6" stroke="var(--mk-code)" strokeWidth="2" fill="none" />
     </svg>
   );
 }
@@ -47,7 +47,7 @@ function HubVisual() {
     <svg aria-hidden="true" viewBox="0 0 320 100" className="mt-8 w-full">
       {spokes.map(([x, y], i) => <line key={i} x1="160" y1="50" x2={x} y2={y} stroke="var(--mk-purple)" strokeOpacity="0.5" strokeWidth="1.5" />)}
       {spokes.map(([x, y], i) => <circle key={`c${i}`} cx={x} cy={y} r="6" fill="var(--mk-surface)" stroke="var(--mk-purple)" strokeWidth="1.5" />)}
-      <circle cx="160" cy="50" r="15" fill="url(#hubg)" /><defs><radialGradient id="hubg"><stop offset="0" style={{ stopColor: 'var(--mk-purple)' }} /><stop offset="1" style={{ stopColor: 'var(--mk-blue)' }} /></radialGradient></defs>
+      <circle cx="160" cy="50" r="15" fill="var(--mk-purple)" />
     </svg>
   );
 }
@@ -57,7 +57,7 @@ function ReviewVisual() {
     <ul aria-hidden="true" className="mt-8 space-y-2.5">
       {['Architecture', 'Performance', 'Security', 'Maintainability'].map((label, i) => (
         <li key={label} className="flex items-center gap-3 text-[13px] text-mk-muted">
-          <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-mk-line"><span className="block h-full rounded-full bg-gradient-to-r from-mk-purple to-mk-violet" style={{ width: `${[86, 72, 80, 64][i]}%` }} /></span>
+          <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-mk-line"><span className="block h-full rounded-full bg-mk-purple/80" style={{ width: `${[86, 72, 80, 64][i]}%` }} /></span>
           <span className="w-28 text-right">{label}</span>
         </li>
       ))}
@@ -96,7 +96,6 @@ export function Services() {
                 className={`mk-reveal relative overflow-hidden rounded-2xl border p-7 transition-transform duration-300 ease-out hover:-translate-y-1 sm:p-8 ${PLACEMENT[service.id]} ${service.id === 'websites'
                   ? 'mk-dark border-white/10 bg-gradient-to-br from-[#211824] via-[#19121D] to-[#100B12] shadow-[0_40px_90px_-40px_rgb(16_11_18/0.7)]'
                   : 'border-mk-line bg-gradient-to-br from-mk-soft via-mk-surface to-mk-bg'}`}>
-                <div aria-hidden="true" className={`pointer-events-none absolute -bottom-24 -left-16 h-64 w-64 rounded-full blur-[90px] ${service.id === 'websites' ? 'bg-[#FF572E]/20' : 'bg-mk-purple/15'}`} />
                 <div className={service.id === 'websites' ? 'relative md:max-w-[42%]' : 'relative'}>
                   <h3 className="font-medium text-[clamp(1.125rem,1.5vw,1.375rem)] sm:text-[1.375rem]">{service.title}</h3>
                   <p className="mt-3 font-light leading-[1.65] text-[clamp(0.9375rem,1.1vw,1rem)] text-mk-muted">{service.summary}</p>

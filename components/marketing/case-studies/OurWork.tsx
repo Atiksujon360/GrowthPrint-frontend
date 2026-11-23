@@ -6,7 +6,7 @@
 export function OurWork() {
   return (
     <section id="work" aria-labelledby="work-title" className="mk-dark scroll-mt-24 border-t border-mk-line bg-mk-bg">
-      <div aria-hidden="true" className="pointer-events-none absolute -left-40 top-24 -z-10 h-[480px] w-[480px] rounded-full bg-[#FF572E]/15 blur-[140px]" />
+      <div aria-hidden="true" className="pointer-events-none absolute -left-40 top-24 -z-10 h-[480px] w-[480px] rounded-full bg-mk-purple/10 blur-[140px]" />
       <div className="relative mx-auto max-w-[1440px] px-5 py-24 sm:px-8 lg:px-14 lg:py-32">
         <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:items-center lg:gap-16">
           <div className="mk-reveal">
@@ -29,7 +29,7 @@ export function OurWork() {
           </div>
 
           <figure className="mk-reveal relative">
-            <div aria-hidden="true" className="pointer-events-none absolute -inset-10 -z-10 rounded-full bg-[#FF572E]/15 blur-[100px]" />
+            <div aria-hidden="true" className="pointer-events-none absolute -inset-10 -z-10 rounded-full bg-mk-purple/10 blur-[100px]" />
             <div className="overflow-hidden rounded-2xl border border-white/10 bg-mk-surface shadow-[0_50px_120px_-40px_rgb(0_0_0/0.8)] ring-1 ring-white/5">
               <img src="/images/work/growthprint-studio-dashboard.webp" width={1440} height={1000} decoding="async"
                 alt="GrowthPrint Studio dashboard with project, lead, client and invoice summaries and charts"

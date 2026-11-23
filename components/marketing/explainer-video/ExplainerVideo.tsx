@@ -37,7 +37,7 @@ export function ExplainerVideo() {
 
   return (
     <div className="relative w-full">
-      <div aria-hidden="true" className="pointer-events-none absolute -inset-8 -z-10 rounded-[40px] bg-gradient-to-br from-mk-purple/30 via-mk-blue/15 to-transparent blur-3xl" />
+      <div aria-hidden="true" className="pointer-events-none absolute -inset-8 -z-10 rounded-[40px] bg-mk-purple/10 blur-3xl" />
       <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-mk-line bg-mk-code shadow-[0_40px_120px_-40px_rgb(0_0_0/0.55)]">
         <video
           ref={videoRef}
@@ -56,8 +56,8 @@ export function ExplainerVideo() {
         {!started && (
           <button type="button" onClick={() => void start()}
             className="group absolute inset-0 flex items-center justify-center bg-gradient-to-t from-mk-code/70 via-transparent to-transparent">
-            <span className="flex h-20 w-20 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/30 backdrop-blur-md transition-transform duration-300 group-hover:scale-105 group-focus-visible:scale-105 sm:h-24 sm:w-24">
-              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-mk-purple to-mk-blue sm:h-16 sm:w-16">
+            <span className="flex h-20 w-20 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/30 backdrop-blur-md transition-transform duration-200 group-hover:scale-105 group-focus-visible:scale-105 sm:h-24 sm:w-24">
+              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-mk-purple sm:h-16 sm:w-16">
                 <Play className="ml-1 h-6 w-6 fill-mk-accent-fg text-mk-accent-fg" aria-hidden="true" />
               </span>
             </span>

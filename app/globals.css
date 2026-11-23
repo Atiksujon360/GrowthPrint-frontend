@@ -399,9 +399,7 @@
 [data-theme="dark"] .gp-marketing { color-scheme: dark; }
 .gp-marketing :focus-visible { outline: 2px solid var(--color-mk-violet); outline-offset: 3px; }
 .gp-marketing ::selection { background: rgb(249 115 22 / 0.35); }
-@keyframes mk-float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-14px) rotate(1.5deg); } }
 @keyframes mk-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
-.mk-float { animation: mk-float 9s ease-in-out infinite; }
 .mk-rise { animation: mk-rise 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
 
 /* Scroll-driven reveals: content rises into view as it enters the scrollport. Pure CSS
@@ -425,7 +423,7 @@
 }
 .mk-menu-in { animation: mk-menu-in 0.25s cubic-bezier(0.2, 0, 0, 1) both; }
 @media (prefers-reduced-motion: reduce) {
-  .mk-float, .mk-rise, .mk-reveal, .mk-menu-in, .mk-draw path { animation: none; }
+  .mk-rise, .mk-reveal, .mk-menu-in, .mk-draw path { animation: none; }
   .mk-draw path { stroke-dashoffset: 0; }
 }
 

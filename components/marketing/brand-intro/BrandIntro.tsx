@@ -26,10 +26,10 @@ export function BrandIntro() {
       </section>
 
       <section id="meet" aria-labelledby="meet-title" className="mk-dark relative scroll-mt-24 overflow-hidden border-t border-mk-line bg-mk-bg">
-        <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-40 -z-10 h-[600px] w-[1000px] -translate-x-1/2 rounded-full bg-[#FF572E]/15 blur-[160px]" />
+        <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-40 -z-10 h-[600px] w-[1000px] -translate-x-1/2 rounded-full bg-mk-purple/10 blur-[160px]" />
         <div className="mx-auto max-w-[1240px] px-5 pb-24 sm:px-8 lg:px-14 lg:pb-32">
           <div className="mk-reveal mx-auto max-w-3xl text-center mb-12">
-            <p className="text-[13px] font-medium tracking-[0.14em] text-mk-violet">MEET GROWTHPRINT</p>
+            <p className="text-[13px] font-medium text-mk-violet">Meet GrowthPrint</p>
             <h2 id="meet-title" className="mt-5 font-medium leading-[1.08] tracking-[-0.02em] text-[clamp(1.875rem,3.8vw,3.375rem)]">
               Technology should make business <em className="font-light italic">easier.</em>
             </h2>

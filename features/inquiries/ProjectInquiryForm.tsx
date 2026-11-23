@@ -67,8 +67,8 @@ export function ProjectInquiryForm() {
   if (reference) {
     return (
       <div ref={confirmRef} tabIndex={-1} role="status"
-        className="rounded-[22px] border border-mk-violet/40 bg-mk-surface/80 p-8 outline-none sm:p-10">
-        <CheckCircle2 className="h-10 w-10 text-mk-cyan" aria-hidden="true" />
+        className="rounded-2xl border border-mk-purple/40 bg-mk-surface/80 p-8 outline-none sm:p-10">
+        <CheckCircle2 className="h-10 w-10 text-mk-purple" aria-hidden="true" />
         <h3 className="mt-5 text-2xl font-medium">Inquiry received</h3>
         <p className="mt-3 font-light leading-relaxed text-mk-muted">
           Thanks, {values.name.trim().split(' ')[0]}. Your reference is{' '}
@@ -92,7 +92,7 @@ export function ProjectInquiryForm() {
 
   return (
     <form ref={formRef} onSubmit={submit} noValidate aria-busy={pending}
-      className="rounded-[22px] border border-mk-line bg-mk-surface/80 p-6 backdrop-blur-sm sm:p-9">
+      className="rounded-2xl border border-mk-line bg-mk-surface/80 p-6 backdrop-blur-sm sm:p-9">
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
           <label htmlFor={`${id}-name`} className={label}>Full name</label>
@@ -173,7 +173,7 @@ export function ProjectInquiryForm() {
       )}
 
       <button type="submit" disabled={pending}
-        className="mt-8 inline-flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-mk-purple to-mk-blue px-8 text-base font-medium text-mk-accent-fg transition-[filter] hover:brightness-105 disabled:cursor-wait disabled:opacity-70 sm:w-auto">
+        className="mt-8 inline-flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-mk-purple px-8 text-base font-medium text-mk-accent-fg transition-[filter] hover:brightness-105 disabled:cursor-wait disabled:opacity-70 sm:w-auto">
         {pending ? 'Sending…' : <>Send inquiry <ArrowUpRight className="h-[18px] w-[18px]" aria-hidden="true" /></>}
       </button>
     </form>

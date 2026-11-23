@@ -28,12 +28,6 @@ export function AuthShell({ eyebrow, title, subtitle, children, footer, aside }:
   return (
     <div className="gp-app grid min-h-screen bg-gp-canvas lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
       <aside className="relative hidden overflow-hidden bg-gp-plum text-white lg:flex lg:flex-col lg:justify-between lg:p-12">
-        {/* Blueprint grid, purely decorative. */}
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-100"
-          style={{
-            backgroundImage: 'linear-gradient(rgb(255 255 255 / 0.05) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 0.05) 1px, transparent 1px)',
-            backgroundSize: '24px 24px',
-          }} />
         <Link href="/" className="relative flex w-fit items-center gap-2.5 rounded-md focus-visible:outline-white">
           <GrowthPrintMark className="h-8 w-8" tone="light" />
           <span className="gp-display text-lg font-semibold">GrowthPrint</span>
